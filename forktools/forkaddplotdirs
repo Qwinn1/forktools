@@ -1,0 +1,27 @@
+#! /bin/bash
+
+if [ -z "$FORKTOOLSBLOCKCHAINDIRS" ];  # sets the parent directory for all the fork-blockchain directories if it is empty.  Defaults to $HOME.
+ then
+  FORKTOOLSBLOCKCHAINDIRS="$HOME"
+ fi
+
+# You can set the above globally for all scripts by adding the included "forktoolsenv.sh" to your /etc/profile.d directory, modified to your taste.  
+# Requires sudo root permissions.  Making this permanent may require a reboot.
+
+
+
+cd $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain 
+. ./activate 
+# Modify the -d parameter in the following lines to match your plot directories for this server, then uncomment them by removing the # at the start
+# $1 plots add -d "/media/user/dsk1/plot01"
+# $1 plots add -d "/media/user/dsk2/plot02"
+# $1 plots add -d "/media/user/dsk3/plot03"
+# $1 plots add -d "/media/user/dsk4/plot04"
+# $1 plots add -d "/media/user/dsk5/plot05"
+# $1 plots add -d "/media/user/dsk6/plot06"
+# $1 plots add -d "/media/user/dsk7/plot07"
+# $1 plots add -d "/media/user/dsk8/plot08"
+# $1 plots add -d "/media/user/dsk9/plot09"
+
+
+

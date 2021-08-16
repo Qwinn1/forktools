@@ -1,0 +1,2 @@
+ps -ef | grep "_harvester" | grep -v grep | wc -l
+

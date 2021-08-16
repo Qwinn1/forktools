@@ -1,0 +1,16 @@
+#! /bin/bash
+
+if [ -z "$FORKTOOLSBLOCKCHAINDIRS" ];  # sets the parent directory for all the fork-blockchain directories if it is empty.  Defaults to $HOME.
+ then
+  FORKTOOLSBLOCKCHAINDIRS="$HOME"
+ fi
+
+# You can set the above globally for all scripts by adding the included "forktoolsenv.sh" to your /etc/profile.d directory, modified to your taste.  
+# Requires sudo root permissions.  Making this permanent may require a reboot.
+
+cd $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain 
+. ./activate 
+$1 show -c | grep "^FULL_NODE" | sed 's,^FULL_NODE ,,g;s,/.*,,;s, \+,:,g;s,  *,:,g;s,^,'$1' show -a ,g'
+
+
+
