@@ -23,22 +23,6 @@ These scripts assume:
 - That the name of the fork's blockchain directory is 'forkname-blockchain'.  The only fork I'm aware of that violates this convention in a default git installation is dogechia, which names their blockchain directory 'doge-chia' instead of what would conventionally be 'dogechia-blockchain'.  You can deal with this by setting up a symbolic link like so:  `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
 
 
-
-# SETTING UP ENVIRONMENT PATHS
-
-If your blockchain directories and hidden folders are all directly under your home directory, you don't really need to set up an environment, as those are the default paths.  You could then just run any given command by being in your forktools directory and running the script like this:  `./forkloge chia`.  If you have a custom location for your directories, or if you just want to be able to run the forktools from any directory on your system, create a text file called `forktoolsenv.sh` and place it in the /etc/profile.d directory (sudo required, reboot to make the changes persistent and global).  Paste these into it, customizing the paths for your setup:
-
-```
-export FORKTOOLSDIR="$HOME/forktools"
-export FORKTOOLSBLOCKCHAINDIRS="$HOME"
-export FORKTOOLSHIDDENDIRS="$HOME"
-
-export PATH="$PATH:/$FORKTOOLSDIR"
-```
-
-A copy of exactly that forktoolsenv.sh is included in the forktools directory for convenience.
-
-
 # COMMANDS WITH NO PARAMETERS:
 
 - `forkcounth`            \- Simply returns the number of active *_harvester processes running via ps -ef.  A quick numerical check to make sure the right number of fork harvester processes are running on the server (farmers also run harvester processes).  Should equal the total number of forks you are farming.
@@ -59,6 +43,21 @@ A copy of exactly that forktoolsenv.sh is included in the forktools directory fo
 - `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
 - `forkstarttl silicoin`  \-  starts timelord for silicoin.  Requires having previously run sh install-timelord.sh in the silicoin-blockchain directory.
 - `forkstoptl taco`       \-  stops timelord for taco.  Requires having previously run sh install-timelord.sh in the taco-blockchain directory.
+
+
+# SETTING UP ENVIRONMENT PATHS
+
+If your blockchain directories and hidden folders are all directly under your home directory, you don't really need to set up an environment, as those are the default paths.  You could then just run any given command by being in your forktools directory and running the script like this:  `./forkloge chia`.  If you have a custom location for your directories, or if you just want to be able to run the forktools from any directory on your system, create a text file called `forktoolsenv.sh` and place it in the `/etc/profile.d` directory (sudo required, reboot to make the changes persistent and global).  Paste these into it, customizing the paths for your setup:
+
+```
+export FORKTOOLSDIR="$HOME/forktools"
+export FORKTOOLSBLOCKCHAINDIRS="$HOME"
+export FORKTOOLSHIDDENDIRS="$HOME"
+
+export PATH="$PATH:/$FORKTOOLSDIR"
+```
+
+A copy of exactly that forktoolsenv.sh is included in the forktools directory for convenience.
 
 
 
