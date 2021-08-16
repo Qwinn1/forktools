@@ -17,35 +17,55 @@ period of the hidden directory, of course).
 COMMANDS WITH NO PARAMETERS:
 
 forkcounth        - Simply returns the number of active *_harvester processes running via ps -ef.  A quick numerical check to make sure at least the right number of 
-                      fork harvester processes are running (farmers also run harvester processes).  Should equal the total number of forks you are farming.
+                    fork harvester processes are running (farmers also run harvester processes).  Should equal the total number of forks you are farming.
 
 COMMANDS WITH ONE PARAMETER, FORKNAME
 
 forkloge chia         - Prints a grep for the word "ERROR" in .chia/mainnet/log/debug.log
+
 forklogw flax         - Prints a grep for the word "WARNING" in .flax/mainnet/log/debug.log
+
 forklogh greendoge    - Prints a grep for the word "harvester" in the greendoge debug.log file.  Good for checking response times.
+
 forklogt apple        - Tails the last 100 lines of the apple debug.log
+
 forkconfig hddcoin    - Opens the .hddcoin/mainnet/config/config.yaml file in gedit.  Modify this script to your preferred text editor (vi, nano, whatever)
-forknodes avocado     - prints a list of currently connected nodes for sharing with others having difficulty connecting. 
+
+forknodes avocado     - prints a list of currently connected nodes for sharing with others having difficulty connecting.
                         Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
+
 forkstarth cannabis   - runs "start harvester -r" for cannabis
+
 forkstoph covid       - stops harvester process for covid (If you're running GUI farmer, recommend closing that first)
+
 forkstopa socks       - stops ALL services for socks (If you're running GUI farmer, recommend closing that first)
+
 forksum scam          - runs "scam farm summary"
+
 forkver flora         - runs "flora version", returns the version # of the current install
+
 forkbenchips tad      - runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the 
                         tad-blockchain directory
+
 forkstarttl silicoin  - starts timelord for silicoin.  Requires having previously run sh install-timelord.sh in the silicoin-blockchain directory.
+
 forkstoptl taco       - stops timelord for taco.  Requires having previously run sh install-timelord.sh in the taco-blockchain directory.
+
+
 
 
 I am currently working on adding scripts that will edit a fork's config.yaml files to set:
    log_level to INFO
+
    log_maxfilesrotation to 99   
+
    plot_loading_frequency_seconds to 1800 (especially when done plotting, reloading plots every half hour is more than sufficient, every 3 minutes is huge overkill)   
+
    set plot_directories to a list of directories that you can set by editing a variable in the script itself.  Will do nothing if that variable is not set.
 
 ...and there will be a harvester version that also sets the farmer_peer to the IP address of your farmer, passed in as a parameter.
+
+
 
 
 DONATIONS ACCEPTED.  Thank you for your support.
