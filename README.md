@@ -22,6 +22,8 @@ These scripts assume:
 - That the fork's binary executable name and the .hidden file directory name are the same.  I'm unaware of any fork that violates this convention.  I refer to that name as 'forkname' in documentation.
 - That the name of the fork's blockchain directory is 'forkname-blockchain'.  The only fork I'm aware of that violates this convention in a default git installation is dogechia, which names their blockchain directory 'doge-chia' instead of what would conventionally be 'dogechia-blockchain'.  You can deal with this by setting up a symbolic link like so:  `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
 
+
+
 # SETTING UP ENVIRONMENT PATHS
 
 If your blockchain directories and hidden folders are all directly under your home directory, you don't really need to set up an environment, as those are the default paths.  You could then just run any given command by being in your forktools directory and running the script like this:  `./forkloge chia`.  If you have a custom location for your directories, or if you just want to be able to run the forktools from any directory on your system, create a text file called `forktoolsenv.sh` and place it in the /etc/profile.d directory (sudo required, reboot to make the changes persistent and global).  Paste these into it, customizing the paths for your setup:
