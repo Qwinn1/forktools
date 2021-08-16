@@ -22,6 +22,13 @@ These scripts assume:
 - That the fork's binary executable name and the .hidden file directory name are the same.  I'm unaware of any fork that violates this convention.  I refer to that name as 'forkname' in documentation.
 - That the name of the fork's blockchain directory is 'forkname-blockchain'.  The only fork I'm aware of that violates this convention in a default git installation is dogechia, which names their blockchain directory 'doge-chia' instead of what would conventionally be 'dogechia-blockchain'.  You can deal with this by setting up a symbolic link like so:  `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
 
+# INSTALLATION
+
+```
+git clone https://github.com/Qwinn1/forktools
+chmod forktools
+chmod 777 fork*
+```
 
 # COMMANDS WITH NO PARAMETERS:
 
@@ -29,10 +36,11 @@ These scripts assume:
 
 # COMMANDS WITH ONE PARAMETER, FORKNAME
 
-- `forkloge chia`         \-  Prints a grep for the word "ERROR" in .chia/mainnet/log/debug.log
-- `forklogw flax`         \-  Prints a grep for the word "WARNING" in .flax/mainnet/log/debug.log
-- `forklogh greendoge`    \-  Prints a grep for the word "harvester" in the greendoge debug.log file.  Good for checking response times.
-- `forklogt apple`        \-  Tails the last 100 lines of the apple debug.log
+- `forkloge chia`         \-  Searches for the word "ERROR" in .chia/mainnet/log/debug.log
+- `forklogw flax`         \-  Searches for the word "WARNING" in .flax/mainnet/log/debug.log
+- `forklogh greendoge`    \-  Searches for the word "harvester" in the greendoge debug.log file.  Good for checking response times.
+- `forklogp dogechia`     \-  Searches for any non-zero "Found X proofs" in the dogechia debug.log file.
+- `forklogt apple`        \-  Tails the last 100 lines of the apple debug.log file.
 - `forkconfig hddcoin`    \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit.  Modify this script to your preferred text editor (vi, nano, whatever)
 - `forknodes avocado`     \-  prints a list of currently connected nodes for sharing with others having difficulty connecting. Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
 - `forkstarth cannabis`   \-  runs "start harvester -r" for cannabis
@@ -44,10 +52,13 @@ These scripts assume:
 - `forkstarttl silicoin`  \-  starts timelord for silicoin.  Requires having previously run sh install-timelord.sh in the silicoin-blockchain directory.
 - `forkstoptl taco`       \-  stops timelord for taco.  Requires having previously run sh install-timelord.sh in the taco-blockchain directory.
 
+# COMMANDS WITH TWO PARAMETERS
+
+- `forklogg chia signage`    \-  Use when you need to search for something besides the premade options provided above.  This example searches for the word "signage" in the chia logs.
 
 # SETTING UP ENVIRONMENT PATHS
 
-If your blockchain directories and hidden folders are all directly under your home directory, you don't really need to set up an environment, as those are the default paths.  You could then just run any given command by being in your forktools directory and running the script like this:  `./forkloge chia`.  If you have a custom location for your directories, or if you just want to be able to run the forktools from any directory on your system, create a text file called `forktoolsenv.sh` and place it in the `/etc/profile.d` directory (sudo required, reboot to make the changes persistent and global).  Paste these into it, customizing the paths for your setup:
+If your blockchain directories and hidden folders are all directly under your $HOME directory, you don't really need to set up an environment, as those are the default paths.  You could then just run any given command by being in your forktools directory and running the script like this:  `./forkloge chia`.  If you have a custom location for your directories, or if you just want to be able to run the forktools from any directory on your system, create a text file called `envforktoolsv.sh` and place it in the `/etc/profile.d` directory (sudo required, reboot to make the changes persistent and global).  Paste these into it, customizing the paths for your setup:
 
 ```
 export FORKTOOLSDIR="$HOME/forktools"
@@ -57,7 +68,7 @@ export FORKTOOLSHIDDENDIRS="$HOME"
 export PATH="$PATH:/$FORKTOOLSDIR"
 ```
 
-A copy of exactly that forktoolsenv.sh is included in the forktools directory for convenience.
+A copy of exactly that envforktools.sh is included in the forktools directory for convenience.
 
 
 
