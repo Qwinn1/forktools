@@ -14,6 +14,13 @@ These are all very simple bash scripts.  No compiling is necessary.  Simply cat 
 Note that in the following description, FORKNAME is the name of the hidden file and binary for the fork.  In all forks I'm aware of, the two are the same (minus the leading
 period of the hidden directory, of course).
 
+# ASSUMPTIONS REGARDING CONVENTIONS
+
+These scripts assume:
+
+- That the fork's binary executable name and the .hidden file directory name are the same.  I'm unaware of any fork that violates this convention.  I refer to that name as 'forkname' in documentation.
+- That the name of the fork's blockchain directory is 'forkname-blockchain'.  The only fork I'm aware of that violates this convention in a default git installation is dogechia, which names their blockchain directory 'doge-chia' instead of what would conventionally be 'dogechia-blockchain'.  You can deal with this by setting up a symbolic link like so:  `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`)
+
 # COMMANDS WITH NO PARAMETERS:
 
 - `forkcounth`            \- Simply returns the number of active *_harvester processes running via ps -ef.  A quick numerical check to make sure the right number of fork harvester processes are running on the server (farmers also run harvester processes).  Should equal the total number of forks you are farming.
