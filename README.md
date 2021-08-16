@@ -1,5 +1,6 @@
-# forktools
-# Several command line tools to greatly simply CLI maintenance of one or many forks of Chia crypto coins
+# Qwinn's forktools
+
+### Several command line tools to greatly simply CLI maintenance of one or many forks of Chia crypto coins
 
 I created these CLI scripts, currently only for Ubuntu environment (Windows versions may be added later), because I am currently farming 21 separate Chia forks and maintenance
 started becoming a chore, having to CD into the fork's hidden directories to view logs or config files, or to the fork-blockchain directory and . ./activate to issue any
@@ -19,7 +20,7 @@ period of the hidden directory, of course).
 These scripts assume:
 
 - That the fork's binary executable name and the .hidden file directory name are the same.  I'm unaware of any fork that violates this convention.  I refer to that name as 'forkname' in documentation.
-- That the name of the fork's blockchain directory is 'forkname-blockchain'.  The only fork I'm aware of that violates this convention in a default git installation is dogechia, which names their blockchain directory 'doge-chia' instead of what would conventionally be 'dogechia-blockchain'.  You can deal with this by setting up a symbolic link like so:  `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`)
+- That the name of the fork's blockchain directory is 'forkname-blockchain'.  The only fork I'm aware of that violates this convention in a default git installation is dogechia, which names their blockchain directory 'doge-chia' instead of what would conventionally be 'dogechia-blockchain'.  You can deal with this by setting up a symbolic link like so:  `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
 
 # COMMANDS WITH NO PARAMETERS:
 
