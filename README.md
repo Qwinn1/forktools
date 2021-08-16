@@ -21,20 +21,20 @@ forkcounth        - Simply returns the number of active *_harvester processes ru
 
 COMMANDS WITH ONE PARAMETER, FORKNAME
 
-- `forkloge chia`         /-  Prints a grep for the word "ERROR" in .chia/mainnet/log/debug.log
-- `forklogw flax`         /-  Prints a grep for the word "WARNING" in .flax/mainnet/log/debug.log
-- `forklogh greendoge`    /-  Prints a grep for the word "harvester" in the greendoge debug.log file.  Good for checking response times.
-- `forklogt apple`        /-  Tails the last 100 lines of the apple debug.log
-- `forkconfig hddcoin`    /-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit.  Modify this script to your preferred text editor (vi, nano, whatever)
-- `forknodes avocado`     /-  prints a list of currently connected nodes for sharing with others having difficulty connecting. Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
-- `forkstarth cannabis`   /-  runs "start harvester -r" for cannabis
-- `forkstoph covid`       /-  stops harvester process for covid (If you're running GUI farmer, recommend closing that first)
-- `forkstopa socks`       /-  stops ALL services for socks (If you're running GUI farmer, recommend closing that first)
-- `forksum scam`          /-  runs "scam farm summary"
-- `forkver flora`         /-  runs "flora version", returns the version # of the current install
-- `forkbenchips tad`      /-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
-- `forkstarttl silicoin`  /-  starts timelord for silicoin.  Requires having previously run sh install-timelord.sh in the silicoin-blockchain directory.
-- `forkstoptl taco`       /-  stops timelord for taco.  Requires having previously run sh install-timelord.sh in the taco-blockchain directory.
+- `forkloge chia`         \-  Prints a grep for the word "ERROR" in .chia/mainnet/log/debug.log
+- `forklogw flax`         \-  Prints a grep for the word "WARNING" in .flax/mainnet/log/debug.log
+- `forklogh greendoge`    \-  Prints a grep for the word "harvester" in the greendoge debug.log file.  Good for checking response times.
+- `forklogt apple`        \-  Tails the last 100 lines of the apple debug.log
+- `forkconfig hddcoin`    \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit.  Modify this script to your preferred text editor (vi, nano, whatever)
+- `forknodes avocado`     \-  prints a list of currently connected nodes for sharing with others having difficulty connecting. Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
+- `forkstarth cannabis`   \-  runs "start harvester -r" for cannabis
+- `forkstoph covid`       \-  stops harvester process for covid (If you're running GUI farmer, recommend closing that first)
+- `forkstopa socks`       \-  stops ALL services for socks (If you're running GUI farmer, recommend closing that first)
+- `forksum scam`          \-  runs "scam farm summary"
+- `forkver flora`         \-  runs "flora version", returns the version # of the current install
+- `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
+- `forkstarttl silicoin`  \-  starts timelord for silicoin.  Requires having previously run sh install-timelord.sh in the silicoin-blockchain directory.
+- `forkstoptl taco`       \-  stops timelord for taco.  Requires having previously run sh install-timelord.sh in the taco-blockchain directory.
 
 
 
