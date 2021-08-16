@@ -1,6 +1,6 @@
 # Qwinn's forktools
 
-### Several command line tools to greatly simply CLI maintenance of one or many forks of Chia crypto coins
+### Several command line tools to greatly simply CLI maintenance of one or many Chia forks
 
 I created these CLI scripts, currently only for Ubuntu environment (Windows versions may be added later), because I am currently farming 21 separate Chia forks and maintenance
 started becoming a chore, having to CD into the fork's hidden directories to view logs or config files, or to the fork-blockchain directory and . ./activate to issue any
@@ -15,12 +15,27 @@ These are all very simple bash scripts.  No compiling is necessary.  Simply cat 
 Note that in the following description, FORKNAME is the name of the hidden file and binary for the fork.  In all forks I'm aware of, the two are the same (minus the leading
 period of the hidden directory, of course).
 
-# ASSUMPTIONS REGARDING CONVENTIONS
+# ASSUMPTIONS REGARDING FORK NAMING CONVENTIONS
 
 These scripts assume:
 
 - That the fork's binary executable name and the .hidden file directory name are the same.  I'm unaware of any fork that violates this convention.  I refer to that name as 'forkname' in documentation.
 - That the name of the fork's blockchain directory is 'forkname-blockchain'.  The only fork I'm aware of that violates this convention in a default git installation is dogechia, which names their blockchain directory 'doge-chia' instead of what would conventionally be 'dogechia-blockchain'.  You can deal with this by setting up a symbolic link like so:  `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
+
+# SETTING UP ENVIRONMENT PATHS
+
+If your blockchain directories and hidden folders are all directly under your home directory, you don't really need to set up an environment, as those are the default paths.  You could then just run any given command by being in your forktools directory and running the script like this:  `./forkloge chia`.  If you have a custom location for your directories, or if you just want to be able to run the forktools from any directory on your system, create a text file called `forktoolsenv.sh` and place it in the /etc/profile.d directory (sudo required, reboot to make the changes persistent and global).  Paste these into it, customizing the paths for your setup:
+
+```
+export FORKTOOLSDIR="$HOME/forktools"
+export FORKTOOLSBLOCKCHAINDIRS="$HOME"
+export FORKTOOLSHIDDENDIRS="$HOME"
+
+export PATH="$PATH:/$FORKTOOLSDIR"
+```
+
+A copy of exactly that forktoolsenv.sh is included in the forktools directory for convenience.
+
 
 # COMMANDS WITH NO PARAMETERS:
 
