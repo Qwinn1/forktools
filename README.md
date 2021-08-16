@@ -8,12 +8,20 @@ fork commands.  So what I was doing was opening a terminal box with 20 tabs, wit
 worked well enough when it was only up to a dozen forks or so, but quickly grew cumbersome, ESPECIALLY recreating all the tabs after a reboot.
 
 The scripts herein allow me to maintain and work with all the forks from a single terminal tab, without having to change directories.  Feel free to modify them for your 
-own needs.
+own needs.  I think these tools make even maintaining a single fork (such as just chia) a lot easier, saving a great many keystrokes.
 
 These are all very simple bash scripts.  No compiling is necessary.  Simply cat them and verify they're not doing anything you wouldn't want to do yourself.
 
 Note that in the following description, FORKNAME is the name of the hidden file and binary for the fork.  In all forks I'm aware of, the two are the same (minus the leading
 period of the hidden directory, of course).
+
+# INSTALLATION
+
+```
+git clone https://github.com/Qwinn1/forktools
+cd forktools
+chmod 777 fork*
+```
 
 # ASSUMPTIONS REGARDING FORK NAMING CONVENTIONS
 
@@ -21,14 +29,6 @@ These scripts assume:
 
 - That the fork's binary executable name and the .hidden file directory name are the same.  I'm unaware of any fork that violates this convention.  I refer to that name as 'forkname' in documentation.
 - That the name of the fork's blockchain directory is 'forkname-blockchain'.  The only fork I'm aware of that violates this convention in a default git installation is dogechia, which names their blockchain directory 'doge-chia' instead of what would conventionally be 'dogechia-blockchain'.  You can deal with this by setting up a symbolic link like so:  `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
-
-# INSTALLATION
-
-```
-git clone https://github.com/Qwinn1/forktools
-chmod forktools
-chmod 777 fork*
-```
 
 # COMMANDS WITH NO PARAMETERS:
 
@@ -43,18 +43,22 @@ chmod 777 fork*
 - `forklogt apple`        \-  Tails the last 100 lines of the apple debug.log file.
 - `forkconfig hddcoin`    \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit.  Modify this script to your preferred text editor (vi, nano, whatever)
 - `forknodes avocado`     \-  prints a list of currently connected nodes for sharing with others having difficulty connecting. Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
-- `forkstarth cannabis`   \-  runs "start harvester -r" for cannabis
-- `forkstoph covid`       \-  stops harvester process for covid (If you're running GUI farmer, recommend closing that first)
-- `forkstopa socks`       \-  stops ALL services for socks (If you're running GUI farmer, recommend closing that first)
+- `forkstartf kale`       \-  runs "kale start farmer -r"
+- `forkstartfnw cactus`   \-  runs "cactus start farmer-no-wallet -r"
+- `forkstarth cannabis`   \-  runs "cannabis start harvester -r"
 - `forksum scam`          \-  runs "scam farm summary"
 - `forkver flora`         \-  runs "flora version", returns the version # of the current install
+- `forkshowwallet maize`  \-  runs "maize show wallet"
+- `forkstoph covid`       \-  stops harvester process for covid (If you're running GUI farmer, recommend closing that first)
+- `forkstopa socks`       \-  stops ALL services for socks (If you're running GUI farmer, recommend closing that first)
 - `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
 - `forkstarttl silicoin`  \-  starts timelord for silicoin.  Requires having previously run sh install-timelord.sh in the silicoin-blockchain directory.
 - `forkstoptl taco`       \-  stops timelord for taco.  Requires having previously run sh install-timelord.sh in the taco-blockchain directory.
+- `forkaddplotdirs chia`  \-  This script will do nothing until you manually edit it.  Modify and uncomment the provided example lines to add all of your plot directories on that server to the specified fork.
 
 # COMMANDS WITH TWO PARAMETERS
 
-- `forklogg chia signage`    \-  Use when you need to search for something besides the premade options provided above.  This example searches for the word "signage" in the chia logs.
+- `forklogg chia signage`    \-  Use when you need to search the log for something besides the premade options provided above.  This example searches for the word "signage" in the chia logs.
 
 # SETTING UP ENVIRONMENT PATHS
 
@@ -85,8 +89,9 @@ I am currently working on adding scripts that will edit a fork's config.yaml fil
 
 
 
+# DONATIONS ACCEPTED.  
 
-DONATIONS ACCEPTED.  Thank you for your support.
+Thank you for your support.
 
 - Chia:        xch1gsqc9t20fs22eltff3c9eghnw80sq609zsgcj8sz5378jupzd5xqqrv0sl
 - Flax:        xfx179de2g9d33rd2h8yanhx82h2yx7hvqt4c8j6kjylw2q2zdl2fvgqmze5pe
