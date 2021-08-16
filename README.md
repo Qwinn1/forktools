@@ -1,6 +1,6 @@
 # Qwinn's forktools
 
-### Several command line tools to greatly simply CLI maintenance of one or many Chia forks
+#### Several command line tools to greatly simplify CLI maintenance of one or many Chia forks
 
 I created these CLI scripts, currently only for Ubuntu environment (Windows versions may be added later), because I am currently farming 21 separate Chia forks and maintenance
 started becoming a chore, having to CD into the fork's hidden directories to view logs or config files, or to the fork-blockchain directory and . ./activate to issue any
@@ -62,7 +62,7 @@ These scripts assume:
 
 # SETTING UP ENVIRONMENT PATHS
 
-If your blockchain directories and hidden folders are all directly under your $HOME directory, you don't really need to set up an environment, as those are the default paths.  You could then just run any given command by being in your forktools directory and running the script like this:  `./forkloge chia`.  If you have a custom location for your directories, or if you just want to be able to run the forktools from any directory on your system, create a text file called `envforktoolsv.sh` and place it in the `/etc/profile.d` directory (sudo required, reboot to make the changes persistent and global).  Paste these into it, customizing the paths for your setup:
+If your blockchain directories and hidden folders are all directly under your $HOME directory, you don't really need to set up an environment, as those are the default paths.  You could then just run any given command by being in your forktools directory and running the script like this:  `./forkloge chia`.  If you have a custom location for your directories, or if you just want to be able to run the forktools from any directory on your system, create a text file called `envforktools.sh` and place it in the `/etc/profile.d` directory (sudo required, reboot to make the changes persistent and global).  Paste these into it, customizing the paths for your setup:
 
 ```
 export FORKTOOLSDIR="$HOME/forktools"
@@ -83,9 +83,8 @@ I am currently working on adding scripts that will edit a fork's config.yaml fil
 -   `log_level`   Script default: INFO
 -   `log_maxfilesrotation`  Script Default: 99   
 -   `plot_loading_frequency_seconds`  Script Default: 1800 (especially when done plotting, reloading plots every half hour is more than sufficient, every 3 minutes is huge overkill)   
--   `plot_directories`  Script Default:  None.  But if you edit the relevant variable in the script and list the drives the way they should appear in the config.yaml, it will insert them for you.
 
-...and there will be a harvester version that also sets the farmer_peer to the IP address of your farmer, passed in as a parameter.
+...and there will be a harvester version with a second parameter of the IP address to set as your farmer_peer (hopefully also allowing you to just pass the server name as configured in /etc/hosts).
 
 
 
