@@ -12,9 +12,6 @@ own needs.  I think these tools make even maintaining a single fork (such as jus
 
 These are all very simple bash scripts.  No compiling is necessary.  Simply cat them and verify they're not doing anything you wouldn't want to do yourself.
 
-Note that in the following description, FORKNAME is the name of the hidden file and binary for the fork.  In all forks I'm aware of, the two are the same (minus the leading
-period of the hidden directory, of course).
-
 # INSTALLATION
 
 ```
