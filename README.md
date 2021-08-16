@@ -54,11 +54,8 @@ forkstoptl taco       - stops timelord for taco.  Requires having previously run
 
 I am currently working on adding scripts that will edit a fork's config.yaml files to set:
    log_level to INFO
-   
-   log_maxfilesrotation to 99
-   
-   plot_loading_frequency_seconds to 1800 (especially when done plotting, reloading plots every half hour is more than sufficient, every 3 minutes is huge overkill)
-   
+   log_maxfilesrotation to 99   
+   plot_loading_frequency_seconds to 1800 (especially when done plotting, reloading plots every half hour is more than sufficient, every 3 minutes is huge overkill)   
    set plot_directories to a list of directories that you can set by editing a variable in the script itself.  Will do nothing if that variable is not set.
 
 ...and there will be a harvester version that also sets the farmer_peer to the IP address of your farmer, passed in as a parameter.
