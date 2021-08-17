@@ -1,0 +1,28 @@
+#! /bin/bash
+
+# Start farmers
+# forkstartfnw chia
+
+# Start harvesters
+# forkstarth apple
+# forkstarth avocado
+# forkstarth btcgreen
+# forkstarth cactus
+# forkstarth cannabis
+# forkstarth covid
+# forkstarth dogechia
+# forkstarth flax
+# forkstarth flora
+# forkstarth greendoge
+# forkstarth hddcoin
+# forkstarth kale
+# forkstarth maize
+# forkstarth melati
+# forkstarth silicoin
+# forkstarth scam
+# forkstarth socks
+# forkstarth taco
+# forkstarth tad
+
+# Start farmr.net
+# $HOME/farmr/farmr

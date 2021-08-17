@@ -1,0 +1,26 @@
+#! /bin/bash
+
+# Stop farmers (if GUI is in use, close that instead)
+# forkstopa chia
+
+# Stop harvesters
+# forkstopa apple
+# forkstopa avocado
+# forkstopa btcgreen
+# forkstopa cactus
+# forkstopa cannabis
+# forkstopa covid
+# forkstopa dogechia
+# forkstopa flax
+# forkstopa flora
+# forkstopa greendoge
+# forkstopa hddcoin
+# forkstopa kale
+# forkstopa maize
+# forkstopa melati
+# forkstopa silicoin
+# forkstopa scam
+# forkstopa socks
+# forkstopa taco
+# forkstopa tad
+
