@@ -5,7 +5,7 @@ if [ -z "$FORKTOOLSHIDDENDIRS" ];  # sets the parent directory for all the fork 
   FORKTOOLSHIDDENDIRS="$HOME"
  fi
  
-# You can set the above globally for all scripts by adding the included "forktoolsenv.sh" to your /etc/profile.d directory, modified to your taste.  
+# You can set the above globally for all scripts by adding the included "envforktools.sh" to your /etc/profile.d directory, modified to your taste.  
 # Requires sudo root permissions.  Making this permanent may require a reboot.
 
 gedit $FORKTOOLSHIDDENDIRS/.$1/mainnet/config/config.yaml

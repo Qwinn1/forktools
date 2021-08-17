@@ -5,7 +5,7 @@ if [ -z "$FORKTOOLSBLOCKCHAINDIRS" ];  # sets the parent directory for all the f
   FORKTOOLSBLOCKCHAINDIRS="$HOME"
  fi
  
-# You can set the above globally for all scripts by adding the included "forktoolsenv.sh" to your /etc/profile.d directory, modified to your taste.  
+# You can set the above globally for all scripts by adding the included "envforktools.sh" to your /etc/profile.d directory, modified to your taste.  
 # Requires sudo root permissions.  Making this permanent may require a reboot.
 
 cd $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain 
