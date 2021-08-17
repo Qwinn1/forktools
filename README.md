@@ -40,8 +40,6 @@ chmod 777 fork*
 # COMMANDS WITH NO PARAMETERS:
 
 - `forkcounth`            \-  Simply returns the number of active *_harvester processes running via ps -ef.  A quick numerical check to make sure the right number of fork harvester processes are running on the server (farmers also run harvester processes).  Should equal the total number of forks you are farming.
-- `forkstopall`           \-  This script will do nothing until you manually edit it, but configuration is super easy, barely an inconvenience.  Modify and uncomment the provided examples to cleanly and sequentially shut down all services, nodes, and harvesters.  Quickly cleans everything up in preparation for a shutdown.  Remember to update it when you add a new fork or drop an old one.
-- `forkstartall`          \-  This script will do nothing until you manually edit it, but configuration is super easy, barely an inconvenience.  Modify and uncomment the provided examples to sequentially fire up all of your farmers and harvesters (or even timelords, if you wish, or any of the other tools listed below).  Great for getting started quickly after a reboot.  Remember to update it when you add a new fork or drop an old one.
 
 # COMMANDS WITH ONE PARAMETER, FORKNAME
 
@@ -63,11 +61,19 @@ chmod 777 fork*
 - `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
 - `forkstarttl silicoin`  \-  starts timelord for silicoin.  Requires having previously run sh install-timelord.sh in the silicoin-blockchain directory.
 - `forkstoptl taco`       \-  stops timelord for taco.  Requires having previously run sh install-timelord.sh in the taco-blockchain directory.
-- `forkaddplotdirs chia`  \-  This script will do nothing until you manually edit it.  Modify and uncomment the provided example lines to add all of your plot directories on that server to the specified fork.
 
 # COMMANDS WITH TWO PARAMETERS
 
 - `forklogg chia signage`    \-  Use when you need to search the log for something besides the premade options provided above.  This example searches for the word "signage" in the chia logs.
+
+# SCRIPT TEMPLATES THAT REQUIRE EDITING
+
+These three scripts have a .template extension because they can't work out of the box - they need to be edited for your specific configuration, but in all cases this is super easy, barely an inconvenience.  The purpose of the .template extension is so that future updates to forktools don't cause the version you edited to be overwritten.  Remove the .template extension once you've finished your work.
+
+- `forkaddplotdirs chia`  \-  Takes forkname as a parameter.  Modify and uncomment the provided example lines to add all of your plot directories on that server to the specified fork.
+- `forkstopall`           \-  No parameters.  Modify and uncomment the provided examples to sequentially shut down all services, nodes, and harvesters.  Quickly cleans everything up in preparation for a shutdown.  Remember to update it when you add a new fork or drop an old one.
+- `forkstartall`          \-  No parameters.  Modify and uncomment the provided examples to sequentially fire up all of your farmers and harvesters (or even timelords, if you wish, using any of the other tools listed above).  Great for getting started quickly after a reboot.  Remember to update it when you add a new fork or drop an old one.
+
 
 
 # SETTING UP ENVIRONMENT PATHS
