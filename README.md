@@ -66,7 +66,7 @@ export FORKTOOLSDIR="$HOME/forktools"
 export FORKTOOLSBLOCKCHAINDIRS="$HOME"
 export FORKTOOLSHIDDENDIRS="$HOME"
 
-export PATH="$PATH:/$FORKTOOLSDIR"
+export PATH="$PATH:$FORKTOOLSDIR"
 ```
 
 A copy of exactly that envforktools.sh is included in the forktools directory for convenience.
