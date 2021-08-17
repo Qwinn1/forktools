@@ -34,7 +34,7 @@ chmod 777 fork*
 - For the vast majority of forks, the fork's blockchain directory is 'forkname-blockchain'.  A handful don't.  
 
 -- Dogechia:   `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
--- littlelambocoin:  ``ln -s /home/user/littlelambocoin /home/user/littlelambocoin-blockchain`
+-- littlelambocoin:  `ln -s /home/user/littlelambocoin /home/user/littlelambocoin-blockchain`
 
 # COMMANDS WITH NO PARAMETERS:
 
