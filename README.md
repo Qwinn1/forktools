@@ -38,7 +38,9 @@ chmod 777 fork*
 
 # COMMANDS WITH NO PARAMETERS:
 
-- `forkcounth`            \- Simply returns the number of active *_harvester processes running via ps -ef.  A quick numerical check to make sure the right number of fork harvester processes are running on the server (farmers also run harvester processes).  Should equal the total number of forks you are farming.
+- `forkcounth`            \-  Simply returns the number of active *_harvester processes running via ps -ef.  A quick numerical check to make sure the right number of fork harvester processes are running on the server (farmers also run harvester processes).  Should equal the total number of forks you are farming.
+- `forkstopall`           \-  This script will do nothing until you manually edit it, but configuration is super easy, barely an inconvenience.  Modify and uncomment the provided examples to cleanly and sequentially shut down all services, nodes, and harvesters.  Quickly cleans everything up in preparation for a shutdown.  Remember to update it when you add a new fork or drop an old one.
+- `forkstartall`          \-  This script will do nothing until you manually edit it, but configuration is super easy, barely an inconvenience.  Modify and uncomment the provided examples to sequentially fire up all of your farmers and harvesters (or even timelords, if you wish, or any of the other tools listed below).  Great for getting started quickly after a reboot.  Remember to update it when you add a new fork or drop an old one.
 
 # COMMANDS WITH ONE PARAMETER, FORKNAME
 
@@ -65,6 +67,7 @@ chmod 777 fork*
 # COMMANDS WITH TWO PARAMETERS
 
 - `forklogg chia signage`    \-  Use when you need to search the log for something besides the premade options provided above.  This example searches for the word "signage" in the chia logs.
+
 
 # SETTING UP ENVIRONMENT PATHS
 
