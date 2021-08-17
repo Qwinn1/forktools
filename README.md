@@ -20,12 +20,21 @@ cd forktools
 chmod 777 fork*
 ```
 
-# ASSUMPTIONS REGARDING FORK NAMING CONVENTIONS
+# FORK NAMING CONVENTION ISSUES
 
-These scripts assume:
+- A handful of forks are so mind-boggingly lazy as to still use "chia" as their executable.  I have no interest in supporting forks that engage in such terrible practices.  Therefore, consider such forks simply not supported.  This currently includes ChiaRose, N-Chain, and Lucky.
 
-- That the fork's binary executable name and the .hidden file directory name are the same.  I'm unaware of any fork that violates this convention.  I refer to that name as 'forkname' in documentation.
-- That the name of the fork's blockchain directory is 'forkname-blockchain'.  The only fork I'm aware of that violates this convention in a default git installation is dogechia, which names their blockchain directory 'doge-chia' instead of what would conventionally be 'dogechia-blockchain'.  You can deal with this by setting up a symbolic link like so:  `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
+- For the vast majority of forks, the fork's binary executable name and the .hidden file directory name are the same.  A handful don't.  This can be easily solved by setting up symbolic links for those forks that break the convention.  Here are the commands to create the necessary symlinks for the few I'm aware of (obviously edit "/home/user" portion to be the parent directory of your fork data directories):
+
+-- Spare:     `ln -s /home/user/.spare-blockchain /home/user/.spare`
+-- Goji:      `ln -s /home/user/.goji-blockchain /home/user/.goji`
+-- Seno:      `ln -s /home/user/.seno2 /home/user/.seno`
+-- Beer:      `ln -s /home/user/.beernetwork /home/user/.beer`
+
+- For the vast majority of forks, the fork's blockchain directory is 'forkname-blockchain'.  A handful don't.  
+
+-- Dogechia:   `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
+-- littlelambocoin:  ``ln -s /home/user/littlelambocoin /home/user/littlelambocoin-blockchain`
 
 # COMMANDS WITH NO PARAMETERS:
 
