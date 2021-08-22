@@ -9,8 +9,14 @@ if [ -z "$FORKTOOLSBLOCKCHAINDIRS" ];  # sets the parent directory for all the f
 # Requires sudo root permissions.  Making this permanent may require a reboot.
 
 cd $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain 
-. ./activate 
-$1 show -c | grep "^FULL_NODE" | sed 's,^FULL_NODE ,,g;s,/.*,,;s, \+,:,g;s,  *,:,g;s,^,'$1' show -a ,g'
+. ./activate
+
+for port in $($1 show -c | grep "^FULL_NODE" | awk '{print $2,$3}' | sed 's/\s[0-9]*\//:/' ); do
+  echo $1 "show -a" $port
+done
+ 
+
+
 
 
 

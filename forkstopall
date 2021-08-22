@@ -1,0 +1,21 @@
+#! /bin/bash
+
+if [ -z "$FORKTOOLSBLOCKCHAINDIRS" ];  # sets the parent directory for all the fork-blockchain directories if it is empty.  Defaults to $HOME.
+ then
+  FORKTOOLSBLOCKCHAINDIRS="$HOME"
+ fi
+
+# You can set the above globally for all scripts by adding the included "forktoolsenv.sh" to your /etc/profile.d directory, modified to your taste.  
+# Requires sudo root permissions.  Making this permanent may require a reboot.
+
+# Stops all services for all forks with an active harvester process
+
+for fork in $(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v sed); do
+   cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain 
+   . ./activate 
+   echo "Stopping: " $fork
+   forkstopa $fork
+done
+
+
+

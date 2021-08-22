@@ -40,6 +40,9 @@ chmod 777 fork*
 # COMMANDS WITH NO PARAMETERS:
 
 - `forkcounth`            \-  Simply returns the number of active *_harvester processes running via ps -ef.  A quick numerical check to make sure the right number of fork harvester processes are running on the server (farmers also run harvester processes).  Should equal the total number of forks you are farming.
+- `forkstopall`           \-  Stops all services (including daemon) for all forks with an active _harvester process running. No longer just a .template file, no longer needs maintenance.
+- `forkports`             \-  Checks port locking contention on all forks with an active _harvester process.  Checks every port listed for mainnet in each fork's config.yaml, then runs netstat on every port used by that fork and lists any port-locking process which does not contain that fork's binary name as the owner of the process.  If the listed processes don't have a *different* fork's name as the owner of the process, that output can be disregarded.  If no processes are listed under a given fork in the output, no ports were locked by a different fork - i.e., no conflict found.
+
 
 # COMMANDS WITH ONE PARAMETER, FORKNAME
 
