@@ -32,7 +32,7 @@ chmod 777 fork*
   - Seno:      `ln -s /home/user/.seno2 /home/user/.seno`
   - Beer:      `ln -s /home/user/.beernetwork /home/user/.beer`
 
-- These scripts assume the fork's repo directory is named 'forkname-blockchain'.  A handful of forks didn't follow that convention.  This can be easily solved by setting up symbolic links for those forks that break the convention.  Here are the commands to create the necessary symlinks for the few I'm aware of (obviously edit "/home/user" portion to be the parent directory of your fork data directories):
+- These scripts assume the fork's repo directory is named 'forkname-blockchain'.  A handful of forks didn't follow that convention.  This can be easily solved by setting up symbolic links for those forks that break the convention.  Here are the commands to create the necessary symlinks for the few I'm aware of (obviously edit "/home/user" portion to be the parent directory of your fork repo/code directories):
 
   - Dogechia:   `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
   - littlelambocoin:  `ln -s /home/user/littlelambocoin /home/user/littlelambocoin-blockchain`
