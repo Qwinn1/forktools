@@ -36,6 +36,7 @@ chmod 777 fork*
 
   - Dogechia:   `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
   - littlelambocoin:  `ln -s /home/user/littlelambocoin /home/user/littlelambocoin-blockchain`
+  - cryptodoge:  `ln -s /home/user/cryptodoge /home/user/cryptodoge-blockchain`
 
 # COMMANDS WITH NO PARAMETERS:
 
