@@ -25,14 +25,14 @@ chmod 777 fork*
 
 - A handful of forks are so mind-boggingly lazy as to still use "chia" as their executable.  I have no interest in supporting forks that engage in such terrible practices.  Therefore, consider such forks simply not supported.  This currently includes ChiaRose, N-Chain, and Lucky.
 
-- The vast majority of forks named the fork's binary executable and the .hidden data file directory the same thing.  A handful didn't.  This can be easily solved by setting up symbolic links for those forks that break the convention.  Here are the commands to create the necessary symlinks for the few I'm aware of (obviously edit "/home/user" portion to be the parent directory of your fork data directories):
+- These scripts assume that the fork's binary executable and the .hidden data file directory are the same name.  A handful of forks didn't follow that convention.  This can be easily solved by setting up symbolic links for those forks that break the convention.  Here are the commands to create the necessary symlinks for the few I'm aware of (obviously edit "/home/user" portion to be the parent directory of your fork data directories):
 
   - Spare:     `ln -s /home/user/.spare-blockchain /home/user/.spare`
   - Goji:      `ln -s /home/user/.goji-blockchain /home/user/.goji`
   - Seno:      `ln -s /home/user/.seno2 /home/user/.seno`
   - Beer:      `ln -s /home/user/.beernetwork /home/user/.beer`
 
-- The vast majority of forks named the fork's blockchain directory 'forkname-blockchain'.  A handful didn't.  This can be easily solved by setting up symbolic links for those forks that break the convention.  Here are the commands to create the necessary symlinks for the few I'm aware of (obviously edit "/home/user" portion to be the parent directory of your fork data directories):
+- These scripts assume the fork's repo directory is named 'forkname-blockchain'.  A handful of forks didn't follow that convention.  This can be easily solved by setting up symbolic links for those forks that break the convention.  Here are the commands to create the necessary symlinks for the few I'm aware of (obviously edit "/home/user" portion to be the parent directory of your fork data directories):
 
   - Dogechia:   `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
   - littlelambocoin:  `ln -s /home/user/littlelambocoin /home/user/littlelambocoin-blockchain`
