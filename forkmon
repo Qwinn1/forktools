@@ -10,6 +10,10 @@ if [ -z "$FORKTOOLSHIDDENDIRS" ];  # sets the parent directory for all the fork-
   FORKTOOLSHIDDENDIRS="$HOME"
  fi
  
+if [ -z "$FORKTOOLSDIR" ];  # sets the forktools directory.  Defaults to $HOME/forktools.
+ then
+  FORKTOOLSDIR="$HOME/forktools"
+ fi
 
 # You can set the above globally for all scripts by adding the included "forktoolsenv.sh" to your /etc/profile.d directory, modified to your taste.  
 # Requires sudo root permissions.  Making this permanent may require a reboot.
@@ -27,10 +31,10 @@ printf '                                                                        
 printf 'Fork               Version         Status   #Peers   #Plots   Netspace   ETW      Workers       Usage     Errors\n'
 echo -e "------------------------------------------------------------------------------------------------------------------------"
 for fork in $(ps -ef | grep _farmer | grep -v grep | awk '{print $8}' | sed 's/_farmer//' | grep -v sed | sort); do
+   FORKVERSION=$($FORKTOOLSDIR/forkver $fork)
+   FORKSUM=$($FORKTOOLSDIR/forksum $fork)
    cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain 
    . ./activate 
-   FORKVERSION=$(forkver $fork)
-   FORKSUM=$(forksum $fork)
    PLOTCOUNT=$(grep "Plot count for all harvesters: " <<< $FORKSUM | sed 's/Plot count for all harvesters: //' | awk '{$1=$1};1')
    if [ -z "$PLOTCOUNT" ];
       then
@@ -43,14 +47,14 @@ for fork in $(ps -ef | grep _farmer | grep -v grep | awk '{print $8}' | sed 's/_
    ETW2=$(awk '{print $2}' <<< $ETW | cut -b 1)
    ETW3=$(awk '{print $4}' <<< $ETW)
    ETW4=$(awk '{print $5}' <<< $ETW | cut -b 1)
-   FORKNODES=$(forknodes $fork | wc -l)
+   FORKNODES=$($FORKTOOLSDIR/forknodes $fork | wc -l)
    FORKMEM=$(for pid in $(pgrep ^${fork}_); do 
      awk '/Pss:/{ sum += $2 } END { print sum }' /proc/${pid}/smaps 
    done | awk '{ sum +=$1/1024 } END {printf "%7.1f MB\n", sum}')
    FNWORKERS=$(ps -ef | grep "$fork"_full | grep -v grep | wc -l)
    cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log   
-   HARVERRORSTODAY=$(grep "Harvester did not respond" debug.log.* | grep $TODAYSTAMP | wc -l)
-   HARVERRORSYESTERDAY=$(grep "Harvester did not respond" debug.log.* | grep $YESTERDAYSTAMP | wc -l)
+   HARVERRORSTODAY=$(grep "Harvester did not respond" debug.log* | grep $TODAYSTAMP | wc -l)
+   HARVERRORSYESTERDAY=$(grep "Harvester did not respond" debug.log* | grep $YESTERDAYSTAMP | wc -l)
    let HARVESTERERRORS=$HARVERRORSTODAY+$HARVERRORSYESTERDAY
    printf '%-18s %-15s %.10s   %5s%9s %10s   %-7s  %7s  %6s %7s\n' "$fork" "$FORKVERSION" "$FORKSTATUS" "$FORKNODES" "$PLOTCOUNT" "$NETSPACE" "$ETW1$ETW2 $ETW3$ETW4" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" 
 done
@@ -64,7 +68,7 @@ printf 'Fork               Version      # Plots        Harvest         Today    
 echo -e "------------------------------------------------------------------------------------------------------------"
 for fork in $(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v sed | sort); do
    cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log
-   FORKVERSION=$(forkver $fork)
+   FORKVERSION=$($FORKTOOLSDIR/forkver $fork)
    LASTHARVESTERLINE=$(cat debug.log | grep "plots were eligible" | tail -1)
    PLOTCOUNT=$(sed 's/.*Total //' <<< "$LASTHARVESTERLINE" | sed 's/ plots//' | awk '{$1=$1};1')
    CURRENTTIME=$(date "+%s")
@@ -77,8 +81,6 @@ for fork in $(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed '
    PROOFSTODAYLIST=$(grep $TODAYSTAMP debug.log* | grep "Found [1.9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )
    PROOFSYESTERDAYLIST=$(grep $YESTERDAYSTAMP debug.log* | grep "Found [1.9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )   
    PROOFCOUNT=0
-#   echo $PROOFSTODAYLIST
-#   echo $PROOFSYESTERDAYLIST
    for proof in $(echo $PROOFSTODAYLIST); do
      let PROOFCOUNT=$PROOFCOUNT+$proof
    done

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-if [ -z "$FORKTOOLSDIR" ];  # sets the parent directory for all the fork-blockchain directories if it is empty.  Defaults to $HOME.
+if [ -z "$FORKTOOLSDIR" ];  # sets the forktools directory.  Defaults to $HOME/forktools.
  then
   FORKTOOLSDIR="$HOME/forktools"
  fi

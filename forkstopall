@@ -4,6 +4,11 @@ if [ -z "$FORKTOOLSBLOCKCHAINDIRS" ];  # sets the parent directory for all the f
  then
   FORKTOOLSBLOCKCHAINDIRS="$HOME"
  fi
+ 
+ if [ -z "$FORKTOOLSDIR" ];  # sets the forktools directory.  Defaults to $HOME/forktools.
+ then
+  FORKTOOLSDIR="$HOME/forktools"
+ fi
 
 # You can set the above globally for all scripts by adding the included "forktoolsenv.sh" to your /etc/profile.d directory, modified to your taste.  
 # Requires sudo root permissions.  Making this permanent may require a reboot.
@@ -14,7 +19,7 @@ for fork in $(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed '
    cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain 
    . ./activate 
    echo "Stopping: " $fork
-   forkstopa $fork
+   $FORKTOOLSDIR/forkstopa $fork
 done
 
 
