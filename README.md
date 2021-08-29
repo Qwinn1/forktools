@@ -17,7 +17,47 @@ These are all very simple bash scripts.  No compiling is necessary.  Simply cat 
 
 Still 100% local, still 100% bash!
 
-Version 1.2 introduces forkmon!  This script gives you detailed information on every active fork process on your server, one section for farmers and another for harvesters.  Includes longest response times, fullnode worker count, memory usage, and much more!  (Effort%, height and wallet balance information will be trickier if I want to keep these tools local, so I'll get back to you all on those.)
+Version 1.2 introduces forkmon!  This script gives you detailed information on every active fork process on your server, one section for farmers and another for harvesters.  Includes longest response times, fullnode worker count, proofs found in last 24-48 hours, memory usage, and much more!  (Effort%, height and wallet balance information will be trickier if I want to keep these tools local, so I'll get back to you all on those.)
+
+Sample forkmon output (incomplete for brevity, counts won't match):
+
+```qwinn@Huginn:~$ forkmon
+
+----------------------------------------------------- FARMERS: 12 ------------------------------------------------------
+                                                                                 FullNode      Memory   NoHarvResp
+Fork               Version         Status   #Peers   #Plots   Netspace   ETW      Workers       Usage     Errors
+------------------------------------------------------------------------------------------------------------------------
+cactus             1.2.2.dev7      Farming       8     4424    255 PiB   3h 27m        20   1833.9 MB       0
+cryptodoge         1.2.6           Farming      18     4424    174 PiB   1h 59m        20   1355.6 MB       1
+dogechia           1.0.9           Farming       8     4424    495 PiB   6h 3m         20   2061.8 MB       0
+hddcoin            1.2.5.dev2      Farming       8     4424    479 PiB   5h 43m        20   1165.0 MB       0
+kale               0.1.111         Farming      21     4424    360 PiB   4h 8m         20   2031.5 MB       0
+melati             1.1.7140        Farming       8     4424    276 PiB   3h 8m         20   1826.0 MB       0
+olive              0.0.296         Farming      17     4424     91 PiB   2h 1m         20   1587.1 MB       0
+seno               1.1.8.dev36     Farming       8     1379    349 PiB   13h 11m       20   2830.0 MB       0
+
+------------------------------------------- HARVESTERS: 25 ------------------------------------------------
+
+                                                             Longest      Longest     Proofs
+                                                  Last      Response     Response      Since
+Fork               Version      # Plots        Harvest         Today    Yesterday  Yesterday
+------------------------------------------------------------------------------------------------------------
+apple              1.2.31.dev1     1379         8s ago         3.23s        2.51s          2
+avocado            1.1.7.dev124    1379         6s ago         2.36s        2.76s          3
+btcgreen           2.1.0           1379         6s ago         1.97s        3.33s          4
+cactus             1.2.2.dev7      1379         6s ago         1.83s        3.48s          3
+cannabis           1.2.301         1379         5s ago         2.57s        3.55s          3
+chia               1.2.5           1379         3s ago         3.60s        3.11s          0
+covid              1.2.3           1379         3s ago         2.57s        2.93s          6
+cryptodoge         1.2.6           1379         7s ago         2.89s        2.58s          7
+dogechia           1.0.9           1379         2s ago         2.67s        3.58s          1
+flax               0.1.1           1379         4s ago         2.09s        2.85s          0
+flora              0.2.5           1379         1s ago         2.07s        2.40s          3
+goji               0.2.3           1379        11s ago         2.62s        2.98s          3
+greendoge          1.2.4           1379         3s ago         2.49s        3.41s          3
+hddcoin            1.2.3           1379         2s ago         2.44s        2.46s          2
+```
+
 
 Also new is forktargets, which lists the target wallet addresses as configured in each fork's config.yaml in a convenient and organized list for easy visual comparison to whatever list of wallet addresses you're currently maintaining.  Good to check this every so often to make sure wallets haven't been diverted by error or malicious action.
 
