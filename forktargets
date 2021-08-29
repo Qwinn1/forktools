@@ -1,0 +1,17 @@
+#! /bin/bash
+
+if [ -z "$FORKTOOLSHIDDENDIRS" ];  # sets the parent directory for all the fork hidden directories if it is empty.  Defaults to $HOME.
+ then
+  FORKTOOLSHIDDENDIRS="$HOME"
+ fi
+ 
+# You can set the above globally for all scripts by adding the included "envforktools.sh" to your /etc/profile.d directory, modified to your taste.  
+# Requires sudo root permissions.  Making this permanent may require a reboot.
+
+
+for fork in $(ps -ef | grep _farmer | grep -v grep | grep -v "sed s/" | awk '{print $8}' | sed 's/_farmer//' | sort); do
+   cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/config
+   echo $fork
+   cat config.yaml | grep "target_address"
+done
+

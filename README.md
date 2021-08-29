@@ -13,6 +13,16 @@ own needs.  I think these tools make even maintaining a single fork (such as jus
 
 These are all very simple bash scripts.  No compiling is necessary.  Simply cat them and verify they're not doing anything you wouldn't want to do yourself.
 
+# WHAT'S NEW
+
+Still 100% local, still 100% bash!
+
+Version 1.2 introduces forkmon!  This script gives you detailed information on every active fork process on your server, one section for farmers and another for harvesters.  Includes longest response times, fullnode worker count, memory usage, and much more!  (Effort%, height and wallet balance information will be trickier if I want to keep these tools local, so I'll get back to you all on those.)
+
+Also new is forktargets, which lists the target wallet addresses as configured in each fork's config.yaml in a convenient and organized list for easy visual comparison to whatever list of wallet addresses you're currently maintaining.  Good to check this every so often to make sure wallets haven't been diverted by error or malicious action.
+
+Finally, forkstopa and forkports will now list their output alphabetically by fork name.
+
 # INSTALLATION
 
 ```
@@ -43,6 +53,8 @@ chmod 777 fork*
 - `forkcounth`            \-  Simply returns the number of active *_harvester processes running via ps -ef.  A quick numerical check to make sure the right number of fork harvester processes are running on the server (farmers also run harvester processes).  Should equal the total number of forks you are farming.
 - `forkstopall`           \-  Stops all services (including daemon) for all forks with an active _harvester process running. No longer just a .template file, no longer needs maintenance.
 - `forkports`             \-  Checks port locking contention on all forks with an active _harvester process.  Checks every port listed for mainnet in each fork's config.yaml, then runs netstat on every port used by that fork and lists any port-locking process which does not contain that fork's binary name as the owner of the process.  If the listed processes don't have a *different* fork's name as the owner of the process, that output can be disregarded.  If no processes are listed under a given fork in the output, no ports were locked by a different fork - i.e., no conflict found.
+- `forkmon`               \-  Version 1.2 introduces forkmon!  This script gives you detailed information on every active fork process on your server, one section for farmers and another for harvesters.  Includes longest response times, fullnode worker count, memory usage, and much more! 
+- `forktargets`           \-  Version 1.2 also adds forktargets, which lists the target wallet addresses as configured in every active fork farmer's  config.yaml in a convenient and organized list for easy visual comparison to whatever list of wallet addresses you intend rewards to go to that you're currently maintaining.  Good to check this every so often to make sure target wallets haven't been diverted by error or malicious action.
 
 
 # COMMANDS WITH ONE PARAMETER, FORKNAME

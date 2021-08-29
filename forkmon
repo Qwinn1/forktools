@@ -1,0 +1,90 @@
+#! /bin/bash
+
+if [ -z "$FORKTOOLSBLOCKCHAINDIRS" ];  # sets the parent directory for all the fork-blockchain directories if it is empty.  Defaults to $HOME.
+ then
+  FORKTOOLSBLOCKCHAINDIRS="$HOME"
+ fi
+ 
+if [ -z "$FORKTOOLSHIDDENDIRS" ];  # sets the parent directory for all the fork-blockchain directories if it is empty.  Defaults to $HOME.
+ then
+  FORKTOOLSHIDDENDIRS="$HOME"
+ fi
+ 
+
+# You can set the above globally for all scripts by adding the included "forktoolsenv.sh" to your /etc/profile.d directory, modified to your taste.  
+# Requires sudo root permissions.  Making this permanent may require a reboot.
+
+
+FARMERCOUNT=$(ps -ef | grep _farmer | grep -v grep | wc -l)
+HARVESTERCOUNT=$(ps -ef | grep _harvester | grep -v grep | wc -l)
+TODAYSTAMP=`date +"20%y-%m-%d"`
+YESTERDAYSTAMP=$(date -d '-1 day' +"20%y-%m-%d")
+
+
+printf '\n'
+echo -e "----------------------------------------------------- FARMERS: $FARMERCOUNT ------------------------------------------------------"
+printf '                                                                                 FullNode      Memory   NoHarvResp\n'
+printf 'Fork               Version         Status   #Peers   #Plots   Netspace   ETW      Workers       Usage     Errors\n'
+echo -e "------------------------------------------------------------------------------------------------------------------------"
+for fork in $(ps -ef | grep _farmer | grep -v grep | awk '{print $8}' | sed 's/_farmer//' | grep -v sed | sort); do
+   cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain 
+   . ./activate 
+   FORKVERSION=$(forkver $fork)
+   FORKSUM=$(forksum $fork)
+   PLOTCOUNT=$(grep "Plot count for all harvesters: " <<< $FORKSUM | sed 's/Plot count for all harvesters: //' | awk '{$1=$1};1')
+   if [ -z "$PLOTCOUNT" ];
+      then
+        PLOTCOUNT=$(grep "Plot count: " <<< $FORKSUM | sed 's/Plot count: //' | awk '{$1=$1};1')
+      fi 
+   FORKSTATUS=$(grep "Farming status: " <<< $FORKSUM | sed 's/Farming status: //' | awk '{$1=$1};1')
+   NETSPACE=$(grep "Estimated network space: " <<< $FORKSUM | sed 's/Estimated network space: //' | sed 's/\.[0-9]*//' | awk '{$1=$1};1')
+   ETW=$(grep "Expected time to win: " <<< $FORKSUM | sed 's/Expected time to win: //' | awk '{$1=$1};1')
+   ETW1=$(awk '{print $1}' <<< $ETW)
+   ETW2=$(awk '{print $2}' <<< $ETW | cut -b 1)
+   ETW3=$(awk '{print $4}' <<< $ETW)
+   ETW4=$(awk '{print $5}' <<< $ETW | cut -b 1)
+   FORKNODES=$(forknodes $fork | wc -l)
+   FORKMEM=$(for pid in $(pgrep ^${fork}_); do 
+     awk '/Pss:/{ sum += $2 } END { print sum }' /proc/${pid}/smaps 
+   done | awk '{ sum +=$1/1024 } END {printf "%7.1f MB\n", sum}')
+   FNWORKERS=$(ps -ef | grep "$fork"_full | grep -v grep | wc -l)
+   cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log   
+   HARVERRORSTODAY=$(grep "Harvester did not respond" debug.log.* | grep $TODAYSTAMP | wc -l)
+   HARVERRORSYESTERDAY=$(grep "Harvester did not respond" debug.log.* | grep $YESTERDAYSTAMP | wc -l)
+   let HARVESTERERRORS=$HARVERRORSTODAY+$HARVERRORSYESTERDAY
+   printf '%-18s %-15s %.10s   %5s%9s %10s   %-7s  %7s  %6s %7s\n' "$fork" "$FORKVERSION" "$FORKSTATUS" "$FORKNODES" "$PLOTCOUNT" "$NETSPACE" "$ETW1$ETW2 $ETW3$ETW4" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" 
+done
+
+
+printf '\n'
+echo -e "-------------------------------------------- HARVESTERS: $HARVESTERCOUNT ------------------------------------------------"
+printf '                                                             Longest      Longest     Proofs\n'
+printf '                                                  Last      Response     Response      Since\n'
+printf 'Fork               Version      # Plots        Harvest         Today    Yesterday  Yesterday\n'
+echo -e "------------------------------------------------------------------------------------------------------------"
+for fork in $(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v sed | sort); do
+   cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log
+   FORKVERSION=$(forkver $fork)
+   LASTHARVESTERLINE=$(cat debug.log | grep "plots were eligible" | tail -1)
+   PLOTCOUNT=$(sed 's/.*Total //' <<< "$LASTHARVESTERLINE" | sed 's/ plots//' | awk '{$1=$1};1')
+   CURRENTTIME=$(date "+%s")
+   LASTHARVESTTIME=$(sed 's/\..*//' <<< "$LASTHARVESTERLINE" | awk '{$1=$1};1')
+   LASTHARVESTEPOCH=$(date --date="$LASTHARVESTTIME" +%s | awk '{$1=$1};1')
+   let LASTHARVESTAGO=$CURRENTTIME-$LASTHARVESTEPOCH
+   LASTRESPONSETIME=$(sed 's/.*Time: //' <<< "$LASTHARVESTERLINE" | sed 's/ s\. Total.*//' | awk '{$1=$1};1')
+   TODAYMAX=$(grep $TODAYSTAMP debug.log* | grep 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
+   YESTERDAYMAX=$(grep $YESTERDAYSTAMP debug.log* | grep 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
+   PROOFSTODAYLIST=$(grep $TODAYSTAMP debug.log* | grep "Found [1.9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )
+   PROOFSYESTERDAYLIST=$(grep $YESTERDAYSTAMP debug.log* | grep "Found [1.9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )   
+   PROOFCOUNT=0
+#   echo $PROOFSTODAYLIST
+#   echo $PROOFSYESTERDAYLIST
+   for proof in $(echo $PROOFSTODAYLIST); do
+     let PROOFCOUNT=$PROOFCOUNT+$proof
+   done
+   for proof in $(echo $PROOFSYESTERDAYLIST); do
+     let PROOFCOUNT=$PROOFCOUNT+$proof
+   done
+   printf '%-18s %-15s %-8s %5ss ago      %7.2fs     %7.2fs      %5s\n' "$fork" "$FORKVERSION" "$PLOTCOUNT" "$LASTHARVESTAGO" "$TODAYMAX" "$YESTERDAYMAX" "$PROOFCOUNT"
+done
+
