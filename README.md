@@ -122,7 +122,8 @@ Usage:  forklog
   -t [100] | --tail [100]                   Tails the last 100 lines of the result.
                                             The number parameter is optional.  If not set, uses default value set in forktoolsinit.sh
   -h | --help                               Show this information again.
-qwinn@Huginn:~/forktools$ ```
+qwinn@Huginn:~/forktools$
+```
 
 - all tools now have vastly improved error handling when parameters are passed incorrectly.
 
