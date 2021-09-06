@@ -147,7 +147,7 @@ chmod 777 fork*
 
 # SETTING UP ENVIRONMENT PATHS
 
-In previous versions my instructions were to add forktools to your paths by placing a file in /etc/profile.d.  That, it turns out, was a lousy idea.  Thanks to solarhash for suggesting a far far better option.  If you placed envforktools.sh in that directory for previous versions, please delete it with my apologies.  Instead, open your ~/.bashrc file, and just add these lines below to the end.
+In previous versions my instructions were to add forktools to your paths by placing a file in /etc/profile.d.  That, it turns out, was a lousy idea.  Thanks to solarhash for suggesting a far far better option.  If you placed envforktools.sh in that directory for previous versions, please delete it with my apologies.  Instead, open your ~/.bashrc file, and just add these lines below to the end, modifying them to match wherever you installed all your stuffs.
 
 ```
 export FORKTOOLSDIR="$HOME/forktools"
