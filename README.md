@@ -219,7 +219,11 @@ The scripts herein allow me to maintain and work with all the forks from a singl
 
 These are all very simple bash scripts (EDIT:  some are not so simple anymore!).  No compiling is necessary.  Simply cat or grep them however you like and verify they're not doing anything you wouldn't want to do yourself.
 
+# DISCORD SERVER
 
+Got a fun crowd here already.  Come join us!  And if you have any issues, I'll be happy to help.
+
+https://discord.gg/XmTEZ4SHtj
 
 
 # DONATIONS ACCEPTED
