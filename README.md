@@ -134,7 +134,7 @@ If I haven't gotten your attention by now, I never will.  So let's get on with i
 
 # INSTALLATION
 
-# If you don't have curl already, version 2.0 of forktools does require it in order to make RPC calls to the various fork full nodes, farmers and harvesters.  It's currently the only dependency.
+If you don't have curl already, version 2.0 of forktools does require it in order to make RPC calls to the various fork full nodes, farmers and harvesters.  It's currently the only dependency.
 ```
 sudo apt update
 sudo apt upgrade -y
