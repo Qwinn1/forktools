@@ -130,12 +130,12 @@ qwinn@Huginn:~/forktools$
 - all configuration options centralized!  Every single forktool now shares an include - forktoolsinit.sh - which contains every configurable option for every single tool.  You no longer edit forkaddplotdirs to add your plot directories, and then separately manipulate forkstartall to tell it which forks to start up after a reboot - instead, every single customization is all done in the same include file.  I won't bother showing it here.  Just trust me, you'll want to check out the CONFIGURATION SECTION of forktoolsinit.sh for yourself ASAP to see all the options for setting defaults that you have now.  This will make backing up your customizations in preparation for updating forktools much easier.  For version 2.0 only I'll be releasing a forktoolsinit.sh file, but every version after that it'll be forktoolsinit.sh.template so that I don't overwrite your customizations.  I'll let you know with each update if you will need to diff and merge the two files, or if it hasn't changed and you need not bother.  All the .template files from previous versions are no longer necessary and have been removed.
 
 If I haven't gotten your attention by now, I never will.  So let's get on with it.
-```
+
 
 # INSTALLATION
 
+# If you don't have curl already, version 2.0 of forktools does require it in order to make RPC calls to the various fork full nodes, farmers and harvesters.  It's currently the only dependency.
 ```
-# if you don't have curl already, version 2.0 of forktools does require it in order to make RPC calls to the various fork full nodes, farmers and harvesters.  It's currently the only dependency.
 sudo apt update
 sudo apt upgrade -y
 sudo apt install curl
