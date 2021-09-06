@@ -1,0 +1,20 @@
+#! /usr/bin/env bash
+
+VALIDATEFORKNAME='Yes'
+. forktoolsinit.sh
+
+FORKNAME=$1
+
+cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain 
+. ./activate 
+
+IFS=$'\n'
+for plotdir in $FORKADDPLOTDIRS; do
+  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< $plotdir | awk '{$1=$1};1' )
+  if [ -n "$STRIPPEDCOMMENTS" ]; then
+    BUILDEXPR=$(echo "$FORKNAME plots add -d '$STRIPPEDCOMMENTS'")
+    echo $(eval $BUILDEXPR)
+  fi  
+done
+IFS=DEFAULT_IFS
+

@@ -1,14 +1,9 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
-if [ -z "$FORKTOOLSHIDDENDIRS" ];  # sets the parent directory for all the fork hidden directories if it is empty.  Defaults to $HOME.
- then
-  FORKTOOLSHIDDENDIRS="$HOME"
- fi
- 
-# You can set the above globally for all scripts by adding the included "envforktools.sh" to your /etc/profile.d directory, modified to your taste.  
-# Requires sudo root permissions.  Making this permanent may require a reboot.
+VALIDATEFORKNAME='No'
+. forktoolsinit.sh
 
-for fork in $(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v sed | sort); do
+for fork in $(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v "[s]ed" | sort); do
   echo $fork
   for port in $(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml | grep "port: " | grep -v "default_full_node_port" | sed 's/\s*[a-z_]*port: //g' | sed 's/\s*[#].*//g' | sort | uniq); do
 #    echo $port - for debugging

@@ -1,2 +1,7 @@
-ps -ef | grep "_harvester" | grep -v grep | wc -l
+#! /usr/bin/env bash
+
+VALIDATEFORKNAME='No'
+. forktoolsinit.sh
+
+ps -ef | grep "_harvester" | grep -v grep | wc -l | awk '{$1=$1};1'
 

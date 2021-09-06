@@ -1,110 +1,189 @@
 # Qwinn's forktools
 
-#### Several command line tools to greatly simplify CLI maintenance of one or many Chia forks
-
-
-I created these CLI scripts, currently only for Ubuntu environment (Windows versions may be added later), because I am currently farming 21 separate Chia forks and maintenance
-started becoming a chore, having to CD into the fork's hidden directories to view logs or config files, or to the fork-blockchain directory and . ./activate to issue any
-fork commands.  So what I was doing was opening a terminal box with 20 tabs, with each one cd'd into that fork's proper directories so I could quickly issue commands.  That
-worked well enough when it was only up to a dozen forks or so, but quickly grew cumbersome, ESPECIALLY recreating all the tabs after a reboot.
-
-The scripts herein allow me to maintain and work with all the forks from a single terminal tab, without having to change directories.  Feel free to modify them for your 
-own needs.  I think these tools make even maintaining a single fork (such as just chia) a lot easier, saving a great many keystrokes.
-
-These are all very simple bash scripts.  No compiling is necessary.  Simply cat them and verify they're not doing anything you wouldn't want to do yourself.
-
 # WHAT'S NEW
 
-Still 100% local, still 100% bash!
+Literally practically everything.  But still 100% local, still 100% bash!
 
-Version 1.2 introduces forkmon!  This script gives you detailed information on every active fork process on your server, one section for farmers and another for harvesters.  Includes longest response times, fullnode worker count, proofs found in last 24-48 hours, memory usage, and much more!  (Effort%, height and wallet balance information will be trickier if I want to keep these tools local, so I'll get back to you all on those.)
+Version 2.0 is a massive update with nearly a dozen new features! 
 
-Sample forkmon output (incomplete for brevity, counts won't match):
+- new tool:  forkexplore! a 100% local blockchain address explorer!  As long as you have a farmer running a synced blockchain, forktools can query on hot or cold wallet balances and transaction history.  Wallet sync is not necessary.  Also consolidates the paired 0.25/1.75 block rewards for easier review. Can specify date ranges for the output too.  Here's a taste:
 
-```qwinn@Huginn:~$ forkmon
+```qwinn@Huginn:~/.silicoin/mainnet/log$ forkexplore hddcoin -s 2021-08-28 -u 2021-08-30
 
------------------------------------------------------ FARMERS: 12 ------------------------------------------------------
-                                                                                 FullNode      Memory   NoHarvResp
-Fork               Version         Status   #Peers   #Plots   Netspace   ETW      Workers       Usage     Errors
-------------------------------------------------------------------------------------------------------------------------
-cactus             1.2.2.dev7      Farming       8     4424    255 PiB   3h 27m        20   1833.9 MB       0
-cryptodoge         1.2.6           Farming      18     4424    174 PiB   1h 59m        20   1355.6 MB       1
-dogechia           1.0.9           Farming       8     4424    495 PiB   6h 3m         20   2061.8 MB       0
-hddcoin            1.2.5.dev2      Farming       8     4424    479 PiB   5h 43m        20   1165.0 MB       0
-kale               0.1.111         Farming      21     4424    360 PiB   4h 8m         20   2031.5 MB       0
-melati             1.1.7140        Farming       8     4424    276 PiB   3h 8m         20   1826.0 MB       0
-olive              0.0.296         Farming      17     4424     91 PiB   2h 1m         20   1587.1 MB       0
-seno               1.1.8.dev36     Farming       8     1379    349 PiB   13h 11m       20   2830.0 MB       0
+                         EXPLORING Address:
+   hdd1w5hw0qsv0se7fasdfasd9un8325g0kyl6fdafaaw0953ha5phxh2313ss8fvkg2
 
-------------------------------------------- HARVESTERS: 25 ------------------------------------------------
-
-                                                             Longest      Longest     Proofs
-                                                  Last      Response     Response      Since
-Fork               Version      # Plots        Harvest         Today    Yesterday  Yesterday
-------------------------------------------------------------------------------------------------------------
-apple              1.2.31.dev1     1379         8s ago         3.23s        2.51s          2
-avocado            1.1.7.dev124    1379         6s ago         2.36s        2.76s          3
-btcgreen           2.1.0           1379         6s ago         1.97s        3.33s          4
-cactus             1.2.2.dev7      1379         6s ago         1.83s        3.48s          3
-cannabis           1.2.301         1379         5s ago         2.57s        3.55s          3
-chia               1.2.5           1379         3s ago         3.60s        3.11s          0
-covid              1.2.3           1379         3s ago         2.57s        2.93s          6
-cryptodoge         1.2.6           1379         7s ago         2.89s        2.58s          7
-dogechia           1.0.9           1379         2s ago         2.67s        3.58s          1
-flax               0.1.1           1379         4s ago         2.09s        2.85s          0
-flora              0.2.5           1379         1s ago         2.07s        2.40s          3
-goji               0.2.3           1379        11s ago         2.62s        2.98s          3
-greendoge          1.2.4           1379         3s ago         2.49s        3.41s          3
-hddcoin            1.2.3           1379         2s ago         2.44s        2.46s          2
+                    Balance:           343 HDD
+                    Today:               8 HDD
+                    Yesterday:           2 HDD
+---------------------------------------------------------------------
+                       Height      Height     Farmed         Total
+DateTime               Confirmed   Spent      Block?        Amount
+---------------------------------------------------------------------
+2021-08-28T03:56:32    252432      0          Yes         2.00 HDD  
+2021-08-28T07:41:38    253161      0          Yes         2.00 HDD  
+2021-08-28T08:32:03    253336      0          Yes         2.00 HDD  
+2021-08-28T11:39:57    253959      0          Yes         2.00 HDD  
+2021-08-28T12:02:45    254036      0          Yes         2.00 HDD  
+2021-08-28T19:57:23    255552      0          No         13.00 HDD  
+2021-08-28T22:39:44    256057      0          Yes         2.00 HDD  
+2021-08-28T23:18:25    256170      0          Yes         2.00 HDD  
+2021-08-29T01:48:40    256658      0          Yes         2.00 HDD  
+2021-08-29T13:44:29    258960      0          Yes         2.00 HDD  
+2021-08-29T16:21:35    259447      0          Yes         2.00 HDD  
+2021-08-29T17:28:27    259644      0          Yes         2.00 HDD  
+2021-08-30T08:00:15    262475      0          Yes         2.00 HDD  
+2021-08-30T18:47:29    264529      0          Yes         2.00 HDD  
+2021-08-30T22:32:24    265164      0          Yes         2.00 HDD  
+---------------------------------------------------------------------
+    15 transactions from 2021-08-28 to 2021-08-30:       41.00 HDD  
 ```
 
+- updated tool:  forkmon!  Naturally the address information has made it into forkmon - with the most specific and accurate calculation of ETW and Effort% possible (down to seconds), using chia's exact formula but without rounding 23 or 44 days to 'a month'.
 
-Also new is forktargets, which lists the target wallet addresses as configured in each fork's config.yaml in a convenient and organized list for easy visual comparison to whatever list of wallet addresses you're currently maintaining.  Good to check this every so often to make sure wallets haven't been diverted by error or malicious action.
+```---------------------------------------------------------------- FARMERS: 13 --------------------------------------------------------------
 
-Finally, forkstopa and forkports will now list their output alphabetically by fork name.
+                                                                       FulNode   Memory   NoHarv        Wallet              Last
+Fork              Version         Status   #Peers   #Plots   Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort
+-------------------------------------------------------------------------------------------------------------------------------------------
+cactus            1.2.2.dev7      Farming       8     4424    266 PiB     20    1900 MB       0        458 CAC   3h2m     1h54m ago    62%
+cryptodoge        1.2.6           Farming      25     4424    188 PiB     20    1637 MB    7674    3600000 XCD   2h1m     2h38m ago   130%
+dogechia          1.0.9           Farming       8     4424    507 PiB     20    2126 MB       0        328 XDG   5h53m       3m ago     0%
+hddcoin           1.2.5.dev2      Farming      10     4424    499 PiB     20    2091 MB       0        331 HDD   5h59m       4h ago    67%
+kale              0.1.111         Farming       9     4424    361 PiB     20    2082 MB       0        254 XKA   4h44m    7h36m ago   160%
+melati            1.1.7140        Farming       8     4424    274 PiB     20    1885 MB       0        374 XMX   2h58m      26m ago    15%
+olive             0.0.296         Farming       8     4424    109 PiB     20    1621 MB       0       1042 XOL   1h15m    1h31m ago   121%
+pipscoin          1.1.0           Farming      74     4424     31 PiB     20    1785 MB       0        240 PIPS  27m        22m ago    84%
+seno              1.1.8.dev36     Farming       7     1379    350 PiB     20    3054 MB       0        160 XSE   13h6m    5h34m ago    42%
+silicoin          0.0.9.dev10     Farming      55     4424    821 PiB     20    2189 MB       0        225 TSIT  9h2m      5h7m ago    56%
+```
+
+- new tool:  forkfixconfig!  Tired of changing the same settings in every config file every time you update or set up a new fork?  Then forkfixconfig is for you!  Allows automated setting (with backups, of course) of your preferred log_level, max_logfilesrotation, plot_loading_frequency (old or new version), farmer_peer for your harvesters and more!  Even allows you to add 'multiprocessing_limit" for the new feature added to several forks to reduce RAM usage - but it won't install it until it can verify you are synced, because setting it before that would be bad.  Here's a taste:
+
+```(venv) qwinn@Gungnir:~/silicoin-blockchain$ forkfixconfig silicoin 10.0.0.104
+Proposed changes to /home/qwinn/.silicoin/mainnet/config/config.yaml :
+  Old Log Level:  log_level: "WARNING" # Can be CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
+  New Log Level:  log_level: "INFO" # Can be CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
+  Old Plot Load Frequency:  interval_seconds: 120 # The interval in seconds to refresh the plot file manager
+  New Plot Load Frequency:  interval_seconds: 18000 # The interval in seconds to refresh the plot file manager
+  Old Batch Size:  batch_size: 30 # How many plot files the harvester processes before it waits batch_sleep_milliseconds
+  New Batch Size:  batch_size: 1500 # How many plot files the harvester processes before it waits batch_sleep_milliseconds
+  Old Batch Sleep:  batch_sleep_milliseconds: 10 # Milliseconds the harvester sleeps between batch processing
+  New Batch Sleep:  batch_sleep_milliseconds: 1 # Milliseconds the harvester sleeps between batch processing
+  Old Target Peer Count:  target_peer_count: 80
+  New Target Peer Count:  target_peer_count: 10
+  Old Harvester Farmer_Peer IP:  host: *self_hostname
+  New Harvester Farmer_Peer IP:  host: 10.0.0.104
+  Appending:  multiprocessing_limit: 4
+Should you proceed, a backup of your current config.yaml will be made called config.yaml.2021-09-03
+Are you sure you wish to make these changes? (Y/y)y```
+
+- update tool:  forktargets!  Reformatted and now focuses on the farmer target reward (pool target is not considered).  More importantly, it now checks to make sure that the setting in your config.yaml has actually taken effect.  Wait, the config.yaml isn't the last word as to where rewards go?  Afraid not.  A little demonstration...
+
+```qwinn@Huginn:~/forktools$ forktargets
+          cactus - config.yaml and Farmer RPC agree.  Address: cac1blahblah
+      cryptodoge - config.yaml and Farmer RPC agree.  Address: xcd1blahblah
+        dogechia - config.yaml and Farmer RPC agree.  Address: xdg11blahblah
+         hddcoin - config.yaml and Farmer RPC agree.  Address: hdd11blahblah
+            kale - config.yaml and Farmer RPC agree.  Address: xka11blahblah
+          melati - config.yaml and Farmer RPC agree.  Address: xmx11blahblah
+           olive - config.yaml and Farmer RPC agree.  Address: xol11blahblah
+        pipscoin - config.yaml and Farmer RPC agree.  Address: pips11blahblah
+            seno - config.yaml and Farmer RPC agree.  Address: xse11blahblah
+        silicoin - WARNING!  config.yaml and RPC target addresses DO NOT MATCH!   WARNING!
+                   When this happens, rewards actually go to the target address reported by the farmer RPC call.
+                   If you recently edited the config.yaml but didn't restart your farmer, you should restart it or revert your config changes.
+                   config.yaml:      tsit11blahblah
+                   Farmer RPC call:  tsit11differentblahblah
+           socks - config.yaml and Farmer RPC agree.  Address: sock1blahblah
+            taco - config.yaml and Farmer RPC agree.  Address: xtx1blahblah
+             tad - config.yaml and Farmer RPC agree.  Address: tad1blahblah
+qwinn@Huginn:~/forktools$ 
+```
+
+- new tool:  forklog!  Replaces forkloge, forklogt, forklogg, forklogh forklogp and forklogw from previous versions. Instead, you'll use this one tool with lots of switches that you can combine at will.  Also has fully customizable date range capability.  And it's quite well documented.  You want to see all ERRORs *and* WARNINGs *and* found proofs from the last 12 days all in one output, but then just the last 20 lines of the result?  That's now super easy, barely an inconvenience:
+
+```qwinn@Huginn:~/forktools$ forklog -h
+Usage:  forklog
+  forkname                                  Required parameter.  All others optional, but need at least one to get any results.
+  -e | --error                              Adds 'ERROR' as a search term.
+  -w | --warning                            Adds 'WARNING' as a search term.
+  -p | --proof                              Adds any positive # of found proofs as a search term.
+  -ha | --harv                              Adds 'harvester' as a search term.
+  -g 'word' | --grep 'word'                 Adds 'word' as a search term.  Multiple uses allowed.
+  -l 10 | --lastxdays 10                    Shows only results for the last 10 days.
+                                            Default value can be set in forktoolsinit.sh.
+  -s YYYY-MM-DD | --startdate YYYY-MM-DD    Do not show results prior to this date.  If both this and -l / --lastxdays are set, this is used.
+                                            Default value can be set in forktoolsinit.sh.
+  -u | --enddate YYYY-MM-DD                 Do not show results after this date.
+                                            Default value can be set in forktoolsinit.sh.
+  -t [100] | --tail [100]                   Tails the last 100 lines of the result.
+                                            The number parameter is optional.  If not set, uses default value set in forktoolsinit.sh
+  -h | --help                               Show this information again.
+qwinn@Huginn:~/forktools$ ```
+
+- all tools now have vastly improved error handling when parameters are passed incorrectly.
+
+- all configuration options centralized!  Every single forktool now shares an include - forktoolsinit.sh - which contains every configurable option for every single tool.  You no longer edit forkaddplotdirs to add your plot directories, and then separately manipulate forkstartall to tell it which forks to start up after a reboot - instead, every single customization is all done in the same include file.  I won't bother showing it here.  Just trust me, you'll want to check out the CONFIGURATION SECTION of forktoolsinit.sh for yourself ASAP to see all the options for setting defaults that you have now.  This will make backing up your customizations in preparation for updating forktools much easier.  For version 2.0 only I'll be releasing a forktoolsinit.sh file, but every version after that it'll be forktoolsinit.sh.template so that I don't overwrite your customizations.  I'll let you know with each update if you will need to diff and merge the two files, or if it hasn't changed and you need not bother.  All the .template files from previous versions are no longer necessary and have been removed.
+
+If I haven't gotten your attention by now, I never will.  So let's get on with it.
 
 # INSTALLATION
 
 ```
+# if you don't have curl already, version 2.0 of forktools does require it in order to make RPC calls to the various fork full nodes, farmers and harvesters.  It's currently the only dependency.
+sudo apt update
+sudo apt upgrade -y
+sudo apt install curl
+
 git clone https://github.com/Qwinn1/forktools
 cd forktools
 chmod 777 fork*
 ```
+
+# SETTING UP ENVIRONMENT PATHS
+
+In previous versions my instructions were to add forktools to your paths by placing a file in /etc/profile.d.  That, it turns out, was a lousy idea.  Thanks to solarhash for suggesting a far far better option.  If you placed envforktools.sh in that directory for previous versions, please delete it with my apologies.  Instead, open your ~/.bashrc file, and just add these lines below to the end.
+
+```
+export FORKTOOLSDIR="$HOME/forktools"
+export FORKTOOLSBLOCKCHAINDIRS="$HOME"
+export FORKTOOLSHIDDENDIRS="$HOME"
+
+export PATH="$PATH:$FORKTOOLSDIR"
+```
+Then run `source ~/.bashrc` to make it work immediately, or just reboot.  And you're done.  This is a far cleaner solution.
  
 # FORK NAMING CONVENTION ISSUES
 
-- A handful of forks are so mind-boggingly lazy as to still use "chia" as their executable.  I have no interest in supporting forks that engage in such terrible practices.  Therefore, consider such forks simply not supported.  This currently includes ChiaRose, N-Chain, and Lucky.
+- A handful of forks are so mind-boggingly lazy as to still use "chia" as their executable, or create "chia_farmer" processes.  I have no interest in supporting forks that engage in such terrible practices.  Therefore, consider such forks simply not supported.  This currently includes ChiaRose, N-Chain, and Lucky.
 
 - These scripts assume that the fork's binary executable and the .hidden data file directory are the same name.  A handful of forks didn't follow that convention.  This can be easily solved by setting up symbolic links for those forks that break the convention.  Here are the commands to create the necessary symlinks for the few I'm aware of (obviously edit "/home/user" portion to be the parent directory of your fork data directories):
 
-  - Spare:     `ln -s /home/user/.spare-blockchain /home/user/.spare`
-  - Goji:      `ln -s /home/user/.goji-blockchain /home/user/.goji`
-  - Seno:      `ln -s /home/user/.seno2 /home/user/.seno`
-  - Beer:      `ln -s /home/user/.beernetwork /home/user/.beer`
+  - Spare:              `ln -s /home/user/.spare-blockchain /home/user/.spare`
+  - Goji:               `ln -s /home/user/.goji-blockchain /home/user/.goji`
+  - Seno:               `ln -s /home/user/.seno2 /home/user/.seno`
+  - Beer:               `ln -s /home/user/.beernetwork /home/user/.beer`
 
 - These scripts assume the fork's repo directory is named 'forkname-blockchain'.  A handful of forks didn't follow that convention.  This can be easily solved by setting up symbolic links for those forks that break the convention.  Here are the commands to create the necessary symlinks for the few I'm aware of (obviously edit "/home/user" portion to be the parent directory of your fork repo/code directories):
 
-  - Dogechia:   `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
-  - littlelambocoin:  `ln -s /home/user/littlelambocoin /home/user/littlelambocoin-blockchain`
-  - cryptodoge:  `ln -s /home/user/cryptodoge /home/user/cryptodoge-blockchain`
+  - Dogechia:           `ln -s /home/user/doge-chia /home/user/dogechia-blockchain`
+  - littlelambocoin:    `ln -s /home/user/littlelambocoin /home/user/littlelambocoin-blockchain`
+  - cryptodoge:         `ln -s /home/user/cryptodoge /home/user/cryptodoge-blockchain`
 
 # COMMANDS WITH NO PARAMETERS:
 
-- `forkcounth`            \-  Simply returns the number of active *_harvester processes running via ps -ef.  A quick numerical check to make sure the right number of fork harvester processes are running on the server (farmers also run harvester processes).  Should equal the total number of forks you are farming.
-- `forkstopall`           \-  Stops all services (including daemon) for all forks with an active _harvester process running. No longer just a .template file, no longer needs maintenance.
-- `forkports`             \-  Checks port locking contention on all forks with an active _harvester process.  Checks every port listed for mainnet in each fork's config.yaml, then runs netstat on every port used by that fork and lists any port-locking process which does not contain that fork's binary name as the owner of the process.  If the listed processes don't have a *different* fork's name as the owner of the process, that output can be disregarded.  If no processes are listed under a given fork in the output, no ports were locked by a different fork - i.e., no conflict found.
-- `forkmon`               \-  Version 1.2 introduces forkmon!  This script gives you detailed information on every active fork process on your server, one section for farmers and another for harvesters.  Includes longest response times, fullnode worker count, memory usage, and much more! 
-- `forktargets`           \-  Version 1.2 also adds forktargets, which lists the target wallet addresses as configured in every active fork farmer's  config.yaml in a convenient and organized list for easy visual comparison to whatever list of wallet addresses you intend rewards to go to that you're currently maintaining.  Good to check this every so often to make sure target wallets haven't been diverted by error or malicious action.
+- `forkmon`               \-  In my opinion the current heart of forktools.  This script gives you detailed information on every active fork process on your server, one section for farmers and another for harvesters.  Includes longest response times, fullnode worker count, memory usage, wallet balances for your target addresses, how long ago the last block was won, effort percent, and much more! 
+- `forkstopall`           \-  Stops all services (including daemon) for all forks with an active _harvester process running.
+- `forkstartall`          \-  Requires configuration in forktoolsinit.sh.  Just list there which forks you'd like started as farmers, which as farmer-no-wallet, and which as harvesters.  Between this and `forkstopall`, shutdowns and reboots are relatively painless now.
+- `forkports`             \-  Checks port locking contention on all forks with an active _harvester process.  Checks every port listed for mainnet in each fork's config.yaml, then runs netstat on every port used by that fork and lists any port-locking process which does not contain that fork's binary name as the owner of the process.  If the listed processes don't have a *different* fork's name as the owner of the process, that output can probably be safely disregarded.  If no processes are listed under a given fork in the output, no ports were locked by a different fork - i.e., no conflict found.
+- `forktargets`           \-  Version 2.0 lists the target wallet addresses as configured in every active fork farmer's config.yaml in a convenient and organized list for easy visual comparison to whatever list of wallet addresses you intend rewards to go to that you're currently maintaining.  In version 2.0 now also compares the target setting in config.yaml to the RPC call for the same value, and gives a big warning if they don't match.
 
 
 # COMMANDS WITH ONE PARAMETER, FORKNAME
 
-- `forkloge chia`         \-  Searches for the word "ERROR" in .chia/mainnet/log/debug.log
-- `forklogw flax`         \-  Searches for the word "WARNING" in .flax/mainnet/log/debug.log
-- `forklogh greendoge`    \-  Searches for the word "harvester" in the greendoge debug.log file.  Good for checking response times.
-- `forklogp dogechia`     \-  Searches for any non-zero "Found X proofs" in the dogechia debug.log file.
-- `forklogt apple`        \-  Tails the last 100 lines of the apple debug.log file.
-- `forkconfig hddcoin`    \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit.  Modify this script to your preferred text editor (vi, nano, whatever)
+- `forkfixconfig`         \-  Provides automated editing of several entries that require frequent editing - log level, plot loading frequency, farmer peer for harvesters, and several more.  Requires confirmation and creates backups.  Does not actually require editing of default options in forktoolsinit.sh - the defaults I picked should work fine - but if you'd like to tweak them, you can do so there.  Please report if the defaults as I chose them cause you any issues so I can review.
+- `forkconfig hddcoin`    \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit.  Modify this script to use your preferred text editor (vi, nano, whatever).  Not going to make that a configurable option because IMO it would be dangerous to do so because reasons.
 - `forknodes avocado`     \-  prints a list of currently connected nodes for sharing with others having difficulty connecting. Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
 - `forkstartf kale`       \-  runs "kale start farmer -r"
 - `forkstartfnw cactus`   \-  runs "cactus start farmer-no-wallet -r"
@@ -116,46 +195,27 @@ chmod 777 fork*
 - `forkstopa socks`       \-  stops ALL services for socks (If you're running GUI farmer, recommend closing that first)
 - `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
 - `forkstarttl silicoin`  \-  starts timelord for silicoin.  Requires having previously run sh install-timelord.sh in the silicoin-blockchain directory.
-- `forkstoptl taco`       \-  stops timelord for taco.  Requires having previously run sh install-timelord.sh in the taco-blockchain directory.
+- `forkstoptl pipscoin`   \-  stops timelord for pipscoin.  Requires having previously run sh install-timelord.sh in the pipscoin-blockchain directory.
+- `forkaddplotdirs taco`  \-  Requires configuration in forktoolsinit.sh to use.  List your plot directories there, then you can add them to any fork quickly with a single command.
 
-# COMMANDS WITH TWO PARAMETERS
+# COMMANDS WITH MULTIPLE PARAMETERS
 
-- `forklogg chia signage`    \-  Use when you need to search the log for something besides the premade options provided above.  This example searches for the word "signage" in the chia logs.
-
-# SCRIPT TEMPLATES THAT REQUIRE EDITING
-
-These three scripts have a .template extension because they can't work out of the box - they need to be edited for your specific configuration, but in all cases this is super easy, barely an inconvenience.  The purpose of the .template extension is so that future updates to forktools don't cause the version you edited to be overwritten.  Remove the .template extension once you've finished your work.
-
-- `forkaddplotdirs chia`  \-  Takes forkname as a parameter.  Modify and uncomment the provided example lines to add all of your plot directories on that server to the specified fork.
-- `forkstopall`           \-  No parameters.  Modify and uncomment the provided examples to sequentially shut down all services, nodes, and harvesters.  Quickly cleans everything up in preparation for a shutdown.  Remember to update it when you add a new fork or drop an old one.
-- `forkstartall`          \-  No parameters.  Modify and uncomment the provided examples to sequentially fire up all of your farmers and harvesters (or even timelords, if you wish, using any of the other tools listed above).  Great for getting started quickly after a reboot.  Remember to update it when you add a new fork or drop an old one.
+- `forklog`               \-  This single function has now replaced all previous log parsing forktools. You need to pass at least one switch after the forkname to get any output.  You can manipulate log output now any way I could think of if you get creative with the switches, but you're still able to duplicate the quick and simple older versions with a single switch for each.  Just run forklog -h to get a full list of options.
+- `forkexplore`           \-  New 100% local address explorer.  Provides address balances for your target receive address for the selected fork, but has an additional -a switch which allows you to explore any receive address you wish, hot or cold, and all the same date range options that forklog now has.  Does not require wallet sync, just a synced full node.  Run forkexplore -h for detailed usage instructions.
 
 
+# HOW WE GOT HERE - notes from version 1.0, updated slightly
 
-# SETTING UP ENVIRONMENT PATHS
-
-If your blockchain directories and hidden folders are all directly under your $HOME directory, you don't really need to set up an environment, as those are the default paths.  You could then just run any given command by being in your forktools directory and running the script like this:  `./forkloge chia`.  If you have a custom location for your directories, or if you just want to be able to run the forktools from any directory on your system, create a text file called `envforktools.sh` and place it in the `/etc/profile.d` directory (sudo required, reboot to make the changes persistent and global).  Paste these into it, customizing the paths for your setup:
-
-```
-export FORKTOOLSDIR="$HOME/forktools"
-export FORKTOOLSBLOCKCHAINDIRS="$HOME"
-export FORKTOOLSHIDDENDIRS="$HOME"
-
-export PATH="$PATH:$FORKTOOLSDIR"
-```
-
-A copy of exactly that envforktools.sh is included in the forktools directory for convenience.
+#### Several command line tools to greatly simplify CLI maintenance of one or many Chia forks
 
 
-# UPCOMING IN VERSION 1.3
+I created these CLI scripts, currently only for Ubuntu environment (but very very workable on Windows by installing WSL2, I do it myself), because I was farming 21 separate Chia forks and maintenance started becoming a chore, having to CD into the fork's hidden directories to view logs or config files, or to the fork-blockchain directory and . ./activate to issue any fork commands.  So what I was doing was opening a terminal box with 20 tabs, with each one cd'd into that fork's proper directories so I could quickly issue commands.  That worked well enough when it was only up to a dozen forks or so, but quickly grew cumbersome, ESPECIALLY recreating all the tabs after a reboot.
 
-I am currently working on adding scripts that will edit a fork's config.yaml files to set:
+The scripts herein allow me to maintain and work with all the forks from a single terminal tab, without having to change directories.  Feel free to modify them for your own needs.  I think these tools make even maintaining a single fork (such as just chia) a lot easier, saving a great many keystrokes.
 
--   `log_level`   Script default: INFO
--   `log_maxfilesrotation`  Script Default: 99   
--   `plot_loading_frequency_seconds`  Script Default: 1800 (especially when done plotting, reloading plots every half hour is more than sufficient, every 3 minutes is huge overkill)   
+These are all very simple bash scripts (EDIT:  some are not so simple anymore!).  No compiling is necessary.  Simply cat or grep them however you like and verify they're not doing anything you wouldn't want to do yourself.
 
-...and there will be a harvester version with a second parameter of the IP address to set as your farmer_peer (hopefully also allowing you to just pass the server name as configured in /etc/hosts).
+
 
 
 # DONATIONS ACCEPTED

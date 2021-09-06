@@ -1,0 +1,55 @@
+#! /usr/bin/env bash
+
+VALIDATEFORKNAME='No'
+. forktoolsinit.sh
+
+
+IFS=$'\n'
+for plotdir in $FORKSTARTFLIST; do
+  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< $plotdir | awk '{$1=$1};1' )
+  if [[ $STRIPPEDCOMMENTS = '' ]]; then
+     continue
+  fi
+  if [ ! -d $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain ]; then
+     echo "forkstartall found an invalid forkname in forktoolsinit.sh configuration.  Directory $STRIPPEDCOMMENTS-blockchain does not exist.  Please fix configuration and restart forkstartall.  Aborting."
+     exit
+  fi  
+  cd $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain 
+  . ./activate
+
+  forkstartf $STRIPPEDCOMMENTS
+done
+
+for plotdir in $FORKSTARTFNWLIST; do
+  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< $plotdir | awk '{$1=$1};1' )
+  if [[ $STRIPPEDCOMMENTS = '' ]]; then
+     continue
+  fi
+  if [ ! -d $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain ]; then
+     echo "forkstartall found an invalid forkname in forktoolsinit.sh configuration.  Directory $STRIPPEDCOMMENTS-blockchain does not exist.  Please fix configuration and restart forkstartall.  Aborting."
+     exit
+  fi  
+  cd $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain 
+  . ./activate
+
+  forkstartfnw $STRIPPEDCOMMENTS
+done
+
+for plotdir in $FORKSTARTHLIST; do
+  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< $plotdir | awk '{$1=$1};1' )
+  if [[ $STRIPPEDCOMMENTS = '' ]]; then
+     continue
+  fi
+  if [ ! -d $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain ]; then
+     echo "forkstartall found an invalid forkname in forktoolsinit.sh configuration.  Directory $STRIPPEDCOMMENTS-blockchain does not exist.  Please fix configuration and restart forkstartall.  Aborting."
+     exit
+  fi  
+  cd $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain 
+  . ./activate
+
+  forkstarth $STRIPPEDCOMMENTS
+done
+
+
+IFS=DEFAULT_IFS
+
