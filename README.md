@@ -147,7 +147,7 @@ chmod 777 fork*
 
 # SETTING UP ENVIRONMENT PATHS
 
-In previous versions my instructions were to add forktools to your paths by placing a file in /etc/profile.d.  That, it turns out, was a lousy idea.  Thanks to solarhash for suggesting a far far better option.  If you placed envforktools.sh in that directory for previous versions, please delete it with my apologies.  Instead, open your ~/.bashrc file, and just add these lines below to the end, modifying them to match wherever you installed all your stuffs.
+In previous versions my instructions were to add forktools to your paths by placing a file in /etc/profile.d.  That, it turns out, was a lousy idea.  Thanks to solarhash for suggesting a far far better option.  If you placed envforktools.sh in that directory for previous versions, please delete it with my apologies.  Instead, open your ~/.bashrc file, and just add these lines to the end, modifying them to match wherever you installed all your stuffs.
 
 ```
 export FORKTOOLSDIR="$HOME/forktools"
@@ -208,7 +208,7 @@ Then run `source ~/.bashrc` to make it work immediately, or just reboot.  And yo
 - `forkexplore`           \-  New 100% local address explorer.  Provides address balances for your target receive address for the selected fork, but has an additional -a switch which allows you to explore any receive address you wish, hot or cold, and all the same date range options that forklog now has.  Does not require wallet sync, just a synced full node.  Run forkexplore -h for detailed usage instructions.
 
 
-# HOW WE GOT HERE - notes from version 1.0, updated slightly
+## HOW WE GOT HERE - notes from version 1.0, updated slightly
 
 #### Several command line tools to greatly simplify CLI maintenance of one or many Chia forks
 
