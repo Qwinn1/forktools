@@ -60,7 +60,8 @@ silicoin          0.0.9.dev10     Farming      55     4424    821 PiB     20    
 
 - new tool:  forkfixconfig!  Tired of changing the same settings in every config file every time you update or set up a new fork?  Then forkfixconfig is for you!  Allows automated setting (with backups, of course) of your preferred log_level, max_logfilesrotation, plot_loading_frequency (old or new version), farmer_peer for your harvesters and more!  Even allows you to add 'multiprocessing_limit" for the new feature added to several forks to reduce RAM usage - but it won't install it until it can verify you are synced, because setting it before that would be bad.  Here's a taste:
 
-```(venv) qwinn@Gungnir:~/silicoin-blockchain$ forkfixconfig silicoin 10.0.0.104
+```
+(venv) qwinn@Gungnir:~/silicoin-blockchain$ forkfixconfig silicoin 10.0.0.104
 Proposed changes to /home/qwinn/.silicoin/mainnet/config/config.yaml :
   Old Log Level:  log_level: "WARNING" # Can be CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
   New Log Level:  log_level: "INFO" # Can be CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
@@ -76,7 +77,8 @@ Proposed changes to /home/qwinn/.silicoin/mainnet/config/config.yaml :
   New Harvester Farmer_Peer IP:  host: 10.0.0.104
   Appending:  multiprocessing_limit: 4
 Should you proceed, a backup of your current config.yaml will be made called config.yaml.2021-09-03
-Are you sure you wish to make these changes? (Y/y)y```
+Are you sure you wish to make these changes? (Y/y)y
+```
 
 - update tool:  forktargets!  Reformatted and now focuses on the farmer target reward (pool target is not considered).  More importantly, it now checks to make sure that the setting in your config.yaml has actually taken effect.  Wait, the config.yaml isn't the last word as to where rewards go?  Afraid not.  A little demonstration...
 
@@ -127,6 +129,7 @@ qwinn@Huginn:~/forktools$ ```
 - all configuration options centralized!  Every single forktool now shares an include - forktoolsinit.sh - which contains every configurable option for every single tool.  You no longer edit forkaddplotdirs to add your plot directories, and then separately manipulate forkstartall to tell it which forks to start up after a reboot - instead, every single customization is all done in the same include file.  I won't bother showing it here.  Just trust me, you'll want to check out the CONFIGURATION SECTION of forktoolsinit.sh for yourself ASAP to see all the options for setting defaults that you have now.  This will make backing up your customizations in preparation for updating forktools much easier.  For version 2.0 only I'll be releasing a forktoolsinit.sh file, but every version after that it'll be forktoolsinit.sh.template so that I don't overwrite your customizations.  I'll let you know with each update if you will need to diff and merge the two files, or if it hasn't changed and you need not bother.  All the .template files from previous versions are no longer necessary and have been removed.
 
 If I haven't gotten your attention by now, I never will.  So let's get on with it.
+```
 
 # INSTALLATION
 
