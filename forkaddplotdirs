@@ -10,9 +10,10 @@ cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain
 
 IFS=$'\n'
 for plotdir in $FORKADDPLOTDIRS; do
-  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< $plotdir | awk '{$1=$1};1' )
+  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
   if [ -n "$STRIPPEDCOMMENTS" ]; then
     BUILDEXPR=$(echo "$FORKNAME plots add -d '$STRIPPEDCOMMENTS'")
+    echo 'forkaddplotdirs running: ' $BUILDEXPR 
     echo $(eval $BUILDEXPR)
   fi  
 done

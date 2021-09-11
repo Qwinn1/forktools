@@ -9,13 +9,13 @@ function print_usage () {
    echo "  -p | --proof                              Adds any positive # of found proofs as a search term."
    echo "  -g 'word' | --grep 'word'                 Adds 'word' as a search term.  Multiple uses allowed."
    echo "  -l 10 | --lastxdays 10                    Shows only results for the last 10 days."
-   echo "                                            Default value can be set globally in forktoolsinit.sh."
+   echo "                                            Default value can be set globally in config.forklog."
    echo "  -s YYYY-MM-DD | --startdate YYYY-MM-DD    Do not show results prior to this date.  If both this and -l / --lastxdays are set, this is used."
-   echo "                                            Default value can be set globally in forktoolsinit.sh."
+   echo "                                            Default value can be set globally in config.forklog."
    echo "  -u | --enddate YYYY-MM-DD                 Do not show results after this date."
-   echo "                                            Default value can be set globally in forktoolsinit.sh."
-   echo "  -t [100] | --tail [100]                   Tails the last 100 lines of the result."
-   echo "                                            The number parameter is optional.  If not set, uses default value set in forktoolsinit.sh"                    
+   echo "                                            Default value can be set globally in config.forklog"
+   echo "  -t 100 | --tail 100                       Tails the last 100 lines of the result."
+   echo "                                            forklog always tails FORKLOGTAIL lines as set in config.forklog. Use -t to change that number."
    echo "  -h | --help                               Show this information again."
    exit 0
 }
@@ -49,7 +49,7 @@ fi
 STARTDATE=$FORKLOGSTARTDATE
 LASTXDAYS=$FORKLOGLASTXDAYS
 ENDDATE=$(date -d '+1 day' +"20%y-%m-%d")
-
+TAILLENGTH=$FORKLOGTAIL
 
 GREPTERM=''
 FIRSTLOOP=1
@@ -64,24 +64,13 @@ while [[ $# -gt 0 ]]; do
    case "$opt" in
      "-e"|"--error"          ) GREPTERM=$(echo "$GREPTERM" '-e ERROR'); shift;;
      "-w"|"--warning"        ) GREPTERM=$(echo "$GREPTERM" '-e WARNING'); shift;;
-     "-p"|"--proofs"         ) GREPTERM=$(echo "$GREPTERM" '-e "Found [1.9].* proofs"'); shift;;
+     "-p"|"--proofs"         ) GREPTERM=$(echo "$GREPTERM" '-e "Found [1.9].* proofs\."'); shift;;
      "-ha"|"--harv"          ) GREPTERM=$(echo "$GREPTERM" '-e harvester'); shift;;
      "-g"|"--grep"           ) shift; GREPTERM=$(echo $GREPTERM '-e ' $1); shift;;
      "-l"|"--lastxdays"      ) shift; LASTXDAYS="$1"; SETLASTXDAYS="$1"; shift;;
      "-s"|"--startdate"      ) shift; STARTDATE="$1"; SETSTARTDATE="$1"; shift;;
      "-u"|"--enddate"        ) shift; ENDDATE="$1"; ENDDATE=$(date -d $ENDDATE'+1 day' +"20%y-%m-%d"); shift;;
-     "-t"|"--tail"           ) shift
-                               TAILLENGTH=$FORKLOGTAIL
-                               if [[ $1 != '' ]]
-                               then
-                                  ISITASWITCH=$(cut -b 1 <<< $1)
-                                  if [[ $ISITASWITCH != '-' ]] 
-                                  then
-                                     TAILLENGTH="$1"
-                                     shift                                     
-                                  fi
-                               fi
-                               ;;
+     "-t"|"--tail"           ) shift; TAILLENGTH="$1"; shift;;
      "-h"|"--help"           ) print_usage;;
      *                       ) echo 'ERROR: Invalid option: '$opt >&2
                                exit 1;;
@@ -100,11 +89,15 @@ fi
 
 BUILDEXPR=$(echo 'awk -v start='"$STARTFROM"' -v end='"$ENDDATE")
 BUILDEXPR=$(echo $BUILDEXPR "'"'$0 >= start && $0 <= end'"'" '$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log*')
-BUILDEXPR=$(echo $BUILDEXPR "| grep $GREPTERM | sort")
+if [[ $GREPTERM != '' ]]; then
+  BUILDEXPR=$(echo $BUILDEXPR " | grep $GREPTERM")
+fi  
+BUILDEXPR=$(echo $BUILDEXPR " | sort")
 if [[ $TAILLENGTH != '' ]]; then
    BUILDEXPR=$(echo $BUILDEXPR " | tail -$TAILLENGTH")
 fi
 IFS=''
+echo "forklog running: '" $BUILDEXPR "'"
 echo $(eval $BUILDEXPR)
 IFS=$DEFAULT_IFS
 

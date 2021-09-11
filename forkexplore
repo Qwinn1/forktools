@@ -5,11 +5,11 @@ function print_usage () {
    echo "  forkname                                  Required parameter.  All others optional."
    echo "  -a <address> | --address <address>        forkexplore assumes you want to see your target address. To see another address, pass it with this switch."
    echo "  -l 10 | --lastxdays 10                    Shows only transactions for the last X days."
-   echo "                                            Default value can be set globally in forktoolsinit.sh."
+   echo "                                            Default value can be set globally in config.forkexplore."
    echo "  -s YYYY-MM-DD | --startdate YYYY-MM-DD    Do not show transactions prior to this date.  If both this and -l / --lastxdays are set, this is used."
-   echo "                                            Default value can be set globally in forktoolsinit.sh."
+   echo "                                            Default value can be set globally in config.forkexplore."
    echo "  -u YYYY-MM-DD | --enddate YYYY-MM-DD      Do not show results after this date."
-   echo "                                            Default value can be set globally in forktoolsinit.sh."
+   echo "                                            Default value can be set globally in config.forkexplore."
    echo "  -h | --help                               Show this information again."
    exit 0
 }
@@ -59,11 +59,9 @@ fi
 
 . $FORKTOOLSDIR/ftrpcinclude.sh
 
-echo $FARMSYNCED
-
 BUILDEXPR=$(echo 'awk -v start='"$STARTFROM"' -v end='"$ENDDATE")
 BUILDEXPR=$(echo $BUILDEXPR "'"'$0 >= start && $0 <= end'"'")
-BUILDEXPR=$(echo $BUILDEXPR '<<< $MERGEDCOINLIST')
+BUILDEXPR=$(echo $BUILDEXPR '<<< "$MERGEDCOINLIST"')
 IFS=''
 TRANSACTIONLIST=$(eval $BUILDEXPR | sort)
 
@@ -114,7 +112,7 @@ while read line; do
   PREVCOINBASE=$COINBASE
   PREVHEIGHTCONFIRMED=$HEIGHTCONFIRMED
   PREVHEIGHTSPENT=$HEIGHTSPENT
-done <<< $TRANSACTIONLIST
+done <<< "$TRANSACTIONLIST"
 
 # Add the last line.
 printf '%19s    %-10s  %-10s %3s %12.12s %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
