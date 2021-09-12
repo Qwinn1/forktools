@@ -25,6 +25,8 @@ fi
 exec 3>&2  # capture current stderr output destination
 exec 2>> $FORKTOOLSDIR/forkerrors.txt #reroute stderr
 
+echo "Forkmon initiated at " $(date) >> $FORKTOOLSDIR/forkerrors.txt
+
 # Graceful exit on Ctrl-C
 trap stopforkmonscript SIGINT
 stopforkmonscript() {
@@ -45,26 +47,26 @@ OLDIFS=$IFS
 IFS=''
 FARMERLIST=$(ps -ef | grep _farmer | grep -v grep | awk '{print $8}' | sed 's/_farmer//' | grep -v [s]ed | uniq | sort)
 # Verify chia farmer actually running - necessary because of shitforks that didn't rename their processes
-CHIAPORTINUSE=$(netstat -atnp | grep '/chia_farm' | grep ":8559 " | wc -l | awk '{$1=$1};1')
+CHIAPORTINUSE=$(netstat -atnp 2>/dev/null | grep '/chia_farm' | grep ":8559 " | wc -l | awk '{$1=$1};1')
 if [[ $CHIAPORTINUSE == 0 ]]; then
   FARMERLIST=$(echo $FARMERLIST | sed '/^chia$/d')
 fi
 
 # Add special handling for obnoxious horribly coded forks that use "chia_farmer" as process name
 # I do this under protest.
-XCHAPORTINUSE=$(netstat -atnp | grep '/chia_farm' | grep ":5159 " | wc -l | awk '{$1=$1};1')
+XCHAPORTINUSE=$(netstat -atnp 2>/dev/null | grep '/chia_farm' | grep ":5159 " | wc -l | awk '{$1=$1};1')
 if [[ $XCHAPORTINUSE == 1 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nxcha" )
 fi  
-LUCKYPORTINUSE=$(netstat -atnp | grep '/chia_farm' | grep ":16659 " | wc -l | awk '{$1=$1};1')
+LUCKYPORTINUSE=$(netstat -atnp 2>/dev/null | grep '/chia_farm' | grep ":16659 " | wc -l | awk '{$1=$1};1')
 if [[ $LUCKYPORTINUSE == 1 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nlucky" )
 fi  
-NCHAINPORTINUSE=$(netstat -atnp | grep '/chia_farm' | grep ":38559 " | wc -l | awk '{$1=$1};1')
+NCHAINPORTINUSE=$(netstat -atnp 2>/dev/null | grep '/chia_farm' | grep ":38559 " | wc -l | awk '{$1=$1};1')
 if [[ $NCHAINPORTINUSE == 1 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nnchain" )
 fi  
-FISHERYPORTINUSE=$(netstat -atnp | grep '/chia_farm' | grep ":4799 " | wc -l | awk '{$1=$1};1')
+FISHERYPORTINUSE=$(netstat -atnp 2>/dev/null | grep '/chia_farm' | grep ":4799 " | wc -l | awk '{$1=$1};1')
 if [[ $FISHERYPORTINUSE == 1 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nfishery" )
 fi  
@@ -109,26 +111,26 @@ done
 OLDIFS=$IFS
 IFS=''
 HARVESTERLIST=$(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v [s]ed | uniq | sort)
-CHIAPORTINUSE=$(netstat -atnp | grep '/chia_harv' | grep ":8560 " | wc -l | awk '{$1=$1};1')
-if [[ $CHIAPORTINUSE != 0 ]]; then
+CHIAPORTINUSE=$(netstat -atnp 2>/dev/null | grep '/chia_harv' | grep ":8560 " | wc -l | awk '{$1=$1};1')
+if [[ $CHIAPORTINUSE == 0 ]]; then
   HARVESTERLIST=$(echo $HARVESTERLIST | sed '/^chia$/d')
 fi
 
 # Add special handling for obnoxious horribly coded forks that use "chia_harvester" as process names
 # I do this under protest.
-XCHAPORTINUSE=$(netstat -atnp | grep '/chia_harv' | grep ":5160 " | wc -l | awk '{$1=$1};1')
+XCHAPORTINUSE=$(netstat -atnp 2>/dev/null | grep '/chia_harv' | grep ":5160 " | wc -l | awk '{$1=$1};1')
 if [[ $XCHAPORTINUSE == 1 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nxcha" )
 fi  
-LUCKYPORTINUSE=$(netstat -atnp | grep '/chia_harv' | grep ":16660 " | wc -l | awk '{$1=$1};1')
+LUCKYPORTINUSE=$(netstat -atnp 2>/dev/null | grep '/chia_harv' | grep ":16660 " | wc -l | awk '{$1=$1};1')
 if [[ $LUCKYPORTINUSE == 1 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nlucky" )
 fi  
-NCHAINPORTINUSE=$(netstat -atnp | grep '/chia_harv' | grep ":38560 " | wc -l | awk '{$1=$1};1')
+NCHAINPORTINUSE=$(netstat -atnp 2>/dev/null | grep '/chia_harv' | grep ":38560 " | wc -l | awk '{$1=$1};1')
 if [[ $NCHAINPORTINUSE == 1 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nnchain" )
 fi  
-FISHERYPORTINUSE=$(netstat -atnp | grep '/chia_harv' | grep ":4790 " | wc -l | awk '{$1=$1};1')
+FISHERYPORTINUSE=$(netstat -atnp 2>/dev/null | grep '/chia_harv' | grep ":4790 " | wc -l | awk '{$1=$1};1')
 if [[ $FISHERYPORTINUSE == 1 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nfishery" )
 fi  
@@ -159,10 +161,10 @@ for fork in $HARVESTERLIST; do
    fi
    let LASTHARVESTAGO=$CURRENTTIME-$LASTHARVESTEPOCH
    LASTRESPONSETIME=$(sed 's/.*Time: //' <<< "$LASTHARVESTERLINE" | sed 's/ s\. Total.*//' | awk '{$1=$1};1')
-   TODAYMAX=$(grep $TODAYSTAMP debug.log* | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
-   YESTERDAYMAX=$(grep $YESTERDAYSTAMP debug.log* | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
-   PROOFSTODAYLIST=$(grep $TODAYSTAMP debug.log* | grep -a "Found [1.9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )
-   PROOFSYESTERDAYLIST=$(grep $YESTERDAYSTAMP debug.log* | grep -a "Found [1.9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )   
+   TODAYMAX=$(grep -a $TODAYSTAMP debug.log* | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
+   YESTERDAYMAX=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
+   PROOFSTODAYLIST=$(grep -a $TODAYSTAMP debug.log* | grep -a "Found [1.9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )
+   PROOFSYESTERDAYLIST=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a "Found [1.9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )   
    PROOFCOUNT=0
    for proof in $(echo $PROOFSTODAYLIST); do
      let PROOFCOUNT=$PROOFCOUNT+$proof
