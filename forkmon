@@ -40,15 +40,45 @@ fi
 FARMERCOUNT=$(ps -ef | grep _farmer | grep -v grep | wc -l | awk '{$1=$1};1' )
 HARVESTERCOUNT=$(ps -ef | grep _harvester | grep -v grep | wc -l | awk '{$1=$1};1')
 
+
+OLDIFS=$IFS
+IFS=''
+FARMERLIST=$(ps -ef | grep _farmer | grep -v grep | awk '{print $8}' | sed 's/_farmer//' | grep -v [s]ed | uniq | sort)
+# Verify chia farmer actually running - necessary because of shitforks that didn't rename their processes
+CHIAPORTINUSE=$(netstat -atnp | grep '/chia_farm' | grep ":8559 " | wc -l | awk '{$1=$1};1')
+if [[ $CHIAPORTINUSE == 0 ]]; then
+  FARMERLIST=$(echo $FARMERLIST | sed '/^chia$/d')
+fi
+
+# Add special handling for obnoxious horribly coded forks that use "chia_farmer" as process name
+# I do this under protest.
+XCHAPORTINUSE=$(netstat -atnp | grep '/chia_farm' | grep ":5159 " | wc -l | awk '{$1=$1};1')
+if [[ $XCHAPORTINUSE == 1 ]]; then 
+  FARMERLIST=$(echo -e $FARMERLIST"\nxcha" )
+fi  
+LUCKYPORTINUSE=$(netstat -atnp | grep '/chia_farm' | grep ":16659 " | wc -l | awk '{$1=$1};1')
+if [[ $LUCKYPORTINUSE == 1 ]]; then 
+  FARMERLIST=$(echo -e $FARMERLIST"\nlucky" )
+fi  
+NCHAINPORTINUSE=$(netstat -atnp | grep '/chia_farm' | grep ":38559 " | wc -l | awk '{$1=$1};1')
+if [[ $NCHAINPORTINUSE == 1 ]]; then 
+  FARMERLIST=$(echo -e $FARMERLIST"\nnchain" )
+fi  
+FISHERYPORTINUSE=$(netstat -atnp | grep '/chia_farm' | grep ":4799 " | wc -l | awk '{$1=$1};1')
+if [[ $FISHERYPORTINUSE == 1 ]]; then 
+  FARMERLIST=$(echo -e $FARMERLIST"\nfishery" )
+fi  
+IFS=$OLDIFS
+
 printf '\n'
 if [[ $VALIDATEFORKNAME == 'No' ]]; then
-  echo -e "---------------------------------------------------------------- FARMERS: $FARMERCOUNT --------------------------------------------------------------"
+  echo -e "------------------------------------------------------------------- FARMERS: $FARMERCOUNT -----------------------------------------------------------------"
   printf '\n'
 fi
-printf '                                                                       FulNode   Memory   NoHarv       Address              Last\n'
-printf 'Farmer            Version         Status   #Peers   #Plots   Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort\n'
-echo -e "-------------------------------------------------------------------------------------------------------------------------------------------"
-for fork in $(ps -ef | grep _farmer | grep -v grep | awk '{print $8}' | sed 's/_farmer//' | grep -v [s]ed | sort); do
+printf '                                                                              FulNode   Memory   NoHarv       Address              Last\n'
+printf 'Farmer            Version         Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort\n'
+echo -e "-------------------------------------------------------------------------------------------------------------------------------------------------"
+for fork in $FARMERLIST; do
    FORKNAME=$fork
    if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $1 ]]; then
      continue
@@ -73,8 +103,37 @@ for fork in $(ps -ef | grep _farmer | grep -v grep | awk '{print $8}' | sed 's/_
    if [[ $HIDEBALANCES == 1 ]]; then
      ADDRESSBALANCE=0
    fi
-   printf '%-17.17s %-15.15s %-10.10s%5.5s%9.9s %10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%7.7s ago %5d%%\n' "$fork" "$FORKVERSION" "$FARMSTATUS" "$FORKNODES" "$PLOTCOUNT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$EFFORT"
+   printf '%-17.17s %-15.15s %-10.10s%5.5s%9.9s %7d%10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%7.7s ago %5d%%\n' "$fork" "$FORKVERSION" "$FARMSTATUS" "$FORKNODES" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$EFFORT"
 done
+
+OLDIFS=$IFS
+IFS=''
+HARVESTERLIST=$(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v [s]ed | uniq | sort)
+CHIAPORTINUSE=$(netstat -atnp | grep '/chia_harv' | grep ":8560 " | wc -l | awk '{$1=$1};1')
+if [[ $CHIAPORTINUSE != 0 ]]; then
+  HARVESTERLIST=$(echo $HARVESTERLIST | sed '/^chia$/d')
+fi
+
+# Add special handling for obnoxious horribly coded forks that use "chia_harvester" as process names
+# I do this under protest.
+XCHAPORTINUSE=$(netstat -atnp | grep '/chia_harv' | grep ":5160 " | wc -l | awk '{$1=$1};1')
+if [[ $XCHAPORTINUSE == 1 ]]; then 
+  HARVESTERLIST=$(echo -e $HARVESTERLIST"\nxcha" )
+fi  
+LUCKYPORTINUSE=$(netstat -atnp | grep '/chia_harv' | grep ":16660 " | wc -l | awk '{$1=$1};1')
+if [[ $LUCKYPORTINUSE == 1 ]]; then 
+  HARVESTERLIST=$(echo -e $HARVESTERLIST"\nlucky" )
+fi  
+NCHAINPORTINUSE=$(netstat -atnp | grep '/chia_harv' | grep ":38560 " | wc -l | awk '{$1=$1};1')
+if [[ $NCHAINPORTINUSE == 1 ]]; then 
+  HARVESTERLIST=$(echo -e $HARVESTERLIST"\nnchain" )
+fi  
+FISHERYPORTINUSE=$(netstat -atnp | grep '/chia_harv' | grep ":4790 " | wc -l | awk '{$1=$1};1')
+if [[ $FISHERYPORTINUSE == 1 ]]; then 
+  HARVESTERLIST=$(echo -e $HARVESTERLIST"\nfishery" )
+fi  
+IFS=$OLDIFS
+
 
 printf '\n'
 if [[ $VALIDATEFORKNAME == 'No' ]]; then
@@ -84,7 +143,7 @@ printf '                                                            Longest     
 printf '                                                 Last      Response     Response      Since\n'
 printf 'Harvester         Version      # Plots        Harvest         Today    Yesterday  Yesterday\n'
 echo -e "------------------------------------------------------------------------------------------------------------"
-for fork in $(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v [s]ed | sort); do
+for fork in $HARVESTERLIST; do
    if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $1 ]]; then
      continue
    fi

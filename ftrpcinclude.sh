@@ -15,12 +15,6 @@ CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
 cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain
 . ./activate
 
-# The only hard coding I'm doing to account for crappy fork renaming practices, only because it's still testnet.  Hope they appreciate it. 
-# EDIT: Was almost able to remove this by doing a symlink on directory, but they left their major minor multiplier as _per_chia too, so gotta leave it in for that for now.
-MMMULTIPLIERNAME=$FORKNAME
-if [[ $FORKNAME == 'silicoin' || $FORKNAME == 'ext9' || $FORKNAME == 'fishery' || $FORKNAME == 'xcha' || $FORKNAME = 'lucky' ]]; then
-  MMMULTIPLIERNAME='chia'
-fi
 
 # Get full_node, harvester and farmer rpc ports.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
 OLDIFS=$IFS
@@ -48,6 +42,11 @@ COINNAME=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/con
 COINNAME=$(grep -Po '"'"network_prefix"'"\s*:\s*"\K([^"]*)' <<< "$COINNAME" | sed 's/[a-z]/\U&/g')
 
 # Get major-minor multiplier
+# Hard coding to account for crappy lack of proper fork renaming. 
+MMMULTIPLIERNAME=$FORKNAME
+if [[ $FORKNAME == 'silicoin' || $FORKNAME == 'nchain' || $FORKNAME == 'fishery' || $FORKNAME == 'xcha' || $FORKNAME = 'lucky' || $FORKNAME = 'rose' ]]; then
+  MMMULTIPLIERNAME='chia'
+fi
 MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME ="| sed 's/.*=//' | awk '{$1=$1};1')
 MMMULTIPLIER=$(echo "(( $MMMULTIPLIER ))" | bc )
 
@@ -120,6 +119,7 @@ fi
 # Grabs current block, then block 500 lower, gets difference in timestamps, then calculates average
 
 CURHEIGHT=$(grep '"height":'  <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
+PEAKHEIGHT=$CURHEIGHT
 CURPREVHASH=$(grep '"prev_hash":'  <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
 CURBLOCK=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"header_hash\":$CURPREVHASH}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_block_record | python -m json.tool")
 CURBLOCK=$(eval $CURBLOCK)
