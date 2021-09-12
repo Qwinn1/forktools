@@ -1,6 +1,47 @@
 # Qwinn's forktools
 
-# WHAT'S NEW
+# TESTING BRANCH - VERSION 2.1
+
+Changelog:
+```
+1)  All configuration options have been moved out of forktoolsinit.sh and into sub-includes named config.forkstartall, config.forkaddplotdirs, etc. 
+2)  New `bash installft.sh` installation script.  Tests for curl installation, sets up environment variables, creates all known needed symlinks, sets up new config.forktool files from .template versions (see previous changelog entry) and makes forktools executable.
+3)  Forkmon fixes and enhancements:
+    A)  Issue with a minority of forks showing "1 plot" should be fixed.
+    B)  Can now accept optional first parameter FORKNAME to only show output for the specified fork
+    C)  Can now accept optional parameter -n (or --nobalance) to show all wallet balances as 0 (for privacy if posting results publicly)
+    D)  Forkmon will no longer be fooled by forks that duplicate chia process names into thinking chia is running when it isn't
+    E)  Added "Height" as a column
+    F)  When forkmon is initiated, a "Forkmon initiated at datetime" stamp will be sent to the forkerrors.txt error dump file.
+    G)  Fixed incorrect chia netspace display.  Also added a decimal point of precision when netspace shown in EiB
+    H)  Forkmon should be able to handle debug.log files with NULLs in them now (which can happen if harvesters are running when server crashes)
+    I)  Blind attempt to add support for poorly coded forks that left key functions and processes named "chia" (xcha, lucky, fishery, nchain).  Requires extensive testing.
+4)  Forklog fixes and enhancements
+    A)  The first line of output from forklog will now always be the actual bash command that was assembled from all the parameters and switches to generate the output that follows.
+    B)  The previous "FORKLOGTAIL" setting (which is now set in config.forklog) is now always active. Puts a hard limit on how many lines of output you can get. Can be overridden with -t parameter.
+    C)  Can now run forklog with *just* a -t parameter, to just tail the last bunch of lines.
+5)  Extensive work to make forktools compatible with MacOS.  Needs additional testing.
+```
+
+INSTALLATION INSTRUCTIONS FOR TESTING:
+
+1)  If you previously set up configurations in forktoolsinit.sh, make a copy. It'll make setting up the new config structure easier.
+2)  cd to parent directory of forktools
+3)
+```
+rm -r forktools`
+git clone https://github.com/Qwinn1/forktools -b testing
+cd forktools
+bash installft.sh
+# Next line only if you did not previously have environment variables set up
+source ~/.bashrc
+```
+4)  Edit config.forkaddplotdirs and config.forkstartall (copy right from your preserved forktoolsinit.sh if you have it).
+
+
+
+
+# WHAT'S NEW (FROM VERSION 2.0)
 
 Literally practically everything.  But still 100% local, still 100% bash!
 
