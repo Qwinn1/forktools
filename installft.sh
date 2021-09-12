@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-echo "Installing forktools..."
+echo "Installing forktools testing branch..."
+
+echo "Updating (git pull -f) to most current testing code..."
+git pull -f https://github.com/Qwinn1/forktools testing
 
 # Test for curl installation
 CURLFOUND=$( type -P curl )
