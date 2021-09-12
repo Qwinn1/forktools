@@ -3,7 +3,7 @@
 # TESTING BRANCH - VERSION 2.1
 
 Changelog:
-```
+
 1)  All configuration options have been moved out of forktoolsinit.sh and into sub-includes named config.forkstartall, config.forkaddplotdirs, etc. 
 2)  New `bash installft.sh` installation script.  Tests for curl installation, sets up environment variables, creates all known needed symlinks, sets up new config.forktool files from .template versions (see previous changelog entry) and makes forktools executable.
 3)  Forkmon fixes and enhancements:
@@ -21,7 +21,7 @@ Changelog:
     B)  The previous "FORKLOGTAIL" setting (which is now set in config.forklog) is now always active. Puts a hard limit on how many lines of output you can get. Can be overridden with -t parameter.
     C)  Can now run forklog with *just* a -t parameter, to just tail the last bunch of lines.
 5)  Extensive work to make forktools compatible with MacOS.  Needs additional testing.
-```
+
 
 INSTALLATION INSTRUCTIONS FOR TESTING:
 
@@ -29,7 +29,7 @@ INSTALLATION INSTRUCTIONS FOR TESTING:
 2)  cd to parent directory of forktools
 3)
 ```
-rm -r forktools`
+rm -r forktools
 git clone https://github.com/Qwinn1/forktools -b testing
 cd forktools
 bash installft.sh
