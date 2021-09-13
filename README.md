@@ -40,7 +40,7 @@
 
 
 
-INSTALLATION INSTRUCTIONS:
+# INSTALLATION INSTRUCTIONS:
 
 For initial update to version 2.2, I recommend simply wiping out your forktools directory and doing a fresh git clone.
 
@@ -57,7 +57,7 @@ That's it!  You can run `bash installft.sh` at any time without harm (including 
 
 # FORKTOOLS MAJOR FEATURES:
 
-- forkexplore (100% local address explorer) :
+- forkexplore ( 100% local address explorer ) :
 
 ```qwinn@Huginn:~/.silicoin/mainnet/log$ forkexplore hddcoin -s 2021-08-28 -u 2021-08-30
 
@@ -90,7 +90,7 @@ DateTime               Confirmed   Spent      Block?        Amount
     15 transactions from 2021-08-28 to 2021-08-30:       41.00 HDD  
 ```
 
-- forkmon (detailed overview of all running farmers and harvesters) :
+- forkmon ( Detailed overview of all running farmers and harvesters ) :
 
 ```
 (venv) qwinn@Muninn:~/forktools$ forkmon
@@ -151,7 +151,7 @@ taco              2.1.1.dev1      1377         2s ago         1.89s        6.36s
 tad               1.0.2           1377         7s ago         3.16s        3.29s          6
 ```
 
-- forkfixconfig (Automated fixing of fork config.yamls to preferred settings.
+- forkfixconfig ( Automated editing of fork config.yamls to preferred settings as set up in config.forkfixconfig. )
 
 ```
 (venv) qwinn@Gungnir:~/silicoin-blockchain$ forkfixconfig silicoin 10.0.0.104
@@ -173,7 +173,7 @@ Should you proceed, a backup of your current config.yaml will be made called con
 Are you sure you wish to make these changes? (Y/y)y
 ```
 
-- forktargets : ( lists target addresses as set up in config.yamls and verifies the current running farmer process is using that address. )
+- forktargets : ( Lists target addresses as set up in config.yamls and verifies the current running farmer process is using that address. )
 
 ```
 qwinn@Huginn:~/forktools$ forktargets
@@ -197,7 +197,7 @@ qwinn@Huginn:~/forktools$ forktargets
 qwinn@Huginn:~/forktools$ 
 ```
 
-- forklog :  ( Extremely versatile debug.log parser with multiple runtime switches including date range available ) 
+- forklog :  ( Extremely versatile debug.log parser with multiple runtime switches including date range available. ) 
 
 ```(venv) qwinn@Muninn:~/forktools$ forklog -h
 Usage:  forklog
