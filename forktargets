@@ -5,7 +5,7 @@ VALIDATEFORKNAME='No'
 
 . ftbuildfarmerlist.sh
 
-for $fork in $FARMERLIST; do
+for fork in $FARMERLIST; do
    CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml
    # CD and activate venv
    cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain
