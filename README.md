@@ -38,6 +38,8 @@
 
 6)  forkaddplotdirs will now show warnings if a drive specified in config.forkaddplotdirs is not mounted.
 
+7)  forkshowwallet renamed to forkwalletshow to be consistent with the format of the manual command.
+
 
 
 # INSTALLATION INSTRUCTIONS:
@@ -247,7 +249,7 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 - `forkstarth cannabis`   \-  runs "cannabis start harvester -r"
 - `forksum scam`          \-  runs "scam farm summary"
 - `forkver flora`         \-  runs "flora version", returns the version # of the current install
-- `forkshowwallet maize`  \-  runs "maize show wallet"
+- `forkwalletshow maize`  \-  runs "maize wallet show"
 - `forkstoph covid`       \-  stops harvester process for covid (If you're running GUI farmer, recommend closing that first)
 - `forkstopa socks`       \-  stops ALL services for socks (If you're running GUI farmer, recommend closing that first)
 - `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
