@@ -1,12 +1,14 @@
 
 # All RPC calls and most data assembly for forkmon and forkexplorer occurs in this include.
 
-
-FARMERPROCESS='\s'$FORKNAME'_farmer'
-FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
-if [ -z "$FARMERRUNNING" ]; then
-   echo "Farmer for $FORKNAME is not running, process aborted."
-   exit
+# Excepting the forks with chia_ process names, we've already checked if farmer is running via ss port check in forkmon.
+if [[ $FORKNAME != 'xcha' && $FORKNAME != 'lucky' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' ]]; then
+  FARMERPROCESS='\s'$FORKNAME'_farmer'
+  FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
+  if [ -z "$FARMERRUNNING" ]; then
+     echo "Farmer for $FORKNAME is not running, process aborted."
+     exit
+  fi
 fi
 
 CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
