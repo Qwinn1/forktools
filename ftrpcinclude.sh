@@ -2,7 +2,7 @@
 # All RPC calls and most data assembly for forkmon and forkexplorer occurs in this include.
 
 # Excepting the forks with chia_ process names, we've already checked if farmer is running via ss port check in forkmon.
-if [[ $FORKNAME != 'xcha' && $FORKNAME != 'lucky' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' ]]; then
+if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' ]]; then
   FARMERPROCESS='\s'$FORKNAME'_farmer'
   FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
   if [ -z "$FARMERRUNNING" ]; then
@@ -51,7 +51,7 @@ MMMULTIPLIERNAME=$FORKNAME
 if [[ $FORKNAME == 'silicoin' || $FORKNAME == 'nchain' || $FORKNAME == 'fishery' || $FORKNAME == 'xcha' || $FORKNAME = 'lucky' || $FORKNAME = 'rose' ]]; then
   MMMULTIPLIERNAME='chia'
 fi
-MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME ="| sed 's/.*=//' | awk '{$1=$1};1')
+MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME ="| sed 's/.*=//' | sed 's/_//' | awk '{$1=$1};1')
 MMMULTIPLIER=$(echo "(( $MMMULTIPLIER ))" | bc )
 
 # Get wallet target address (can be different from what is set in config.yaml, if config was directly edited after last time farmer was started)

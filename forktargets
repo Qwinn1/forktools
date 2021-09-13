@@ -3,8 +3,9 @@
 VALIDATEFORKNAME='No'
 . forktoolsinit.sh
 
+. ftbuildfarmerlist.sh
 
-for fork in $(ps -ef | grep _farmer | grep -v grep | grep -v "[s]ed" | awk '{print $8}' | sed 's/_farmer//' | sort); do
+for $fork in $FARMERLIST; do
    CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml
    # CD and activate venv
    cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain

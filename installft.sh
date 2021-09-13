@@ -107,6 +107,10 @@ if [[ ( -d "$FORKTOOLSHIDDENDIRS/.venidium/kition" ) && ( ! -d "$FORKTOOLSHIDDEN
   ln -sv $FORKTOOLSHIDDENDIRS/.venidium/kition $FORKTOOLSHIDDENDIRS/.venidium/mainnet
 fi
 if [[ ( -d "$FORKTOOLSHIDDENDIRS/.chia/ext9" ) && ( ! -d "$FORKTOOLSHIDDENDIRS/.nchain/mainnet" ) ]]; then
+  if [[ ( ! -d "$FORKTOOLSHIDDENDIRS/.nchain" ) ]]; then
+    printf 'Created dummy directory: '
+    mkdir -v $FORKTOOLSHIDDENDIRS/.nchain
+  fi
   printf 'Created symlink: '
   ln -sv $FORKTOOLSHIDDENDIRS/.chia/ext9 $FORKTOOLSHIDDENDIRS/.nchain/mainnet
 fi

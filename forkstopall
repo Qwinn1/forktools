@@ -5,7 +5,9 @@ VALIDATEFORKNAME='No'
 
 # Stops all services for all forks with an active harvester process
 
-for fork in $(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v "[s]ed" | sort); do
+. ftbuildharvesterlist.sh
+
+for fork in $HARVESTERLIST; do
    cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain 
    . ./activate 
    echo "Stopping: " $fork

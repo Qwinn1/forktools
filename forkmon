@@ -39,49 +39,7 @@ if [[ $1 == '-n' || $1 == '--nobalance' || $2 == '-n' || $2 == '--nobalance' ]];
   HIDEBALANCES=1
 fi
 
-FARMERCOUNT=$(ps -ef | grep _farmer | grep -v grep | wc -l | awk '{$1=$1};1' )
-HARVESTERCOUNT=$(ps -ef | grep _harvester | grep -v grep | wc -l | awk '{$1=$1};1')
-
-
-OLDIFS=$IFS
-IFS=''
-FARMERLIST=$(ps -ef | grep _farmer | grep -v grep | awk '{print $8}' | sed 's/_farmer//' | grep -v [s]ed | uniq | sort)
-# Verify chia farmer actually running - necessary because of shitforks that didn't rename their processes
-CHIAPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_farm' | grep ":8559 " | wc -l | awk '{$1=$1};1')
-if [[ $CHIAPORTINUSE == 0 ]]; then
-  FARMERLIST=$(echo $FARMERLIST | sed '/^chia$/d')
-  FARMERCOUNT=$( (( $FARMERCOUNT - 1 )) )  
-fi
-
-# Add special handling for obnoxious horribly coded forks that use "chia_farmer" as process name
-# I do this under protest.
-XCHAPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_farm' | grep ":5159 " | wc -l | awk '{$1=$1};1')
-if [[ $XCHAPORTINUSE == 1 ]]; then 
-  FARMERLIST=$(echo -e $FARMERLIST"\nxcha" )
-  FARMERCOUNT=$( (( $FARMERCOUNT + 1 )) )  
-fi  
-LUCKYPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_farm' | grep ":16659 " | wc -l | awk '{$1=$1};1')
-if [[ $LUCKYPORTINUSE == 1 ]]; then 
-  FARMERLIST=$(echo -e $FARMERLIST"\nlucky" )
-  FARMERCOUNT=$( (( $FARMERCOUNT + 1 )) )    
-fi  
-NCHAINPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_farm' | grep ":38559 " | wc -l | awk '{$1=$1};1')
-if [[ $NCHAINPORTINUSE == 1 ]]; then 
-  FARMERLIST=$(echo -e $FARMERLIST"\nnchain" )
-  FARMERCOUNT=$( (( $FARMERCOUNT + 1 )) )  
-fi  
-FISHERYPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_farm' | grep ":4799 " | wc -l | awk '{$1=$1};1')
-if [[ $FISHERYPORTINUSE == 1 ]]; then 
-  FARMERLIST=$(echo -e $FARMERLIST"\nfishery" )
-  FARMERCOUNT=$( (( $FARMERCOUNT + 1 )) )  
-fi  
-ROSEPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_farm' | grep ":8459 " | wc -l | awk '{$1=$1};1')
-if [[ $ROSEPORTINUSE == 1 ]]; then 
-  FARMERLIST=$(echo -e $FARMERLIST"\nrose" )
-  FARMERCOUNT=$( (( $FARMERCOUNT + 1 )) )  
-fi
-FARMERLIST=$(echo $FARMERLIST | sort)  
-IFS=$OLDIFS
+. ftbuildfarmerlist.sh
 
 printf '\n'
 if [[ $VALIDATEFORKNAME == 'No' ]]; then
@@ -119,45 +77,7 @@ for fork in $FARMERLIST; do
    printf '%-17.17s %-15.15s %-10.10s%5.5s%9.9s %7d%10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%7.7s ago %5d%%\n' "$fork" "$FORKVERSION" "$FARMSTATUS" "$FORKNODES" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$EFFORT"
 done
 
-OLDIFS=$IFS
-IFS=''
-HARVESTERLIST=$(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v [s]ed | uniq | sort)
-CHIAPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_harv' | grep ":8560 " | wc -l | awk '{$1=$1};1')
-if [[ $CHIAPORTINUSE == 0 ]]; then
-  HARVESTERLIST=$(echo $HARVESTERLIST | sed '/^chia$/d')
-  HARVESTERCOUNT=$( (( $HARVESTERCOUNT - 1 )) )    
-fi
-
-# Add special handling for obnoxious horribly coded forks that use "chia_harvester" as process names
-# I do this under protest.
-XCHAPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_harv' | grep ":5160 " | wc -l | awk '{$1=$1};1')
-if [[ $XCHAPORTINUSE == 1 ]]; then 
-  HARVESTERLIST=$(echo -e $HARVESTERLIST"\nxcha" )
-  HARVESTERCOUNT=$( (( $HARVESTERCOUNT + 1 )) )
-fi  
-LUCKYPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_harv' | grep ":16660 " | wc -l | awk '{$1=$1};1')
-if [[ $LUCKYPORTINUSE == 1 ]]; then 
-  HARVESTERLIST=$(echo -e $HARVESTERLIST"\nlucky" )
-  HARVESTERCOUNT=$( (( $HARVESTERCOUNT + 1 )) )  
-fi  
-NCHAINPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_harv' | grep ":38560 " | wc -l | awk '{$1=$1};1')
-if [[ $NCHAINPORTINUSE == 1 ]]; then 
-  HARVESTERLIST=$(echo -e $HARVESTERLIST"\nnchain" )
-  HARVESTERCOUNT=$( (( $HARVESTERCOUNT + 1 )) )  
-fi  
-FISHERYPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_harv' | grep ":4790 " | wc -l | awk '{$1=$1};1')
-if [[ $FISHERYPORTINUSE == 1 ]]; then 
-  HARVESTERLIST=$(echo -e $HARVESTERLIST"\nfishery" )
-  HARVESTERCOUNT=$( (( $HARVESTERCOUNT + 1 )) )  
-fi  
-ROSEPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_harv' | grep ":8561 " | wc -l | awk '{$1=$1};1')
-if [[ $ROSEPORTINUSE == 1 ]]; then 
-  HARVESTERLIST=$(echo -e $HARVESTERLIST"\nrose" )
-  HARVESTERCOUNT=$( (( $HARVESTERCOUNT + 1 )) )  
-fi  
-HARVESTERLIST=$(echo $HARVESTERLIST | sort)  
-IFS=$OLDIFS
-
+. ftbuildharvesterlist.sh
 
 printf '\n'
 if [[ $VALIDATEFORKNAME == 'No' ]]; then
