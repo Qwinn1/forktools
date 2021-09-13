@@ -9,6 +9,8 @@ if [[ $FORKNAME != 'xcha' && $FORKNAME != 'lucky' && $FORKNAME != 'fishery' && $
      echo "Farmer for $FORKNAME is not running, process aborted."
      exit
   fi
+else
+  FARMERRUNNING=1
 fi
 
 CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
