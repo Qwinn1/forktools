@@ -6,7 +6,7 @@ HARVESTERLIST=$(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed
 CHIAPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_harv' | grep ":8560 " | wc -l | awk '{$1=$1};1')
 if [[ $CHIAPORTINUSE == 0 ]]; then
   HARVESTERLIST=$(echo $HARVESTERLIST | sed '/^chia$/d')
-  HARVESTERCOUNT=$(echo (( $HARVESTERCOUNT - 1 )) )    
+  HARVESTERCOUNT=$(echo $(( $HARVESTERCOUNT - 1 )) )    
 fi
 
 # Add special handling for obnoxious horribly coded forks that use "chia_harvester" as process names
