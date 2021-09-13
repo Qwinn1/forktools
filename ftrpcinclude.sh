@@ -2,7 +2,7 @@
 # All RPC calls and most data assembly for forkmon and forkexplorer occurs in this include.
 
 # Excepting the forks with chia_ process names, we've already checked if farmer is running via ss port check in forkmon.
-if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' ]]; then
+if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
   FARMERPROCESS='\s'$FORKNAME'_farmer'
   FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
   if [ -z "$FARMERRUNNING" ]; then

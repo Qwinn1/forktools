@@ -16,11 +16,11 @@ if [[ $XCHAPORTINUSE == 1 ]]; then
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nxcha" )
   HARVESTERCOUNT=$(echo (( $HARVESTERCOUNT + 1 )) )
 fi  
-# LUCKYPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_harv' | grep ":16660 " | wc -l | awk '{$1=$1};1')
-# if [[ $LUCKYPORTINUSE == 1 ]]; then 
-#   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nlucky" )
-#  HARVESTERCOUNT=$(echo (( $HARVESTERCOUNT + 1 )) )  
-# fi  
+LUCKYPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_harv' | grep ":16660 " | wc -l | awk '{$1=$1};1')
+if [[ $LUCKYPORTINUSE == 1 ]]; then 
+  HARVESTERLIST=$(echo -e $HARVESTERLIST"\nlucky" )
+  HARVESTERCOUNT=$(echo (( $HARVESTERCOUNT + 1 )) )  
+fi  
 NCHAINPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_harv' | grep ":38560 " | wc -l | awk '{$1=$1};1')
 if [[ $NCHAINPORTINUSE == 1 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nnchain" )

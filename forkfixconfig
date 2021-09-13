@@ -86,8 +86,12 @@ then
    if [[ $EXISTINGMULTIPROC = '' ]]
    then
       IFS=''      
-      FARMERPROCESS='\s'$FORKNAME'_farmer'
-      FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
+      if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
+        FARMERPROCESS='\s'$FORKNAME'_farmer'
+        FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
+      else
+        FARMERRUNNING=1
+      fi
       if [[ $FARMERRUNNING != '' ]]
       then
          FULLNODESYNCED='No'

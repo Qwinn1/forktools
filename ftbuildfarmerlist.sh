@@ -17,11 +17,11 @@ if [[ $XCHAPORTINUSE == 1 ]]; then
   FARMERLIST=$(echo -e $FARMERLIST"\nxcha" )
   FARMERCOUNT=$(echo (( $FARMERCOUNT + 1 )) )  
 fi  
-# LUCKYPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_farm' | grep ":16659 " | wc -l | awk '{$1=$1};1')
-# if [[ $LUCKYPORTINUSE == 1 ]]; then 
-#   FARMERLIST=$(echo -e $FARMERLIST"\nlucky" )
-#  FARMERCOUNT=$(echo (( $FARMERCOUNT + 1 )) )    
-# fi  
+LUCKYPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_farm' | grep ":16659 " | wc -l | awk '{$1=$1};1')
+if [[ $LUCKYPORTINUSE == 1 ]]; then 
+  FARMERLIST=$(echo -e $FARMERLIST"\nlucky" )
+  FARMERCOUNT=$(echo (( $FARMERCOUNT + 1 )) )    
+fi  
 NCHAINPORTINUSE=$(ss -atnp 2>/dev/null | grep '"chia_farm' | grep ":38559 " | wc -l | awk '{$1=$1};1')
 if [[ $NCHAINPORTINUSE == 1 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nnchain" )
