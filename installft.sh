@@ -2,8 +2,9 @@
 
 echo "Installing forktools testing branch..."
 
-echo "Updating (git pull -f) to most current testing code..."
-git pull -f https://github.com/Qwinn1/forktools testing
+echo "Updating ( git fetch --all, git reset --hard origin/testing ) to most current testing code..."
+git fetch --all
+git reset --hard origin/testing
 
 # Test for curl installation
 CURLFOUND=$( type -P curl )
