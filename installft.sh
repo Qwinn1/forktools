@@ -20,9 +20,16 @@ else
   exit
 fi  
 
-echo "Setting up environment variables in .bashrc..."
-# Removes all FORKTOOLS related lines from .bashrc
-sed -i '/FORKTOOLS/d' "$HOME/.bashrc"
+
+if [[ $OSTYPE == 'darwin'* ]]; then
+  ENVFILE="$HOME/.bash_profile"
+else
+  ENVFILE="$HOME/.bashrc"
+fi
+
+echo "Setting up environment variables in $ENVFILE"
+# Removes all FORKTOOLS related lines from bash startup file
+sed -i '/FORKTOOLS/d' "$ENVFILE"
 
 FORKTOOLDSDIR=$PWD
 
@@ -55,11 +62,11 @@ if [[ $FINDHIDDENDIRS = 0 ]]; then
   read FORKTOOLSHIDDENDIRS
 fi
 
-echo "export FORKTOOLSDIR=$FORKTOOLSDIR" >> "$HOME/.bashrc"
-echo "export FORKTOOLSBLOCKCHAINDIRS=$FORKTOOLSBLOCKCHAINDIRS" >> "$HOME/.bashrc"
-echo "export FORKTOOLSHIDDENDIRS=$FORKTOOLSHIDDENDIRS" >> "$HOME/.bashrc"
-echo 'export PATH=$PATH:$FORKTOOLSDIR' >> "$HOME/.bashrc"
-source $HOME/.bashrc
+echo "export FORKTOOLSDIR=$FORKTOOLSDIR" >> "$ENVFILE"
+echo "export FORKTOOLSBLOCKCHAINDIRS=$FORKTOOLSBLOCKCHAINDIRS" >> "$ENVFILE"
+echo "export FORKTOOLSHIDDENDIRS=$FORKTOOLSHIDDENDIRS" >> "$ENVFILE"
+echo 'export PATH=$PATH:$FORKTOOLSDIR' >> "$ENVFILE"
+source "$ENVFILE"
 
 echo "Scanning for and setting up required symlinks for forks with non-standard paths..."
 
