@@ -193,6 +193,12 @@ if [[ ( ! -f "$FORKTOOLSDIR/config.forkfixconfig" ) ]]; then
   echo "  forkfixconfig will function correctly with forktools defaults, but user may change defaults as desired in config.forkfixconfig ."
   cp $FORKTOOLSDIR/config.forkfixconfig.template $FORKTOOLSDIR/config.forkfixconfig
 fi 
+if [[ ( ! -f "$FORKTOOLSDIR/config.forkconfig" ) ]]; then
+  echo "No existing config.forkconfig file found.  Copied from config.forkconfig.template."
+  echo "  forkconfig will function correctly with forktools defaults, but user may change defaults as desired in config.forkconfig ."
+  cp $FORKTOOLSDIR/config.forkfixconfig.template $FORKTOOLSDIR/config.forkfixconfig
+fi 
+
 
 echo "Making forktool scripts executable..."
 cd $FORKTOOLSDIR
