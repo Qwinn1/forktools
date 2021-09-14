@@ -40,6 +40,10 @@
 
 . config.forkfixconfig
 
+#### FORKCONFIG SETTINGS
+# The only current setting is which default text editor to use.  Defaults to gedit.
+
+. config.forkconfig
 
 #### END CONFIGURATION INCLUDE CALLS
 
