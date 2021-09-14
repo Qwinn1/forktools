@@ -51,7 +51,7 @@ MMMULTIPLIERNAME=$FORKNAME
 if [[ $FORKNAME == 'silicoin' || $FORKNAME == 'nchain' || $FORKNAME == 'fishery' || $FORKNAME == 'xcha' || $FORKNAME = 'lucky' || $FORKNAME = 'rose' ]]; then
   MMMULTIPLIERNAME='chia'
 fi
-MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME ="| sed 's/.*=//' | sed 's/_//' | awk '{$1=$1};1')
+MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME ="| sed 's/.*=//' | sed 's/_//g' | awk '{$1=$1};1')
 MMMULTIPLIER=$(echo "(( $MMMULTIPLIER ))" | bc )
 
 # Get wallet target address (can be different from what is set in config.yaml, if config was directly edited after last time farmer was started)
