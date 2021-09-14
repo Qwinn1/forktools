@@ -26,7 +26,7 @@ FORKNAME=$1
 
 STARTDATE=$FORKEXPLORESTARTDATE
 LASTXDAYS=$FORKEXPLORELASTXDAYS
-ENDDATE=$(date -d $FORKEXPLOREENDDATE +"20%y-%m-%d")
+ENDDATE=$FORKEXPLOREENDDATE # Tomorrow
 
 FIRSTLOOP=1
 while [[ $# -gt 0 ]]; do
@@ -41,7 +41,7 @@ while [[ $# -gt 0 ]]; do
      "-a"|"--address"        ) shift; SPECIFIEDADDRESS=$1; shift;;
      "-l"|"--lastxdays"      ) shift; LASTXDAYS="$1";SETLASTXDAYS="$1"; shift;;
      "-s"|"--startdate"      ) shift; STARTDATE="$1";SETSTARTDATE="$1"; shift;;
-     "-u"|"--enddate"        ) shift; ENDDATE="$1"; ENDDATE=$(date -d $ENDDATE'+1 day' +"20%y-%m-%d"); shift;;
+     "-u"|"--enddate"        ) shift; ENDDATE="$1"; ENDDATE=$(DateOffset +1 $ENDDATE); shift;;
      "-h"|"--help"           ) print_usage;;
      *                       ) echo 'ERROR: Invalid option: '$opt >&2
                                exit 1;;
@@ -50,7 +50,7 @@ done
 
 if [[ $LASTXDAYS != '' ]]; then
    STARTFROM=$(echo "(($LASTXDAYS - 1))" | bc)
-   STARTFROM=$(date -d "-${STARTFROM} day" +"20%y-%m-%d")
+   STARTFROM=$(DateOffset -${STARTFROM})
 fi
 
 if [[ $STARTDATE != '' && ($SETLASTXDAYS = '' || $SETSTARTDATE != '') ]]; then
@@ -121,7 +121,7 @@ COUNTFORRANGE=$(echo "(($COUNTFORRANGE + 1))" | bc)
 
 echo -e '---------------------------------------------------------------------'
 # Set ENDDATE one day back for display purposes
-ENDDATE=$(date -d $ENDDATE'-1 day' +"20%y-%m-%d")
+ENDDATE=$(DateOffset -1 $ENDDATE)
 printf '%6.6s transactions from %10s to %10s:%12s %-5s\n' "$COUNTFORRANGE" "$STARTFROM" "$ENDDATE" "$TOTALFORRANGE" "$COINNAME"
 
 IFS=DEFAULT_IFS

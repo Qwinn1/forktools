@@ -10,5 +10,5 @@
 # Date Format:  2021-03-19
 FORKEXPLORESTARTDATE=
 FORKEXPLORELASTXDAYS=20
-FORKEXPLOREENDDATE=$(date -d '+1 day' +"20%y-%m-%d") # Tomorrow
+FORKEXPLOREENDDATE=$(DateOffset +1) # Tomorrow
 

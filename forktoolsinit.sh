@@ -1,5 +1,23 @@
 # To be included in all forktools.  Calls all configuration includes and defines forktools functions.
 
+
+# platform-specific function definitions
+if [[ $OSTYPE == 'darwin'* ]]; then
+    function DateOffset () {
+        if [ $# -eq 1 ] ; then
+            date -j -v${1}d +"%Y-%m-%d"
+        else
+            date -j -f "%Y-%m-%d" -v${1}d $2 +"%Y-%m-%d"
+        fi
+    }
+else
+    function DateOffset () {
+        date -d $2"${1} day" +"%Y-%m-%d"
+    }
+fi
+
+
+
 #### START CONFIGURATION INCLUDE CALLS
 
 # In version 2.1+, all configurations have been moved to sub-includes in order to keep them totally separated from the code,
@@ -74,7 +92,7 @@ fi
 # Constants and Dates
 DEFAULT_IFS=$' \t\n'
 TODAYSTAMP=`date +"20%y-%m-%d"`
-YESTERDAYSTAMP=$(date -d '-1 day' +"20%y-%m-%d")
+YESTERDAYSTAMP=$(DateOffset -1)
 
 
 ##  FUNCTIONS
@@ -160,4 +178,6 @@ assemble_bytestring() {
 
 # Used to make sure that a grep that is expected to sometimes not find any results doesn't return a 1 and trigger error trapping
 c1grep() { grep "$@" || test $? = 1; }
+
+
 

@@ -48,7 +48,7 @@ fi
   
 STARTDATE=$FORKLOGSTARTDATE
 LASTXDAYS=$FORKLOGLASTXDAYS
-ENDDATE=$(date -d '+1 day' +"20%y-%m-%d")
+ENDDATE=$FORKLOGENDDATE
 TAILLENGTH=$FORKLOGTAIL
 
 GREPTERM=''
@@ -69,7 +69,7 @@ while [[ $# -gt 0 ]]; do
      "-g"|"--grep"           ) shift; GREPTERM=$(echo $GREPTERM '-e ' $1); shift;;
      "-l"|"--lastxdays"      ) shift; LASTXDAYS="$1"; SETLASTXDAYS="$1"; shift;;
      "-s"|"--startdate"      ) shift; STARTDATE="$1"; SETSTARTDATE="$1"; shift;;
-     "-u"|"--enddate"        ) shift; ENDDATE="$1"; ENDDATE=$(date -d $ENDDATE'+1 day' +"20%y-%m-%d"); shift;;
+     "-u"|"--enddate"        ) shift; ENDDATE="$1"; ENDDATE=$(DateOffset +1 $ENDDATE); shift;;
      "-t"|"--tail"           ) shift; TAILLENGTH="$1"; shift;;
      "-h"|"--help"           ) print_usage;;
      *                       ) echo 'ERROR: Invalid option: '$opt >&2
@@ -79,7 +79,7 @@ done
 
 if [[ $LASTXDAYS != '' ]]; then
    STARTFROM=$(echo "(($LASTXDAYS - 1))" | bc)
-   STARTFROM=$(date -d "-${STARTFROM} day" +"20%y-%m-%d")
+   STARTFROM=$(DateOffset -${STARTFROM})
 fi
 
 if [[ $STARTDATE != '' && ($SETLASTXDAYS = '' || $SETSTARTDATE != '') ]]; then
