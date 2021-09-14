@@ -229,7 +229,7 @@ Usage:  forklog
 
 # SETTING UP ENVIRONMENT PATHS
 
-This section is now obsolete as `bash installft.sh` will set up your paths in .bashrc for you.
+This section is now obsolete as `bash installft.sh` will set up your paths in .bashrc (or .bash_profile, if you're on MacOS X) for you.
 
 # FORK NAMING CONVENTION ISSUES
 
