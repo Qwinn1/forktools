@@ -47,7 +47,7 @@
 
 # INSTALLATION INSTRUCTIONS:
 
-For initial update to version 2.2, I recommend simply wiping out your forktools directory and doing a fresh git clone.
+For initial update to version 2.2, I recommend (for one final time) simply wiping out your forktools directory and doing a fresh `git clone https://github.com/qwinn1/forktools`.  If you helped in the testing branch and haven't already gotten the very latest version of the install script, preserve your config.* files.  If you are still on the main branch of version 2.0, preserve your forktoolsinit.sh for transfer of your configuration settings to the new config.fork* file structure.
 
 FOREVER AFTER THAT, you can update forktools at any time by simply running the following:
 
@@ -60,7 +60,7 @@ bash installft.sh  # Run it a second time just in case the install script itself
 source ~/.bashrc  # or source ~/.bash_profile if you're on MacOS X
 ```
 
-That's it!  You can run `bash installft.sh` at any time without harm (including whenever you've installed a new fork which needs symlinks created).  Once version 2.2 is on your system, updating forktools has become super easy, barely an inconvenience.
+That's it!  Forever after, you can run `bash installft.sh` at any time without harm (including whenever you've installed a new fork which needs symlinks created).  Shouldn't ever need to re-git-clone forktools again.  Once version 2.2 is on your system, updating forktools solely via the install script has become super easy, barely an inconvenience.
 
 
 # FORKTOOLS MAJOR FEATURES:
