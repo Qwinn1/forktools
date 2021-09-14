@@ -2,11 +2,11 @@
 
 # Changelog, Version 2.2:
 
-1)  All configuration options have been moved out of forktoolsinit.sh and into sub-includes named config.forkstartall, config.forkaddplotdirs, etc. 
+1)  All configuration options have been moved out of forktoolsinit.sh and into sub-includes named config.forkstartall, config.forkaddplotdirs, etc.   For your own convenience, please preserve your settings when updating for transfer to the new config file structure.
 
 2)  New `bash installft.sh` installation script.  Updates code to latest version, tests for curl installation, sets up environment variables, creates all known needed symlinks, sets up new config.forktool files from .template versions if not already configured (see previous changelog entry) and makes forktools executable.
 
-3)  Compatibility added for forks that do not rename their processes, folders or code directories from "chia".  Prime examples are lucky, xcha, nchain, rose and fishery.  Please note that adding this compatibility is NOT an endorsement on my part recommending farming of any forks with such terrible lazy coding practices.  Quite the opposite.
+3)  Compatibility added for forks that do not rename their processes, folders or code directories from "chia".  Prime examples are lucky, xcha, nchain, rose and fishery.  Please note that adding this compatibility is NOT an endorsement on my part recommending farming of any forks with such terrible lazy coding practices.  Quite the opposite.  KNOWN ISSUE:  Everything works except memory usage, which cannot be fixed at this time due to process names being indistinguishable from chia and each other. 
 
 3)  Forkmon fixes and enhancements:
 
@@ -42,6 +42,8 @@
 
 8)  forkconfig default text editor can now be changed via editing config.forkconfig (defaults to gedit as before)
 
+9)  A great deal of work has been made to make MacOS X compatible, though some work still needs to be done.
+
 
 # INSTALLATION INSTRUCTIONS:
 
@@ -53,6 +55,9 @@ FOREVER AFTER THAT, you can update forktools at any time by simply running the f
 cd forktools
 bash installft.sh  # This will update all scripts without touching your config files.
 bash installft.sh  # Run it a second time just in case the install script itself was updated during the first run.
+
+# Only needed if this is your first ever install of forktools
+source ~/.bashrc  # or source ~/.bash_profile if you're on MacOS X
 ```
 
 That's it!  You can run `bash installft.sh` at any time without harm (including whenever you've installed a new fork which needs symlinks created).  Once version 2.2 is on your system, updating forktools has become super easy, barely an inconvenience.
