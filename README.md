@@ -34,15 +34,13 @@
 
     C)  Can now run forklog with *just* a -t parameter, to just tail the last bunch of lines.
 
-5)  Extensive work to make forktools compatible with MacOS.  Needs additional testing.
+5)  forkaddplotdirs will now show warnings if a drive specified in config.forkaddplotdirs is not mounted.
 
-6)  forkaddplotdirs will now show warnings if a drive specified in config.forkaddplotdirs is not mounted.
+6)  forkshowwallet renamed to forkwalletshow to be consistent with the format of the manual command.
 
-7)  forkshowwallet renamed to forkwalletshow to be consistent with the format of the manual command.
+7)  forkconfig default text editor can now be changed via editing config.forkconfig (defaults to gedit as before)
 
-8)  forkconfig default text editor can now be changed via editing config.forkconfig (defaults to gedit as before)
-
-9)  A great deal of work has been made to make forktools MacOS X compatible, though some work still needs to be done.  The simpler tools should work fine on MaxOS X, but forklog, forkmon and forkexplore probably won't until at least next version.
+8)  A great deal of work has been made to make forktools MacOS X compatible, though some work still needs to be done.  The simpler tools should work fine on MaxOS X, but forklog, forkmon and forkexplore probably won't until at least next version.
 
 
 # INSTALLATION INSTRUCTIONS:
