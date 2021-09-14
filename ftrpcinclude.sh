@@ -92,14 +92,14 @@ fi
 
 IFS=''
 TODAYADDRESSCHANGE=$(grep $TODAYSTAMP <<< "$MERGEDCOINLIST")
-TODAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20g' <<< "$TODAYADDRESSCHANGE" )
+TODAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20f' <<< "$TODAYADDRESSCHANGE" )
 YESTERDAYADDRESSCHANGE=$(grep $YESTERDAYSTAMP <<< "$MERGEDCOINLIST")
-YESTERDAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20g' <<< "$YESTERDAYADDRESSCHANGE")
+YESTERDAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20f' <<< "$YESTERDAYADDRESSCHANGE")
 IFS=DEFAULT_IFS
 
 # Sum farmed balance from coinbase = true
 IFS=$'\t' 
-FARMEDBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($3 == "true") s += (( $2 / mult )); }' OFMT='%20.20g' <<< "$MERGEDCOINLIST" )
+FARMEDBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($3 == "true") s += (( $2 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
 IFS=''
 
 BLOCKCHAINSTATE=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_blockchain_state | python -m json.tool)
