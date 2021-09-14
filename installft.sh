@@ -196,7 +196,7 @@ fi
 if [[ ( ! -f "$FORKTOOLSDIR/config.forkconfig" ) ]]; then
   echo "No existing config.forkconfig file found.  Copied from config.forkconfig.template."
   echo "  forkconfig will function correctly with forktools defaults, but user may change defaults as desired in config.forkconfig ."
-  cp $FORKTOOLSDIR/config.forkfixconfig.template $FORKTOOLSDIR/config.forkfixconfig
+  cp $FORKTOOLSDIR/config.forkconfig.template $FORKTOOLSDIR/config.forkconfig
 fi 
 
 
