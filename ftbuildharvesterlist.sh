@@ -5,7 +5,7 @@ IFS=''
 HARVESTERLIST=$(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v [s]ed | uniq | sort)
 # Verify chia harvester actually running - necessary because of shitforks that didn't rename their processes
 CHIAINLIST=$( echo $HARVESTERLIST | grep "^chia$" )
-if [[ $CHIAINLIST == 'chia' ]]; then
+if [[ $CHIAINLIST != '' ]]; then
   CHIAPORTINUSE=$(forkss | grep '"chia_harv' | grep ":8560 " | wc -l | awk '{$1=$1};1')
   if [[ $CHIAPORTINUSE == 0 ]]; then
     HARVESTERLIST=$(echo $HARVESTERLIST | sed '/^chia$/d')

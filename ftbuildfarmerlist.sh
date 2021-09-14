@@ -5,7 +5,7 @@ IFS=''
 FARMERLIST=$(ps -ef | grep _farmer | grep -v grep | awk '{print $8}' | sed 's/_farmer//' | grep -v [s]ed | uniq | sort)
 # Verify chia farmer actually running - necessary because of shitforks that didn't rename their processes
 CHIAINLIST=$( echo $FARMERLIST | grep "^chia$" )
-if [[ $CHIAINLIST == 'chia' ]]; then
+if [[ $CHIAINLIST != '' ]]; then
   CHIAPORTINUSE=$(forkss | grep '"chia_farm' | grep ":8559 " | wc -l | awk '{$1=$1};1')
   if [[ $CHIAPORTINUSE == 0 ]]; then
     FARMERLIST=$(echo $FARMERLIST | sed '/^chia$/d')
