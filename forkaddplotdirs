@@ -10,9 +10,13 @@ cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain
 
 IFS=$'\n'
 for plotdir in $FORKADDPLOTDIRS; do
-  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< $plotdir | awk '{$1=$1};1' )
+  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
   if [ -n "$STRIPPEDCOMMENTS" ]; then
     BUILDEXPR=$(echo "$FORKNAME plots add -d '$STRIPPEDCOMMENTS'")
+    echo 'forkaddplotdirs running: ' $BUILDEXPR 
+    if [[ ( ! -d "$STRIPPEDCOMMENTS" ) ]]; then
+      echo -e "\e[1;31m   WARNING:  \e[0m $STRIPPEDCOMMENTS is not a mounted directory.  \e[1;31m  :WARNING \e[0m"
+    fi
     echo $(eval $BUILDEXPR)
   fi  
 done

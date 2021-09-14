@@ -3,11 +3,14 @@
 VALIDATEFORKNAME='No'
 . forktoolsinit.sh
 
-for fork in $(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v "[s]ed" | sort); do
-  echo $fork
+. ftbuildharvesterlist.sh
+
+for fork in $HARVESTERLIST; do
+  echo "Scanning: $fork"
   for port in $(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml | grep "port: " | grep -v "default_full_node_port" | sed 's/\s*[a-z_]*port: //g' | sed 's/\s*[#].*//g' | sort | uniq); do
-#    echo $port - for debugging
-     netstat -atnp 2>/dev/null | grep :$port[^0-9] | grep -v $fork | grep -v TIME_WAIT
+   # echo $port - for debugging
+   
+   forkss | grep :$port[^0-9] | grep -v '"'$fork_
   done
 done
 

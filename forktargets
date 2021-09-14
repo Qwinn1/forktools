@@ -3,27 +3,28 @@
 VALIDATEFORKNAME='No'
 . forktoolsinit.sh
 
+. ftbuildfarmerlist.sh
 
-for fork in $(ps -ef | grep _farmer | grep -v grep | grep -v "[s]ed" | awk '{print $8}' | sed 's/_farmer//' | sort); do
+for fork in $FARMERLIST; do
    CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml
    # CD and activate venv
    cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain
    . ./activate
    IFS=''   
    while read line; do
-      WORKLINE=$(sed 's/#.*//' <<< $line )  # This removes any comments from consideration for alteration
-      TESTSECTION=$(c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< $WORKLINE )
+      WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
+      TESTSECTION=$(c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
       if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]]; then 
         SECTION=$TESTSECTION 
       elif [[ $SECTION == *full_node:* && $WORKLINE == *rpc_port:* ]]; then 
-        FULLNODERPCPORT=$(sed 's/rpc_port: //' <<< $WORKLINE | awk '{$1=$1};1') 
+        FULLNODERPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
       elif [[ $SECTION == *farmer:* && $WORKLINE == *rpc_port:* ]]; then 
-        FARMERRPCPORT=$(sed 's/rpc_port: //' <<< $WORKLINE | awk '{$1=$1};1') 
+        FARMERRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
       elif [[ $SECTION == *harvester:* && $WORKLINE == *rpc_port:* ]]; then 
-        HARVESTRPCPORT=$(sed 's/rpc_port: //' <<< $WORKLINE | awk '{$1=$1};1') 
+        HARVESTRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
       fi
       if [[ $SECTION = *farmer:* && $WORKLINE == *target_address:* ]]; then
-         CONFIGTARGETADDRESS=$(sed 's/.*target_address: //' <<< $WORKLINE | awk '{$1=$1};1')       
+         CONFIGTARGETADDRESS=$(sed 's/.*target_address: //' <<< "$WORKLINE" | awk '{$1=$1};1')       
       fi   
    done < $CURRENTCONFIG
    
@@ -34,7 +35,7 @@ for fork in $(ps -ef | grep _farmer | grep -v grep | grep -v "[s]ed" | awk '{pri
    IFS=''   
    RPCTARGETADDRESS=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{"search_for_private_key":false}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_reward_targets | python -m json.tool )
 #   echo "rpc" $RPCTARGETADDRESS
-   RPCTARGETADDRESS=$(grep -Po '"'"farmer_target"'"\s*:\s*"\K([^"]*)' <<< $RPCTARGETADDRESS ) 
+   RPCTARGETADDRESS=$(grep -Po '"'"farmer_target"'"\s*:\s*"\K([^"]*)' <<< "$RPCTARGETADDRESS" ) 
 #   echo "RPC" $RPCTARGETADDRESS
    if [[ $CONFIGTARGETADDRESS = $RPCTARGETADDRESS ]]; then
       printf "%16.16s - config.yaml and Farmer RPC agree.  Address: %25s\n" "$fork" "$CONFIGTARGETADDRESS" 

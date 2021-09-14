@@ -3,6 +3,6 @@
 VALIDATEFORKNAME='Yes'
 . forktoolsinit.sh
 
-gedit $FORKTOOLSHIDDENDIRS/.$1/mainnet/config/config.yaml
+$FORKCONFIGEDITOR $FORKTOOLSHIDDENDIRS/.$1/mainnet/config/config.yaml
 
 

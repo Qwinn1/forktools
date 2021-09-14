@@ -6,7 +6,7 @@ VALIDATEFORKNAME='No'
 
 IFS=$'\n'
 for plotdir in $FORKSTARTFLIST; do
-  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< $plotdir | awk '{$1=$1};1' )
+  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
   if [[ $STRIPPEDCOMMENTS = '' ]]; then
      continue
   fi
@@ -21,7 +21,7 @@ for plotdir in $FORKSTARTFLIST; do
 done
 
 for plotdir in $FORKSTARTFNWLIST; do
-  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< $plotdir | awk '{$1=$1};1' )
+  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
   if [[ $STRIPPEDCOMMENTS = '' ]]; then
      continue
   fi
@@ -36,7 +36,7 @@ for plotdir in $FORKSTARTFNWLIST; do
 done
 
 for plotdir in $FORKSTARTHLIST; do
-  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< $plotdir | awk '{$1=$1};1' )
+  STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
   if [[ $STRIPPEDCOMMENTS = '' ]]; then
      continue
   fi

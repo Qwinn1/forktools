@@ -18,9 +18,9 @@ IFS=$'\n'
 LINENUMBER=0
 while read line; do
    ((LINENUMBER=$LINENUMBER+1))
-   PRESERVECOMMENT=$(grep '#' <<< $line | sed 's/.*#/#/')
-   WORKLINE=$(sed 's/#.*//' <<< $line )  # This removes any comments from consideration for alteration
-   TESTSECTION=$(grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< $WORKLINE )
+   PRESERVECOMMENT=$(grep '#' <<< "$line" | sed 's/.*#/#/')
+   WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
+   TESTSECTION=$(grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
 
   if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]];
   then 
@@ -29,51 +29,51 @@ while read line; do
   
   if [[ $SETLOGLEVEL != '' && ($SECTION == *logging:* || $SECTION == *farmer:*) && $WORKLINE == *log_level:* ]];
   then
-     OLDLOGLEVEL=$(sed 's/log_level: //' <<< $WORKLINE | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
-     NEWLOGLEVEL=$(sed "s/$OLDLOGLEVEL/$SETLOGLEVEL/" <<< $WORKLINE)$PRESERVECOMMENT
+     OLDLOGLEVEL=$(sed 's/log_level: //' <<< "$WORKLINE" | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
+     NEWLOGLEVEL=$(sed "s/$OLDLOGLEVEL/$SETLOGLEVEL/" <<< "$WORKLINE")$PRESERVECOMMENT
      OLDLOGLEVEL=$line
   fi
   if [[ $SETMAXLOGROTATION != '' && ($SECTION == *logging:* || $SECTION == *farmer:*) && $WORKLINE == *log_maxfilesrotation:* ]];
   then
-     OLDROTATION=$(sed 's/log_maxfilesrotation: //' <<< $WORKLINE | awk '{$1=$1};1')
-     NEWROTATION=$(sed "s/$OLDROTATION/$SETMAXLOGROTATION/" <<< $WORKLINE)$PRESERVECOMMENT
+     OLDROTATION=$(sed 's/log_maxfilesrotation: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+     NEWROTATION=$(sed "s/$OLDROTATION/$SETMAXLOGROTATION/" <<< "$WORKLINE")$PRESERVECOMMENT
      OLDROTATION=$line
   fi
   if [[ $SETPLOTLOADFREQUENCY != '' && $SECTION == *harvester:* && $WORKLINE == *plot_loading_frequency_seconds:* ]];
   then
-     OLDPLOTLOAD=$(sed 's/plot_loading_frequency_seconds: //' <<< $WORKLINE | awk '{$1=$1};1')
-     NEWPLOTLOAD=$(sed "s/$OLDPLOTLOAD/$SETPLOTLOADFREQUENCY/" <<< $WORKLINE)$PRESERVECOMMENT
+     OLDPLOTLOAD=$(sed 's/plot_loading_frequency_seconds: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+     NEWPLOTLOAD=$(sed "s/$OLDPLOTLOAD/$SETPLOTLOADFREQUENCY/" <<< "$WORKLINE")$PRESERVECOMMENT
      OLDPLOTLOAD=$line
   fi
   if [[ $SETPLOTLOADFREQUENCY != '' && $SECTION == *harvester:* && $WORKLINE == *interval_seconds:* ]];
   then
-     OLDPLOTLOAD=$(sed 's/interval_seconds: //' <<< $WORKLINE | awk '{$1=$1};1')
-     NEWPLOTLOAD=$(sed "s/$OLDPLOTLOAD/$SETPLOTLOADFREQUENCY/" <<< $WORKLINE)$PRESERVECOMMENT
+     OLDPLOTLOAD=$(sed 's/interval_seconds: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+     NEWPLOTLOAD=$(sed "s/$OLDPLOTLOAD/$SETPLOTLOADFREQUENCY/" <<< "$WORKLINE")$PRESERVECOMMENT
      OLDPLOTLOAD=$line
   fi
   if [[ $SETBATCHSIZE != '' && $SECTION == *harvester:* && $WORKLINE == *batch_size:* ]];
   then
-     OLDBATCHSIZE=$(sed 's/batch_size: //' <<< $WORKLINE | awk '{$1=$1};1')
-     NEWBATCHSIZE=$(sed "s/$OLDBATCHSIZE/$SETBATCHSIZE/" <<< $WORKLINE)$PRESERVECOMMENT
+     OLDBATCHSIZE=$(sed 's/batch_size: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+     NEWBATCHSIZE=$(sed "s/$OLDBATCHSIZE/$SETBATCHSIZE/" <<< "$WORKLINE")$PRESERVECOMMENT
      OLDBATCHSIZE=$line
   fi
   if [[ $SETBATCHSLEEP != '' && $SECTION == *harvester:* && $WORKLINE == *batch_sleep_milliseconds:* ]];
   then
-     OLDBATCHSLEEP=$(sed 's/batch_sleep_milliseconds: //' <<< $WORKLINE | awk '{$1=$1};1')
-     NEWBATCHSLEEP=$(sed "s/$OLDBATCHSLEEP/$SETBATCHSLEEP/" <<< $WORKLINE)$PRESERVECOMMENT
+     OLDBATCHSLEEP=$(sed 's/batch_sleep_milliseconds: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+     NEWBATCHSLEEP=$(sed "s/$OLDBATCHSLEEP/$SETBATCHSLEEP/" <<< "$WORKLINE")$PRESERVECOMMENT
      OLDBATCHSLEEP=$line
   fi    
   if [[ $SETFNTARGETPEERCOUNT != '' && $SECTION == *full_node:* && $WORKLINE == *target_peer_count:* ]];
   then
-     OLDTGTPEERS=$(sed 's/target_peer_count: //' <<< $WORKLINE | awk '{$1=$1};1')
-     NEWTGTPEERS=$(sed "s/$OLDTGTPEERS/$SETFNTARGETPEERCOUNT/" <<< $WORKLINE)$PRESERVECOMMENT
+     OLDTGTPEERS=$(sed 's/target_peer_count: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+     NEWTGTPEERS=$(sed "s/$OLDTGTPEERS/$SETFNTARGETPEERCOUNT/" <<< "$WORKLINE")$PRESERVECOMMENT
      OLDTGTPEERS=$line
      TARGETPEERLINENO=$LINENUMBER
   fi
   if [[ $SETFARMERPEER != '' && $SECTION == *harvester:* && $WORKLINE == *host:* ]];
   then
-     OLDFARMPEER=$(grep "host: " <<< $WORKLINE | sed 's/host: //' | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
-     NEWFARMPEER=$(sed "s/$OLDFARMPEER/$SETFARMERPEER/" <<< $WORKLINE)$PRESERVECOMMENT
+     OLDFARMPEER=$(grep "host: " <<< "$WORKLINE" | sed 's/host: //' | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
+     NEWFARMPEER=$(sed "s/$OLDFARMPEER/$SETFARMERPEER/" <<< "$WORKLINE")$PRESERVECOMMENT
      OLDFARMPEER=$line
      HARVHOSTLINENO=$LINENUMBER
   fi
@@ -86,13 +86,17 @@ then
    if [[ $EXISTINGMULTIPROC = '' ]]
    then
       IFS=''      
-      FARMERPROCESS='\s'$FORKNAME'_farmer'
-      FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
+      if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
+        FARMERPROCESS='\s'$FORKNAME'_farmer'
+        FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
+      else
+        FARMERRUNNING=1
+      fi
       if [[ $FARMERRUNNING != '' ]]
       then
          FULLNODESYNCED='No'
          . ftrpcinclude.sh
-         FULLNODESYNCED=$(c1grep '"synced":'  <<< $BLOCKCHAINSTATE | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
+         FULLNODESYNCED=$(c1grep '"synced":'  <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
       fi   
       if [[ $FULLNODESYNCED != 'true' ]]
       then
@@ -154,7 +158,7 @@ fi
 
 
 if [[ $APPEND1 != '' ]]; then
-  APPEND1EXISTS=$(grep "$APPEND1" "$CURRENTCONFIG" | wc -l awk '{$1=$1};1')
+  APPEND1EXISTS=$(grep "$APPEND1" "$CURRENTCONFIG" | wc -l | awk '{$1=$1};1')
   if [ $APPEND1EXISTS -gt 0 ]; then
     echo "  Option \"$APPEND1\" already exists in $CURRENTCONFIG, skipping append."
   else 

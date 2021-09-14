@@ -1,0 +1,18 @@
+#### FORKADDPLOTDIRS SETTINGS
+# List all plot directories to add here.  Make as many lines as you need, modify to fit your own paths, then remove the #s to activate the lines:
+
+FORKADDPLOTDIRS='
+# /media/user/dsk11/Plot11
+# /media/user/dsk12/Plot12
+# /media/user/dsk13/Plot13
+# /media/user/dsk14/Plot14
+# /media/user/dsk17/Plot17
+# /media/user/dsk18/Plot18
+# /media/user/dsk19/Plot19
+# /media/user/dsk21/Plot21
+# /media/user/dsk23/Plot23
+# /media/user/dsk27/Plot27
+# /plotter1/stage1
+# /plotter2/stage2
+'
+
