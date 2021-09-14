@@ -1,10 +1,10 @@
 #! /usr/bin/env bash
 
-echo "Installing forktools testing branch..."
+echo "Installing forktools main branch..."
 
-echo "Updating ( git fetch --all, git reset --hard origin/testing ) to most current testing code..."
+echo "Updating ( git fetch --all, git reset --hard origin/main ) to most current version of forktools..."
 git fetch --all
-git reset --hard origin/testing
+git reset --hard origin/main
 
 # Test for curl installation
 CURLFOUND=$( type -P curl )
@@ -31,7 +31,7 @@ echo "Setting up environment variables in $ENVFILE"
 # Removes all FORKTOOLS related lines from bash startup file
 sed "-i.bak" '/FORKTOOLS/d' "$ENVFILE"
 
-FORKTOOLSDIR=$PWD
+FORKTOOLDSDIR=$PWD
 
 # Tries to confirm at least one *-blockchain and one .*/mainnet/config exist wherever $FORKTOOLSBLOCKCHAINDIRS and $FORKTOOLSHIDDENDIRS were set previously (existing users) or $HOME if not already set (new users)
 if [[ "$FORKTOOLSBLOCKCHAINDIRS" = '' ]]; then
