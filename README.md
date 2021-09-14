@@ -42,7 +42,7 @@
 
 8)  forkconfig default text editor can now be changed via editing config.forkconfig (defaults to gedit as before)
 
-9)  A great deal of work has been made to make MacOS X compatible, though some work still needs to be done.
+9)  A great deal of work has been made to make forktools MacOS X compatible, though some work still needs to be done.  The simpler tools should work fine on MaxOS X, but forklog, forkmon and forkexplore probably won't until at least next version.
 
 
 # INSTALLATION INSTRUCTIONS:
