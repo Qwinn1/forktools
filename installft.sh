@@ -29,7 +29,7 @@ fi
 
 echo "Setting up environment variables in $ENVFILE"
 # Removes all FORKTOOLS related lines from bash startup file
-sed -i '/FORKTOOLS/d' "$ENVFILE"
+sed "-i.bak" '/FORKTOOLS/d' "$ENVFILE"
 
 FORKTOOLDSDIR=$PWD
 
