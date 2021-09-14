@@ -83,7 +83,7 @@ SPENTLIST=$(grep "spent_block_index"  <<< "$COININFO" | sed 's/"spent_block_inde
 MERGEDCOINLIST=$(paste <(printf %s "$TIMESTAMPEPOCHLIST") <(printf %s "$COINAMOUNTLIST") <(printf %s "$COINBASELIST") <(printf %s "$CONFIRMEDLIST") <(printf %s "$SPENTLIST") | sort)
 
 # Sum address balance from unspent MERGEDCOINLIST
-ADDRESSBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20g' <<< "$MERGEDCOINLIST" )
+ADDRESSBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
 # A ton of extra formatting work for ridiculous forks with like 20000 block rewards (looking at you cryptodoge and chaingreen)
 if [[ "$ADDRESSBALANCE" > 9999 ]]; then
    ADDRESSBALANCE= $( (($ADDRESSBALANCE / 1000)) | bc )
