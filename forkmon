@@ -60,9 +60,7 @@ for fork in $FARMERLIST; do
    let HARVESTERERRORS=$HARVERRORSTODAY+$HARVERRORSYESTERDAY
 #   cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain 
 #   . ./activate    
-   FORKMEM=$(for pid in $(pgrep ^${fork}_); do 
-     awk '/Pss:/{ sum += $2 } END { print sum }' /proc/${pid}/smaps 
-   done | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}')
+   FORKMEM=$(forkmemory)
    FORKVERSION=$($FORKTOOLSDIR/forkver $fork)
    FORKNODES=$($FORKTOOLSDIR/forknodes $fork | wc -l | awk '{$1=$1};1')
    FULLNODEPROCESS='\s'$FORKNAME'_full'   

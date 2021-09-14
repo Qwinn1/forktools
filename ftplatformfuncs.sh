@@ -10,6 +10,9 @@ if [[ $OSTYPE == 'darwin'* ]]; then
     function forkss () {
       netstat -atnp 2>/dev/null | grep -v TIME_WAIT
     }
+    function forkmemory () {
+      echo 'N/A'
+    }
 else
     function DateOffset () {
         date -d $2"${1} day" +"%Y-%m-%d"
@@ -17,6 +20,10 @@ else
     function forkss () {
       ss -atnp 2>/dev/null | grep -v TIME-WAIT
     }
-    
+    function forkmemory () {
+      for pid in $(pgrep ^${fork}_); do 
+         awk '/Pss:/{ sum += $2 } END { print sum }' /proc/${pid}/smaps 
+      done | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
+    }
 fi
 
