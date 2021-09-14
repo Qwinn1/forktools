@@ -40,6 +40,7 @@
 
 7)  forkshowwallet renamed to forkwalletshow to be consistent with the format of the manual command.
 
+8)  forkconfig default text editor can now be changed via editing config.forkconfig (defaults to gedit as before)
 
 
 # INSTALLATION INSTRUCTIONS:
