@@ -9,7 +9,8 @@ if [[ $CHIAINLIST != '' ]]; then
   CHIAPORTINUSE=$(forkss | grep '"chia_farm' | grep ":8559 " | wc -l | awk '{$1=$1};1')
   if [[ $CHIAPORTINUSE == 0 ]]; then
     FARMERLIST=$(echo $FARMERLIST | sed '/^chia$/d')
-    FARMERCOUNT=$(echo $(( "$FARMERCOUNT - 1" )) )  
+    NUMOFCHIAPROCS=$(echo $CHIAINLIST | wc -l | awk '{$1=$1};1' )
+    FARMERCOUNT=$(echo $(( "$FARMERCOUNT - $NUMOFCHIAPROCS" )) )  
   fi
 fi
 

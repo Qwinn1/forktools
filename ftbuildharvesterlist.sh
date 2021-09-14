@@ -9,7 +9,8 @@ if [[ $CHIAINLIST != '' ]]; then
   CHIAPORTINUSE=$(forkss | grep '"chia_harv' | grep ":8560 " | wc -l | awk '{$1=$1};1')
   if [[ $CHIAPORTINUSE == 0 ]]; then
     HARVESTERLIST=$(echo $HARVESTERLIST | sed '/^chia$/d')
-    HARVESTERCOUNT=$(echo $(( $HARVESTERCOUNT - 1 )) )    
+    NUMOFCHIAPROCS=$(echo $CHIAINLIST | wc -l | awk '{$1=$1};1' )    
+    HARVESTERCOUNT=$(echo $(( $HARVESTERCOUNT - $NUMOFCHIAPROCS )) )    
   fi
 fi
 
