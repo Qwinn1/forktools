@@ -95,7 +95,7 @@ for fork in $HARVESTERLIST; do
    PLOTCOUNT=$(sed 's/.*Total //' <<< "$LASTHARVESTERLINE" | sed 's/ plots//' | awk '{$1=$1};1')
    CURRENTTIME=$(date "+%s")
    LASTHARVESTTIME=$(sed 's/\..*//' <<< "$LASTHARVESTERLINE" | awk '{$1=$1};1')
-   LASTHARVESTEPOCH=$(date --date="$LASTHARVESTTIME" +%s | awk '{$1=$1};1')
+   LASTHARVESTEPOCH=$(DateToEpoch "$LASTHARVESTTIME")
    if [[ $LASTHARVESTEPOCH = '' ]]; then
      LASTHARVESTEPOCH=0
    fi

@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+. forktoolsinit.sh
+
+. ftbuildfarmerlist.sh
+echo "Farmer count: " $(echo $FARMERLIST | wc -w | awk '{$1=$1};1' )
+echo $FARMERLIST
+
+echo
+
+. ftbuildharvesterlist.sh
+echo "Harvester count: " $(echo $HARVESTERLIST | wc -w | awk '{$1=$1};1' )
+echo $HARVESTERLIST
+

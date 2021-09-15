@@ -43,7 +43,8 @@ IFS=$OLDIFS
 
 # Get coin name
 COINNAME=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_network_info | python -m json.tool)
-COINNAME=$(grep -Po '"'"network_prefix"'"\s*:\s*"\K([^"]*)' <<< "$COINNAME" | sed 's/[a-z]/\U&/g')
+COINNAME=$(echo $COINNAME | sed 's/.*"network_prefix": "//' | sed 's/",.*//' | tr [a-z] [A-Z] | awk '{$1=$1};1')
+
 
 # Get major-minor multiplier
 # Hard coding to account for crappy lack of proper fork renaming. 
@@ -56,7 +57,7 @@ MMMULTIPLIER=$(echo "(( $MMMULTIPLIER ))" | bc )
 
 # Get wallet target address (can be different from what is set in config.yaml, if config was directly edited after last time farmer was started)
 ADDRESS=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{"search_for_private_key":false}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_reward_targets | python -m json.tool )
-ADDRESS=$(grep -Po '"'"farmer_target"'"\s*:\s*"\K([^"]*)' <<< "$ADDRESS")
+ADDRESS=$(echo $ADDRESS | sed 's/.*"farmer_target": "//' | sed 's/",.*//' | awk '{$1=$1};1')
 
 # Address override.  Pass to forkexplore as -a parameter.
 if [[ $SPECIFIEDADDRESS != '' ]]; then
