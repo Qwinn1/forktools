@@ -211,7 +211,7 @@ ETWTEXT=$( assemble_timestring ${ETWSEC/.*} 's' 2 4 2 )
 
 # Get last block win date and epoch
 LASTBLOCKDATE=$(grep 'true' <<< "$MERGEDCOINLIST" | tail -1 | awk '{print $1}' )
-LASTBLOCKEPOCH=$(grep 'true' <<< "$MERGEDCOINLIST" | tail -1 | awk '{print $1}' | date -f - +%s)
+LASTBLOCKEPOCH=$(grep 'true' <<< "$MERGEDCOINLIST" | tail -1 | awk '{print $1}' | DateToEpoch )
 CURRENTDATEEPOCH=$(date +%s)
 SECONDSSINCEHIT=$(echo "($CURRENTDATEEPOCH - $LASTBLOCKEPOCH)")
 MINUTESSINCEHIT=$(echo "($SECONDSSINCEHIT / 60)" | bc )

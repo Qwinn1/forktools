@@ -17,7 +17,7 @@ if [[ $OSTYPE == 'darwin'* ]]; then
       date -j -f "%Y-%m-%dT%H:%M:%S" "$1" "+%s" | awk '{$1=$1};1'
     }
     function EpochToDate () {
-      date -j -f "@%s" "+%Y-%m-%dT%H:%M:%S"
+      date -j -f "@%s" "$1" "+%Y-%m-%dT%H:%M:%S" | awk '{$1=$1};1'
     }
 else
     function DateOffset () {
