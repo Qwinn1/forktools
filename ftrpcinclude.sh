@@ -75,7 +75,8 @@ COININFO=$(eval $COININFO)
 
 
 # Parse JSON for one line per coin
-TIMESTAMPEPOCHLIST=$(grep "timestamp"  <<< "$COININFO" | sed 's/"timestamp"://' | sed 's/,//' | awk '{$1=$1};1' | awk '{print "@"$1}' | date -f - +%Y-%m-%dT%H:%M:%S )
+TIMESTAMPEPOCHLIST=$(grep "timestamp"  <<< "$COININFO" | sed 's/"timestamp"://' | sed 's/,//' | awk '{$1=$1};1' | awk '{print "@"$1}' | EpochToDate )
+
 COINAMOUNTLIST=$(grep "amount"  <<< "$COININFO" | sed 's/"amount"://' | sed 's/,//' | awk '{$1=$1};1' )
 COINBASELIST=$(grep "coinbase"  <<< "$COININFO" | sed 's/"coinbase"://' | sed 's/,//' | awk '{$1=$1};1' )
 CONFIRMEDLIST=$(grep "confirmed_block_index"  <<< "$COININFO" | sed 's/"confirmed_block_index"://' | sed 's/,//' | awk '{$1=$1};1' )

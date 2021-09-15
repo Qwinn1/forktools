@@ -1,0 +1,44 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "Usage:  forkstop"
+   echo "  forkname | all                            Stops all services for the specified forkname, or for all forks with active harvesters"
+   echo "  -t | --timelord                           Stops timelord service only."
+   echo "  -h | --help                               Show this information again."
+   exit 0
+}
+
+if [[ $3 != '' ]]; then
+  echo "forkstop:  Too many specified parameters."
+  print_usage
+fi
+
+if [[ $1 == '-h' || $1 == '--help' || $2 == '-h' || $2 == '--help' ]]; then
+  print_usage
+  exit
+fi   
+
+if [[ $1 != 'all' ]]; then
+  VALIDATEFORKNAME='Yes'
+fi
+. forktoolsinit.sh
+
+
+. ftbuildharvesterlist.sh
+for fork in $HARVESTERLIST; do
+   if [[ $1 != 'all' && $1 != $fork ]]; then
+      continue
+   fi
+   cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain 
+   . ./activate 
+   if [[ $2 == '-t' || $2 == '--timelord' ]]; then
+      echo "Stopping timelord: " $fork
+      $fork stop timelord-launcher-only      
+      $fork stop timelord-only
+   else      
+      echo "Stopping all services: " $fork      
+      $fork stop -d all
+   fi
+   deactivate
+done
+

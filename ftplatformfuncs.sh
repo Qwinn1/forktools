@@ -16,6 +16,9 @@ if [[ $OSTYPE == 'darwin'* ]]; then
     function DateToEpoch () {
       date -j -f "%Y-%m-%dT%H:%M:%S" "$1" "+%s" | awk '{$1=$1};1'
     }
+    function EpochToDate () {
+      date -j -f "@%s" "+%Y-%m-%dT%H:%M:%S"
+    }
 else
     function DateOffset () {
       date -d $2"${1} day" +"%Y-%m-%d"
@@ -31,6 +34,8 @@ else
     function DateToEpoch () {
       date --date="$1" +%s | awk '{$1=$1};1'
     }
-    
+    function EpochToDate () {
+      date -f - +%Y-%m-%dT%H:%M:%S
+    }
 fi
 
