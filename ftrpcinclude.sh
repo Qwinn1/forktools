@@ -73,10 +73,9 @@ PUZZLEHASH=$(eval $PUZZLEHASH)
 COININFO=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"puzzle_hash\":\""$PUZZLEHASH"\", \"include_spent_coins\":true}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_coin_records_by_puzzle_hash | python -m json.tool")
 COININFO=$(eval $COININFO)
 
-
+IFS=''
 # Parse JSON for one line per coin
 TIMESTAMPEPOCHLIST=$(grep "timestamp"  <<< "$COININFO" | sed 's/"timestamp"://' | sed 's/,//' | awk '{$1=$1};1' | awk '{print "@"$1}' | EpochToDate )
-
 COINAMOUNTLIST=$(grep "amount"  <<< "$COININFO" | sed 's/"amount"://' | sed 's/,//' | awk '{$1=$1};1' )
 COINBASELIST=$(grep "coinbase"  <<< "$COININFO" | sed 's/"coinbase"://' | sed 's/,//' | awk '{$1=$1};1' )
 CONFIRMEDLIST=$(grep "confirmed_block_index"  <<< "$COININFO" | sed 's/"confirmed_block_index"://' | sed 's/,//' | awk '{$1=$1};1' )
@@ -92,7 +91,6 @@ if [[ "$ADDRESSBALANCE" > 9999 ]]; then
    ADDRESSBALANCE="$ADDRESSBALANCE"K
 fi
 
-IFS=''
 TODAYADDRESSCHANGE=$(grep $TODAYSTAMP <<< "$MERGEDCOINLIST")
 TODAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20f' <<< "$TODAYADDRESSCHANGE" )
 YESTERDAYADDRESSCHANGE=$(grep $YESTERDAYSTAMP <<< "$MERGEDCOINLIST")
