@@ -229,7 +229,7 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 - `forktargets`           \-  lists the target wallet addresses as configured in every active fork farmer's config.yaml in a convenient and organized list for easy visual comparison to whatever list of wallet addresses you intend rewards to go to that you're currently maintaining.  Also compares the target setting in config.yaml to the RPC call for the same value, and gives a big warning if they don't match.
 
 
-# COMMANDS WITH PARAMETERS, EXAMPLES OF USAGE
+# COMMANDS WITH ONE PARAMETER: FORKNAME
 
 - `forkfixconfig chia`    \-  Provides automated editing of several entries in chia's config.yaml that require frequent editing - log level, plot loading frequency, farmer peer for harvesters, and several more.  Requires confirmation and creates backups.  Does not actually require editing of default options in config.forkfixconfig - the defaults I picked should work fine - but if you'd like to tweak them, you can do so there.  Please report if the defaults as I chose them cause you any issues so I can review.
 - `forkconfig hddcoin`    \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit. You can now set your preferred text editor in config.forkconfig.
