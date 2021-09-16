@@ -72,7 +72,16 @@ for fork in $FARMERLIST; do
    if [[ $HIDEBALANCES == 1 ]]; then
      ADDRESSBALANCE=0
    fi
-   printf '%-17.17s %-15.15s %-10.10s%5.5s%9.9s %7d%10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%7.7s ago %5d%%\n' "$fork" "$FORKVERSION" "$FARMSTATUS" "$FORKNODES" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$EFFORT"
+   if [[ $BLOCKWON == 'false' ]]; then
+     LASTBLOCKAGOTEXT='Never  '
+   else
+     LASTBLOCKAGOTEXT=$(echo "$LASTBLOCKAGOTEXT ago")   
+   fi
+   PRINTEFFORT=$(printf '%5d%%' "$EFFORT")
+   if [[ $EFFORT == 99999 ]]; then
+      PRINTEFFORT='N/A'
+   fi     
+   printf '%-17.17s %-15.15s %-10.10s%5.5s%9.9s %7d%10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%11.11s %5s\n' "$fork" "$FORKVERSION" "$FARMSTATUS" "$FORKNODES" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$PRINTEFFORT"
 done
 
 . ftbuildharvesterlist.sh

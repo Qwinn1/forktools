@@ -74,6 +74,12 @@ printf '                    Balance:    %10s %3s\n' "$ADDRESSBALANCE" "$COINNAME
 printf '                    Today:      %10s %3s\n' "$TODAYADDRESSCHANGE" "$COINNAME"
 printf '                    Yesterday:  %10s %3s\n' "$YESTERDAYADDRESSCHANGE" "$COINNAME"
 
+if [[ $TRANSACTIONLIST == '' ]]; then
+  echo
+  printf '           No transactions from %10s to %10s\n' "$STARTFROM" "$ENDDATE"
+  echo
+  exit
+fi
 echo -e '---------------------------------------------------------------------'
 printf '                       Height      Height     Farmed         Total\n'
 printf 'DateTime               Confirmed   Spent      Block?        Amount\n'
@@ -90,7 +96,6 @@ while read line; do
   COINBASE=$(echo $line | awk '{print $3}')
   HEIGHTCONFIRMED=$(echo $line | awk '{print $4}')
   HEIGHTSPENT=$(echo $line | awk '{print $5}')
-  echo $line
 
   if [[ $FIRSTLOOP == 1 || ($HEIGHTCONFIRMED == $PREVHEIGHTCONFIRMED && $HEIGHTSPENT == $PREVHEIGHTSPENT && $COINBASE == $PREVCOINBASE && $DATETRANS == $PREVDATETRANS) ]]
   then 
@@ -131,6 +136,6 @@ echo -e '---------------------------------------------------------------------'
 # Set ENDDATE one day back for display purposes
 ENDDATE=$(DateOffset -1 $ENDDATE)
 printf '%6.6s transactions from %10s to %10s:%12s %-5s\n' "$COUNTFORRANGE" "$STARTFROM" "$ENDDATE" "$TOTALFORRANGE" "$COINNAME"
-
+echo
 IFS=DEFAULT_IFS
 

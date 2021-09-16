@@ -166,7 +166,7 @@ assemble_bytestring() {
 }
 
 # Used to make sure that a grep that is expected to sometimes not find any results doesn't return a 1 and trigger error trapping
-c1grep() { grep "$@" || test $? = 1; }
+c1grep() { grep -a "$@" || test $? = 1; }
 
 
 

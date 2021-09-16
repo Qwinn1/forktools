@@ -61,10 +61,9 @@ ADDRESS=$(echo $ADDRESS | sed 's/.*"farmer_target": "//' | sed 's/",.*//' | awk 
 
 # Address override.  Pass to forkexplore as -a parameter.
 if [[ $SPECIFIEDADDRESS != '' ]]; then
-  echo "here"
   ADDRESS=$SPECIFIEDADDRESS
 fi
- 
+
 # Get puzzle hash for that address
 PUZZLEHASH=$(echo "python3 -c 'import $FORKNAME.util.bech32m as b; print(b.decode_puzzle_hash(\""$ADDRESS"\"). hex())'")
 PUZZLEHASH=$(eval $PUZZLEHASH)
@@ -192,6 +191,7 @@ IFS=$'\n'
   PLOTSPACEBYTES=$(echo "($PLOTSPACEBYTES * 1073741824)" | bc) # Number of bytes in a GiB.  1024 cubed.
   PLOTSPACEUNIT="bytes"  
 
+
 #else
 #  HARVESTERLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_harvesters | python -m json.tool )
 #  IFS=''
@@ -206,19 +206,28 @@ ETWMIN=$(echo "scale = 20; ($ETWMIN / $PROPORTION)" | bc -l )
 ETWSEC=$(echo "($ETWMIN * 60)" | bc)
 ETWTEXT=$( assemble_timestring ${ETWSEC/.*} 's' 2 4 2 )
 
-
-# Get last block win date and epoch
-LASTBLOCKDATE=$(grep 'true' <<< "$MERGEDCOINLIST" | tail -1 | awk '{print $1}' )
-LASTBLOCKEPOCH=$(grep 'true' <<< "$MERGEDCOINLIST" | tail -1 | awk '{print $1}' | DateToEpoch )
+IFS=''
 CURRENTDATEEPOCH=$(date +%s)
-SECONDSSINCEHIT=$(echo "($CURRENTDATEEPOCH - $LASTBLOCKEPOCH)")
-MINUTESSINCEHIT=$(echo "($SECONDSSINCEHIT / 60)" | bc )
-
-# Create "ago" string for how long ago last block was farmed.  See forktoolsinit.sh for function definition.
-LASTBLOCKAGOTEXT=$( assemble_timestring ${SECONDSSINCEHIT/.*} 's' 2 4 2 )
-
-# Calculate effort
-EFFORT=$(echo "($SECONDSSINCEHIT / $ETWSEC * 100)" | bc -l)
+LASTBLOCKDATE=$(c1grep 'true' <<< "$MERGEDCOINLIST" | tail -1 | awk '{print $1}' )
+if [[ $LASTBLOCKDATE == '' ]]; then
+  BLOCKWON='false'
+  # Calculate effort from date of first harvest in logs if possible
+  FIRSTHARVESTLINE=$(cat $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log* | grep "eligible for farming" | sort | head -1)  
+  if [[ $FIRSTHARVESTLINE != '' ]]; then
+    FIRSTHARVESTTIME=$(sed 's/\..*//' <<< "$FIRSTHARVESTLINE" | awk '{$1=$1};1')
+    FIRSTHARVESTEPOCH=$(echo "$FIRSTHARVESTTIME" | DateToEpoch )
+    SECONDSSINCESTART=$(echo "($CURRENTDATEEPOCH - $FIRSTHARVESTEPOCH)")
+    EFFORT=$(echo "($SECONDSSINCESTART / $ETWSEC * 100)" | bc -l)    
+  else
+    EFFORT=99999
+  fi
+else
+  BLOCKWON='true'
+  LASTBLOCKEPOCH=$(echo $LASTBLOCKDATE | DateToEpoch )
+  SECONDSSINCEHIT=$(echo "($CURRENTDATEEPOCH - $LASTBLOCKEPOCH)")  
+  MINUTESSINCEHIT=$(echo "($SECONDSSINCEHIT / 60)" | bc )  
+  LASTBLOCKAGOTEXT=$( assemble_timestring ${SECONDSSINCEHIT/.*} 's' 2 4 2 )
+  EFFORT=$(echo "($SECONDSSINCEHIT / $ETWSEC * 100)" | bc -l)
+fi
 IFS=$OLDIFS
-
 
