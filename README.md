@@ -237,20 +237,13 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 - `forksum scam`          \-  runs "scam farm summary"
 - `forkver flora`         \-  runs "flora version", returns the version # of the current install
 - `forkwalletshow maize`  \-  runs "maize wallet show"
-- `forkstart kale -f`     \-  runs "kale start farmer -r"
-- `forkstart cactus -fnw  \-  runs "cactus start farmer-no-wallet -r"
-- `forkstart cannabis`-h  \-  runs "cannabis start harvester -r"
-- `forkstart silicoin`-t  \-  starts timelord for silicoin.  Requires having previously run sh install-timelord.sh in the silicoin-blockchain directory.
-- `forkstart all`         \-  starts every service listed in config.forkstartall
-- `forkstop covid`        \-  stops all services for covid (If you're running GUI farmer, recommend closing that first)
-- `forkstop stor -t`      \-  stops 
-- `forkstop all`          \-  stops all services for covid (If you're running GUI farmer, recommend closing that first)
 - `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
-- `forkstoptl pipscoin`   \-  stops timelord for pipscoin.  Requires having previously run sh install-timelord.sh in the pipscoin-blockchain directory.
 - `forkaddplotdirs taco`  \-  Requires configuration in config.forkaddplotdirs to use.  List your plot directories there, then you can add them to any fork quickly with a single command.  Gives warnings if a drive listed in the config is not mounted.
 
-# COMMANDS WITH MULTIPLE PARAMETERS
+# COMMANDS WITH MULTIPLE PARAMETERS/SWITCHES
 
+- `forkstart`             \-  This single function has now replaced all previous forkstart* tools.  Instead of `forkstartall`, run `forkstart all`.  Instead of `forkstartf chia`, run `forkstart chia -f`.  Other switches are -fnw for farmer-no-wallet, -h for harvester and -t for timelord.  Run `forkstart -h` for usage details.  (Note - `forkstart all` still requires configuration via editing config.forkstartall).
+- `forkstop`              \-  This single function has now replaced all previous forkstop* tools.  Instead of `forkstopall`, run `forkstop all`.  Instead of `forkstopa flax`, run `forkstop flax`.  Instead of forkstoptl hddcoin, run forkstop hddcoin -t to stop timelord.  Run forkstop -h for usage details.  (Note - there is no longer an equivalent way to reproduce the old forkstoph, as I decided there is no good reason to stop just the harvester service without also shutting down the daemon and all other services.)
 - `forklog`               \-  This single function has now replaced all previous log parsing forktools. You need to pass at least one switch after the forkname to get any output.  You can manipulate log output now any way I could think of if you get creative with the switches, but you're still able to duplicate the quick and simple older versions with a single switch for each.  Just run forklog -h to get a full list of options. The first line of forklog output will be the actual bash command that is constructed after all the switches and parameters are interpreted that produces the output that follows.
 - `forkexplore`           \-  100% local address explorer.  Provides address balances for your target receive address for the selected fork, but has an additional -a switch which allows you to explore any receive address you wish, hot or cold, and all the same date range options that forklog has.  Does not require sync, just a running farmer.  Run forkexplore -h for detailed usage instructions.
 
