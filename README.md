@@ -225,11 +225,10 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 
 # COMMANDS WITH NO PARAMETERS:
 
-- `forklist`              \-  Replaces
 - `forkmon`               \-  In my opinion the current heart of forktools.  This script gives you detailed information on every active fork process on your server, one section for farmers and another for harvesters.  Includes longest response times, fullnode worker count, memory usage, wallet balances for your target addresses, how long ago the last block was won, ETW (far more accurately than what chia or any other fork provides), effort percent, and much more! As of version 2.2, forkmon can now take a single fork as a parameter, and -n / --nobalance switch can be specified to show all wallet balances as 0, useful if you want privacy when posting forkmon results online.
 - `forkports`             \-  Checks port locking contention on all forks with an active _harvester process.  Checks every port listed for mainnet in each fork's config.yaml, then runs `ss` scanning for every port used by that fork and lists any process which references those ports and does not contain that fork's binary name as the owner of the process.  If the listed processes don't have a *different* fork or app's name as the owner of the process, that output can probably be safely disregarded.  If no processes are listed under a given fork in the output, no ports were locked by a different fork - i.e., no conflict found.
 - `forktargets`           \-  lists the target wallet addresses as configured in every active fork farmer's config.yaml in a convenient and organized list for easy visual comparison to whatever list of wallet addresses you intend rewards to go to that you're currently maintaining.  Also compares the target setting in config.yaml to the RPC call for the same value, and gives a big warning if they don't match.
-
+- `forklist`              \-  Gives both farmer and harvester counts including a single line list of which forks are running for each.
 
 # COMMANDS WITH ONE PARAMETER: FORKNAME
 
