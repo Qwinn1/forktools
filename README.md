@@ -9,45 +9,26 @@
 
 # Changelog, Version 2.2:
 
-1)  All configuration options have been moved out of forktoolsinit.sh and into sub-includes named config.forkstartall, config.forkaddplotdirs, etc.   For your own convenience, please preserve your settings when updating for transfer to the new config file structure.
-
-2)  New `bash installft.sh` installation script.  Updates code to latest version, tests for curl installation, sets up environment variables, creates all known needed symlinks, sets up new config.forktool files from .template versions if not already configured (see previous changelog entry) and makes forktools executable.
-
-3)  Compatibility added for forks that do not rename their processes, folders or code directories from "chia".  Prime examples are lucky, xcha, nchain, rose and fishery.  Please note that adding this compatibility is NOT an endorsement on my part recommending farming of any forks with such terrible lazy coding practices.  Quite the opposite.  KNOWN ISSUE:  Everything works except memory usage, which cannot be fixed at this time due to process names being indistinguishable from chia and each other. 
-
-3)  Forkmon fixes and enhancements:
-
-    A)  Issue with a minority of forks showing "1 plot" should be fixed.
-
-    B)  Can now accept optional first parameter FORKNAME to only show output for the specified fork
-
-    C)  Can now accept optional parameter -n (or --nobalance) to show all wallet balances as 0 (for privacy if posting results publicly)
-
-    D)  Forkmon will no longer be fooled by forks that duplicate chia process names into thinking chia is running when it isn't
-
-    E)  Added "Height" as a column
-
-    F)  When forkmon is initiated, a "Forkmon initiated at datetime" stamp will be sent to the forkerrors.txt error dump file.
-
-    G)  Fixed incorrect chia netspace display.  Also added a decimal point of precision when netspace shown in EiB
-
-    H)  Forkmon should be able to handle debug.log files with NULLs in them now (which can happen if harvesters are running when server crashes)
-
-4)  Forklog fixes and enhancements
-
-    A)  The first line of output from forklog will now always be the actual bash command that was assembled from all the parameters and switches to generate the output that follows.
-
-    B)  The previous "FORKLOGTAIL" setting (which is now set in config.forklog) is now always active. Puts a hard limit on how many lines of output you can get. Can be overridden with -t parameter.
-
-    C)  Can now run forklog with *just* a -t parameter, to just tail the last bunch of lines.
-
-5)  forkaddplotdirs will now show warnings if a drive specified in config.forkaddplotdirs is not mounted.
-
-6)  forkshowwallet renamed to forkwalletshow to be consistent with the format of the manual command.
-
-7)  forkconfig default text editor can now be changed via editing config.forkconfig (defaults to gedit as before)
-
-8)  A great deal of work has been made to make forktools MacOS X compatible, though some work still needs to be done.  The simpler tools should work fine on MaxOS X, but forklog, forkmon and forkexplore probably won't until at least next version.
+ -All configuration options have been moved out of forktoolsinit.sh and into sub-includes named config.forkstartall, config.forkaddplotdirs, etc.   For your own convenience, please preserve your settings when updating for transfer to the new config file structure.
+- New `bash installft.sh` installation script.  Updates code to latest version, tests for curl installation, sets up environment variables, creates all known needed symlinks, sets up new config.forktool files from .template versions if not already configured (see previous changelog entry) and makes forktools executable.
+- Compatibility added for forks that do not rename their processes, folders or code directories from "chia".  Prime examples are lucky, xcha, nchain, rose and fishery.  Please note that adding this compatibility is NOT an endorsement on my part recommending farming of any forks with such terrible lazy coding practices.  Quite the opposite.  KNOWN ISSUE:  Everything works except memory usage, which cannot be fixed at this time due to process names being indistinguishable from chia and each other. 
+- Forkmon fixes and enhancements:
+-- Issue with a minority of forks showing "1 plot" should be fixed.
+-- Can now accept optional first parameter FORKNAME to only show output for the specified fork
+-- Can now accept optional parameter -n (or --nobalance) to show all wallet balances as 0 (for privacy if posting results publicly)
+-- Forkmon will no longer be fooled by forks that duplicate chia process names into thinking chia is running when it isn't
+-- Added "Height" as a column
+-- When forkmon is initiated, a "Forkmon initiated at datetime" stamp will be sent to the forkerrors.txt error dump file.
+-- Fixed incorrect chia netspace display.  Also added a decimal point of precision when netspace shown in EiB
+-- Forkmon should be able to handle debug.log files with NULLs in them now (which can happen if harvesters are running when server crashes)
+- Forklog fixes and enhancements
+-- The first line of output from forklog will now always be the actual bash command that was assembled from all the parameters and switches to generate the output that follows.
+-- The previous "FORKLOGTAIL" setting (which is now set in config.forklog) is now always active. Puts a hard limit on how many lines of output you can get. Can be overridden with -t parameter.
+-- Can now run forklog with *just* a -t parameter, to just tail the last bunch of lines.
+- forkaddplotdirs will now show warnings if a drive specified in config.forkaddplotdirs is not mounted.
+- forkshowwallet renamed to forkwalletshow to be consistent with the format of the manual command.
+- forkconfig default text editor can now be changed via editing config.forkconfig (defaults to gedit as before)
+- A great deal of work has been made to make forktools MacOS X compatible, though some work still needs to be done.  The simpler tools should work fine on MaxOS X, but forklog, forkmon and forkexplore probably won't until at least next version.
 
 
 # INSTALLATION INSTRUCTIONS:
@@ -244,27 +225,27 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 # COMMANDS WITH NO PARAMETERS:
 
 - `forkmon`               \-  In my opinion the current heart of forktools.  This script gives you detailed information on every active fork process on your server, one section for farmers and another for harvesters.  Includes longest response times, fullnode worker count, memory usage, wallet balances for your target addresses, how long ago the last block was won, ETW (far more accurately than what chia or any other fork provides), effort percent, and much more! As of version 2.2, forkmon can now take a single fork as a parameter, and -n / --nobalance switch can be specified to show all wallet balances as 0, useful if you want privacy when posting forkmon results online.
-- `forkstopall`           \-  Stops all services (including daemon) for all forks with an active _harvester process running.
-- `forkstartall`          \-  Requires configuration in config.forkstartall.  Just list there which forks you'd like started as farmers, which as farmer-no-wallet, and which as harvesters.  Between this and `forkstopall`, shutdowns and reboots are relatively painless.
 - `forkports`             \-  Checks port locking contention on all forks with an active _harvester process.  Checks every port listed for mainnet in each fork's config.yaml, then runs `ss` scanning for every port used by that fork and lists any process which references those ports and does not contain that fork's binary name as the owner of the process.  If the listed processes don't have a *different* fork or app's name as the owner of the process, that output can probably be safely disregarded.  If no processes are listed under a given fork in the output, no ports were locked by a different fork - i.e., no conflict found.
 - `forktargets`           \-  lists the target wallet addresses as configured in every active fork farmer's config.yaml in a convenient and organized list for easy visual comparison to whatever list of wallet addresses you intend rewards to go to that you're currently maintaining.  Also compares the target setting in config.yaml to the RPC call for the same value, and gives a big warning if they don't match.
 
 
-# COMMANDS WITH ONE PARAMETER, FORKNAME
+# COMMANDS WITH PARAMETERS, EXAMPLES OF USAGE
 
-- `forkfixconfig`         \-  Provides automated editing of several entries that require frequent editing - log level, plot loading frequency, farmer peer for harvesters, and several more.  Requires confirmation and creates backups.  Does not actually require editing of default options in config.forkfixconfig - the defaults I picked should work fine - but if you'd like to tweak them, you can do so there.  Please report if the defaults as I chose them cause you any issues so I can review.
-- `forkconfig hddcoin`    \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit.  Modify this script to use your preferred text editor (vi, nano, whatever).  Not going to make that a configurable option because IMO it would be dangerous to do so because reasons.
+- `forkfixconfig chia`    \-  Provides automated editing of several entries in chia's config.yaml that require frequent editing - log level, plot loading frequency, farmer peer for harvesters, and several more.  Requires confirmation and creates backups.  Does not actually require editing of default options in config.forkfixconfig - the defaults I picked should work fine - but if you'd like to tweak them, you can do so there.  Please report if the defaults as I chose them cause you any issues so I can review.
+- `forkconfig hddcoin`    \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit. You can now set your preferred text editor in config.forkconfig.
 - `forknodes avocado`     \-  prints a list of currently connected nodes for sharing with others having difficulty connecting. Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
-- `forkstartf kale`       \-  runs "kale start farmer -r"
-- `forkstartfnw cactus`   \-  runs "cactus start farmer-no-wallet -r"
-- `forkstarth cannabis`   \-  runs "cannabis start harvester -r"
 - `forksum scam`          \-  runs "scam farm summary"
 - `forkver flora`         \-  runs "flora version", returns the version # of the current install
 - `forkwalletshow maize`  \-  runs "maize wallet show"
-- `forkstoph covid`       \-  stops harvester process for covid (If you're running GUI farmer, recommend closing that first)
-- `forkstopa socks`       \-  stops ALL services for socks (If you're running GUI farmer, recommend closing that first)
+- `forkstart kale -f`     \-  runs "kale start farmer -r"
+- `forkstart cactus -fnw  \-  runs "cactus start farmer-no-wallet -r"
+- `forkstart cannabis`-h  \-  runs "cannabis start harvester -r"
+- `forkstart silicoin`-t  \-  starts timelord for silicoin.  Requires having previously run sh install-timelord.sh in the silicoin-blockchain directory.
+- `forkstart all`         \-  starts every service listed in config.forkstartall
+- `forkstop covid`        \-  stops all services for covid (If you're running GUI farmer, recommend closing that first)
+- `forkstop stor -t`      \-  stops 
+- `forkstop all`          \-  stops all services for covid (If you're running GUI farmer, recommend closing that first)
 - `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
-- `forkstarttl silicoin`  \-  starts timelord for silicoin.  Requires having previously run sh install-timelord.sh in the silicoin-blockchain directory.
 - `forkstoptl pipscoin`   \-  stops timelord for pipscoin.  Requires having previously run sh install-timelord.sh in the pipscoin-blockchain directory.
 - `forkaddplotdirs taco`  \-  Requires configuration in config.forkaddplotdirs to use.  List your plot directories there, then you can add them to any fork quickly with a single command.  Gives warnings if a drive listed in the config is not mounted.
 
