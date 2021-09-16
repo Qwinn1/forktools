@@ -1,5 +1,12 @@
 # Qwinn's forktools
 
+# Changelog, Version 2.3 (testing):
+
+- Mac OS X compatibility nearing completion
+- forkexplore can now handle 0 or just 1 transaction found without errors
+- new tool forkstop accepts switches, enabling it to replace forkstopa, forkstoph, forkstoptl and forkstopall. Run forkstop -h for details.
+- new tool forkstart accepts switches, enabling it to replace forkstartf, forkstartfnw, forkstarth, forkstartall and forkstarttl.  Run forkstart -h for details.
+
 # Changelog, Version 2.2:
 
 1)  All configuration options have been moved out of forktoolsinit.sh and into sub-includes named config.forkstartall, config.forkaddplotdirs, etc.   For your own convenience, please preserve your settings when updating for transfer to the new config file structure.
