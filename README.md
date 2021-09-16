@@ -9,26 +9,26 @@
 
 # Changelog, Version 2.2:
 
- -All configuration options have been moved out of forktoolsinit.sh and into sub-includes named config.forkstartall, config.forkaddplotdirs, etc.   For your own convenience, please preserve your settings when updating for transfer to the new config file structure.
-- New `bash installft.sh` installation script.  Updates code to latest version, tests for curl installation, sets up environment variables, creates all known needed symlinks, sets up new config.forktool files from .template versions if not already configured (see previous changelog entry) and makes forktools executable.
-- Compatibility added for forks that do not rename their processes, folders or code directories from "chia".  Prime examples are lucky, xcha, nchain, rose and fishery.  Please note that adding this compatibility is NOT an endorsement on my part recommending farming of any forks with such terrible lazy coding practices.  Quite the opposite.  KNOWN ISSUE:  Everything works except memory usage, which cannot be fixed at this time due to process names being indistinguishable from chia and each other. 
-- Forkmon fixes and enhancements:
--- Issue with a minority of forks showing "1 plot" should be fixed.
--- Can now accept optional first parameter FORKNAME to only show output for the specified fork
--- Can now accept optional parameter -n (or --nobalance) to show all wallet balances as 0 (for privacy if posting results publicly)
--- Forkmon will no longer be fooled by forks that duplicate chia process names into thinking chia is running when it isn't
--- Added "Height" as a column
--- When forkmon is initiated, a "Forkmon initiated at datetime" stamp will be sent to the forkerrors.txt error dump file.
--- Fixed incorrect chia netspace display.  Also added a decimal point of precision when netspace shown in EiB
--- Forkmon should be able to handle debug.log files with NULLs in them now (which can happen if harvesters are running when server crashes)
-- Forklog fixes and enhancements
--- The first line of output from forklog will now always be the actual bash command that was assembled from all the parameters and switches to generate the output that follows.
--- The previous "FORKLOGTAIL" setting (which is now set in config.forklog) is now always active. Puts a hard limit on how many lines of output you can get. Can be overridden with -t parameter.
--- Can now run forklog with *just* a -t parameter, to just tail the last bunch of lines.
-- forkaddplotdirs will now show warnings if a drive specified in config.forkaddplotdirs is not mounted.
-- forkshowwallet renamed to forkwalletshow to be consistent with the format of the manual command.
-- forkconfig default text editor can now be changed via editing config.forkconfig (defaults to gedit as before)
-- A great deal of work has been made to make forktools MacOS X compatible, though some work still needs to be done.  The simpler tools should work fine on MaxOS X, but forklog, forkmon and forkexplore probably won't until at least next version.
+1. All configuration options have been moved out of forktoolsinit.sh and into sub-includes named config.forkstartall, config.forkaddplotdirs, etc.   For your own convenience, please preserve your settings when updating for transfer to the new config file structure.
+2. New `bash installft.sh` installation script.  Updates code to latest version, tests for curl installation, sets up environment variables, creates all known needed symlinks, sets up new config.forktool files from .template versions if not already configured (see previous changelog entry) and makes forktools executable.
+3. Compatibility added for forks that do not rename their processes, folders or code directories from "chia".  Prime examples are lucky, xcha, nchain, rose and fishery.  Please note that adding this compatibility is NOT an endorsement on my part recommending farming of any forks with such terrible lazy coding practices.  Quite the opposite.  KNOWN ISSUE:  Everything works except memory usage, which cannot be fixed at this time due to process names being indistinguishable from chia and each other. 
+4. Forkmon fixes and enhancements:
+   - Issue with a minority of forks showing "1 plot" should be fixed.
+   - Can now accept optional first parameter FORKNAME to only show output for the specified fork
+   - Can now accept optional parameter -n (or --nobalance) to show all wallet balances as 0 (for privacy if posting results publicly)
+   - Forkmon will no longer be fooled by forks that duplicate chia process names into thinking chia is running when it isn't
+   - Added "Height" as a column
+   - When forkmon is initiated, a "Forkmon initiated at datetime" stamp will be sent to the forkerrors.txt error dump file.
+   - Fixed incorrect chia netspace display.  Also added a decimal point of precision when netspace shown in EiB
+   - Forkmon should be able to handle debug.log files with NULLs in them now (which can happen if harvesters are running when server crashes)
+5. Forklog fixes and enhancements
+   - The first line of output from forklog will now always be the actual bash command that was assembled from all the parameters and switches to generate the output that follows.
+   - The previous "FORKLOGTAIL" setting (which is now set in config.forklog) is now always active. Puts a hard limit on how many lines of output you can get. Can be overridden with -t parameter.
+   - Can now run forklog with *just* a -t parameter, to just tail the last bunch of lines.
+6. forkaddplotdirs will now show warnings if a drive specified in config.forkaddplotdirs is not mounted.
+7. forkshowwallet renamed to forkwalletshow to be consistent with the format of the manual command.
+8. forkconfig default text editor can now be changed via editing config.forkconfig (defaults to gedit as before)
+9. A great deal of work has been made to make forktools MacOS X compatible, though some work still needs to be done.  The simpler tools should work fine on MaxOS X, but forklog, forkmon and forkexplore probably won't until at least next version.
 
 
 # INSTALLATION INSTRUCTIONS:
