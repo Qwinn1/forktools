@@ -1,0 +1,133 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "Usage:  forkstart"
+   echo "  forkname | all                   If all, all forks will be started per configuration set in file config.forkstartall"
+   echo "                                   If forkname, one and only one of the following switches is also required."
+   echo "  -f | --farmer                    Starts farmer for forkname."
+   echo "  -fnw | --farmernowallet          Starts farmer-no-wallet for forkname."   
+   echo "  -h | --harvester                 Starts harvester for forkname."
+   echo "  -t | --timelord                  Starts timelord service only."
+   echo "  -h | --help                      Show this information again."
+   exit 0
+}
+
+if [[ $1 == '-h' || $1 == '--help' || $2 == '-h' || $2 == '--help' ]]; then
+  print_usage
+  exit
+fi   
+
+if [[ $3 != '' ]]; then
+  echo "forkstart:  Too many specified parameters.  Aborting forkstart."
+  print_usage
+fi
+
+if [[ $1 != 'all' ]]; then
+  VALIDATEFORKNAME='Yes'
+fi
+. forktoolsinit.sh
+
+FORKNAME=$1
+
+if [[ $1 != 'all' && $2 == '' ]]; then
+  echo "forkstart:  Running for a single fork requires switch as second parameter (e.g. -f, -fnw, -h, -t).  Aborting forkstart."
+  print_usage
+  exit
+fi
+
+if [[ $2 == '-f' || $2 == '--farmer' ]]; then
+  STARTMETHOD='farmer -r'
+fi
+if [[ $2 == '-fnw' || $2 == '--farmernowallet' ]]; then
+  STARTMETHOD='farmer-no-wallet -r'
+fi
+if [[ $2 == '-h' || $2 == '--harvester' ]]; then
+  STARTMETHOD='harvester -r'
+fi
+if [[ $2 == '-t' || $2 == '--timelord' ]]; then
+  STARTMETHOD='timelord'
+fi
+   
+if [[ $1 != 'all' && $STARTMETHOD = '' ]]; then
+  echo "forkstart:  Second parameter $2 unrecognized.  Please use valid switch.   Aborting forkstart."
+  print_usage
+  exit
+fi
+
+if [[ $1 != 'all' ]]; then
+   echo "forkstart:  Attempting to run '$FORKNAME start $STARTMETHOD'"
+   cd $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain 
+   . ./activate 
+   $FORKNAME start $STARTMETHOD
+   exit
+else
+   ORIGIFS=$IFS
+   IFS=$'\n'
+   # Validate entire config.forkstartall file before starting.
+   for plotdir in $FORKSTARTFLIST; do
+      STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
+      if [[ $STRIPPEDCOMMENTS = '' ]]; then
+        continue
+      fi
+      if [ ! -d $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain ]; then
+         echo "forkstart all:  Invalid forkname in config.forkstartall, FORKSTARTFLIST section. Directory $STRIPPEDCOMMENTS-blockchain does not exist.  Please fix configuration and restart forkstart all.  Aborting."
+         exit
+      fi  
+   done
+   for plotdir in $FORKSTARTFNWLIST; do
+      STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
+      if [[ $STRIPPEDCOMMENTS = '' ]]; then
+        continue
+      fi
+      if [ ! -d $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain ]; then
+         echo "forkstart all:  Invalid forkname in config.forkstartall, FORKSTARTFNWLIST section. Directory $STRIPPEDCOMMENTS-blockchain does not exist.  Please fix configuration and restart forkstart all.  Aborting."
+         exit
+      fi  
+   done
+   for plotdir in $FORKSTARTHLIST; do
+      STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
+      if [[ $STRIPPEDCOMMENTS = '' ]]; then
+        continue
+      fi
+      if [ ! -d $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain ]; then
+         echo "forkstart all:  Invalid forkname in config.forkstartall, FORKSTARTHLIST section. Directory $STRIPPEDCOMMENTS-blockchain does not exist.  Please fix configuration and restart forkstart all.  Aborting."
+         exit
+      fi  
+   done
+   echo "forkstart all:  All entries in config.forkstartall validated.  Starting services."
+   echo
+
+   # Everything validated, start the starts! 
+   for plotdir in $FORKSTARTFLIST; do
+      STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
+      if [[ $STRIPPEDCOMMENTS = '' ]]; then
+        continue
+      fi      
+      cd $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain 
+      . ./activate
+      $STRIPPEDCOMMENTS start farmer -r
+      deactivate
+   done
+   for plotdir in $FORKSTARTFNWLIST; do
+      STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
+      if [[ $STRIPPEDCOMMENTS = '' ]]; then
+        continue
+      fi      
+      cd $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain 
+      . ./activate
+      $STRIPPEDCOMMENTS start farmer-no-wallet -r
+      deactivate      
+   done
+   for plotdir in $FORKSTARTHLIST; do
+      STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
+      if [[ $STRIPPEDCOMMENTS = '' ]]; then
+        continue
+      fi      
+      cd $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain 
+      . ./activate
+      $STRIPPEDCOMMENTS start harvester -r
+      deactivate      
+   done
+   IFS=$ORIGIFS
+fi
+
