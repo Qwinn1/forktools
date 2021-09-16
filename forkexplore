@@ -90,8 +90,9 @@ while read line; do
   COINBASE=$(echo $line | awk '{print $3}')
   HEIGHTCONFIRMED=$(echo $line | awk '{print $4}')
   HEIGHTSPENT=$(echo $line | awk '{print $5}')
+  echo $line
 
-  if [[ $FIRSTLOOP = 1 || ($HEIGHTCONFIRMED = $PREVHEIGHTCONFIRMED && $HEIGHTSPENT = $PREVHEIGHTSPENT && $COINBASE = $PREVCOINBASE && $DATETRANS = $PREVDATETRANS) ]]
+  if [[ $FIRSTLOOP == 1 || ($HEIGHTCONFIRMED == $PREVHEIGHTCONFIRMED && $HEIGHTSPENT == $PREVHEIGHTSPENT && $COINBASE == $PREVCOINBASE && $DATETRANS == $PREVDATETRANS) ]]
   then 
      BLOCKAMOUNT=$(echo "(($BLOCKAMOUNT+$PREVBLOCKAMOUNT))" | bc)
   else
@@ -115,7 +116,14 @@ while read line; do
 done <<< "$TRANSACTIONLIST"
 
 # Add the last line.
-printf '%19s    %-10s  %-10s %3s %12.12s %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
+BUILDEXPR=$(echo "echo 'scale = 2; (($PREVBLOCKAMOUNT / $MMMULTIPLIER))' | bc -l")
+PRINTAMOUNT=$(eval $BUILDEXPR)
+if [[ $PREVCOINBASE = true ]]; then
+  FARMEDBLOCK='Yes'
+else
+  FARMEDBLOCK='No'
+fi
+printf '%19s    %-10s  %-10s %-3s %12.12s %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
 TOTALFORRANGE=$(echo "(($TOTALFORRANGE + $PRINTAMOUNT))" | bc -l)
 COUNTFORRANGE=$(echo "(($COUNTFORRANGE + 1))" | bc)
 
