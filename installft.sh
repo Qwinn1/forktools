@@ -31,7 +31,7 @@ echo "Setting up environment variables in $ENVFILE"
 # Removes all FORKTOOLS related lines from bash startup file
 sed "-i.bak" '/FORKTOOLS/d' "$ENVFILE"
 
-FORKTOOLDSDIR=$PWD
+FORKTOOLSDIR=$PWD
 
 # Tries to confirm at least one *-blockchain and one .*/mainnet/config exist wherever $FORKTOOLSBLOCKCHAINDIRS and $FORKTOOLSHIDDENDIRS were set previously (existing users) or $HOME if not already set (new users)
 if [[ "$FORKTOOLSBLOCKCHAINDIRS" = '' ]]; then
