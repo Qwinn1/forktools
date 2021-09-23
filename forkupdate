@@ -4,10 +4,16 @@ function print_usage () {
    echo "Example Usage:  forkupdate chia [-b 1.2.7]"
    echo "  forkname                                  Required.  Name of fork as perceived by existing forktools (e.g. what you see in forkmon)."
    echo "  -b 1.2.7                                  Optional.  Use if you want to pull a specific tag from github. Otherwise, your"
-   echo "                                              fork will be updated to the last tagged release in the current branch."
+   echo "                                              fork will be updated to the last tagged release in 'latest' if it exists,"
+   echo "			                        or the last tagged release in 'main' if it doesn't."
    echo "  -h | --help                               Show this information again."
    exit 0
 }
+
+if [[ $1 == '-h' || $1 == '--help' || $2 == '-h' || $2 == '--help' || $3 == '-h' || $3 == '--help' ]]; then
+   print_usage
+   exit
+fi
 
 
 VALIDATEFORKNAME='Yes'
