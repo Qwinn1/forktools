@@ -2,7 +2,7 @@ HARVESTERCOUNT=$(ps -ef | grep _harvester | grep -v grep | wc -l | awk '{$1=$1};
 
 OLDIFS=$IFS
 IFS=''
-HARVESTERLIST=$(ps -ef | grep _harvester | grep -v grep | awk '{print $8}' | sed 's/_harvester//' | grep -v [s]ed | uniq | sort)
+HARVESTERLIST=$(ps -ef | grep -v grep | grep -o [a-z]*_harvester | sed 's/_harvester//' | uniq | sort)
 # Verify chia harvester actually running - necessary because of shitforks that didn't rename their processes
 CHIAINLIST=$( echo $HARVESTERLIST | grep "^chia$" )
 if [[ $CHIAINLIST != '' ]]; then
