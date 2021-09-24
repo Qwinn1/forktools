@@ -8,6 +8,7 @@
 - forkexplore can now handle 0 or just 1 transaction found without errors
 - changes to some scripts to allow compatibility with shells that run fork processes (and thus change the format of process lists), like SCREEN
 - forkmon now handles Last Block and Effort% calculations much better when a block hasn't been won yet.  Effort% will in that case be calculated from the date of the first successful harvest in the earliest log (so from when you started farming the fork).
+- forkmon will now print the datetime it was initiated as the first line of output.
 - new tool forkstop accepts switches, enabling it to replace forkstopa, forkstoph, forkstoptl and forkstopall. Run forkstop -h for details.
 - new tool forkstart accepts switches, enabling it to replace forkstartf, forkstartfnw, forkstarth, forkstartall and forkstarttl.  Run forkstart -h for details.
 - forkaddplotdirs can now accept "all" instead of forkname as a parameter, which will add the drives specified in config.forkaddplotdirs to every fork with an active harvester.  Great for adding a brand new drive to all forks.
