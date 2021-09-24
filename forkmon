@@ -41,6 +41,7 @@ fi
 
 . ftbuildfarmerlist.sh
 
+echo "forkmon initiated on" `date`
 printf '\n'
 if [[ $VALIDATEFORKNAME == 'No' ]]; then
   echo -e "------------------------------------------------------------------- FARMERS: $FARMERCOUNT -----------------------------------------------------------------"
