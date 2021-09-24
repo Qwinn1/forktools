@@ -6,7 +6,7 @@ function print_usage () {
    echo "                                   If forkname, one and only one of the following switches is also required."
    echo "  -f | --farmer                    Starts farmer for forkname."
    echo "  -fnw | --farmernowallet          Starts farmer-no-wallet for forkname."   
-   echo "  -h | --harvester                 Starts harvester for forkname."
+   echo "  -ha | --harvester                Starts harvester for forkname."
    echo "  -t | --timelord                  Starts timelord service only."
    echo "  -h | --help                      Show this information again."
    exit 0
@@ -41,7 +41,7 @@ fi
 if [[ $2 == '-fnw' || $2 == '--farmernowallet' ]]; then
   STARTMETHOD='farmer-no-wallet -r'
 fi
-if [[ $2 == '-h' || $2 == '--harvester' ]]; then
+if [[ $2 == '-ha' || $2 == '--harvester' ]]; then
   STARTMETHOD='harvester -r'
 fi
 if [[ $2 == '-t' || $2 == '--timelord' ]]; then
