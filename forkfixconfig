@@ -1,254 +1,67 @@
 #! /usr/bin/env bash
 
-VALIDATEFORKNAME='Yes'
+function print_usage () {
+   echo "Usage:  forkfixconfig"
+   echo "  forkname | all | farmers | harvesters    Applies settings as configured in config.forkfixconfig to:"
+   echo "                                              forkname: the specified fork, OR"
+   echo "                                              all:  all forks with active harvesters, OR"
+   echo "                                              farmers:  all forks with active farmers, OR"
+   echo "                                              harvesters:  only to forks with active harvester and no active farmer."
+   echo "  10.0.0.100                               Optional second parameter, farmer peer.  Should only be specified for pure"
+   echo "                                              harvesters.  Set the IP address of the farmer with this option."
+   echo "  -h | --help                              Show this information again."
+   exit 0
+}
+
+
+if [[ $1 == '-h' || $1 == '--help' || $2 == '-h' || $2 == '--help' ]]; then
+  print_usage
+  exit
+fi   
+
+if [[ $3 != '' ]]; then
+  echo "forkstop:  Too many specified parameters."
+  print_usage
+fi
+
+if [[ $1 != 'all' && $1 != 'farmers' && $1 != 'harvesters' ]]; then
+  VALIDATEFORKNAME='Yes'
+fi
+
 . forktoolsinit.sh
 
-# Settings to be applied in config.yaml can be customized in the above include
 
-# Parameter 1 required:  name of fork executable (e.g. chia, flax, hddcoin)
-FORKNAME=$1
-# Parameter 2 optional:  Pass second parameter (IP address of farmer) only if this server is a harvester.  Do not pass 2nd parameter if this is the farmer.
-SETFARMERPEER=$2  
-
-CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
-
-SECTION='START'
-OLDIFS=$IFS
-IFS=$'\n'
-LINENUMBER=0
-while read line; do
-   ((LINENUMBER=$LINENUMBER+1))
-   PRESERVECOMMENT=$(grep '#' <<< "$line" | sed 's/.*#/#/')
-   WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
-   TESTSECTION=$(grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
-
-  if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]];
-  then 
-     SECTION=$TESTSECTION
-  fi
-  
-  if [[ $SETLOGLEVEL != '' && ($SECTION == *logging:* || $SECTION == *farmer:*) && $WORKLINE == *log_level:* ]];
-  then
-     OLDLOGLEVEL=$(sed 's/log_level: //' <<< "$WORKLINE" | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
-     NEWLOGLEVEL=$(sed "s/$OLDLOGLEVEL/$SETLOGLEVEL/" <<< "$WORKLINE")$PRESERVECOMMENT
-     OLDLOGLEVEL=$line
-  fi
-  if [[ $SETMAXLOGROTATION != '' && ($SECTION == *logging:* || $SECTION == *farmer:*) && $WORKLINE == *log_maxfilesrotation:* ]];
-  then
-     OLDROTATION=$(sed 's/log_maxfilesrotation: //' <<< "$WORKLINE" | awk '{$1=$1};1')
-     NEWROTATION=$(sed "s/$OLDROTATION/$SETMAXLOGROTATION/" <<< "$WORKLINE")$PRESERVECOMMENT
-     OLDROTATION=$line
-  fi
-  if [[ $SETPLOTLOADFREQUENCY != '' && $SECTION == *harvester:* && $WORKLINE == *plot_loading_frequency_seconds:* ]];
-  then
-     OLDPLOTLOAD=$(sed 's/plot_loading_frequency_seconds: //' <<< "$WORKLINE" | awk '{$1=$1};1')
-     NEWPLOTLOAD=$(sed "s/$OLDPLOTLOAD/$SETPLOTLOADFREQUENCY/" <<< "$WORKLINE")$PRESERVECOMMENT
-     OLDPLOTLOAD=$line
-  fi
-  if [[ $SETPLOTLOADFREQUENCY != '' && $SECTION == *harvester:* && $WORKLINE == *interval_seconds:* ]];
-  then
-     OLDPLOTLOAD=$(sed 's/interval_seconds: //' <<< "$WORKLINE" | awk '{$1=$1};1')
-     NEWPLOTLOAD=$(sed "s/$OLDPLOTLOAD/$SETPLOTLOADFREQUENCY/" <<< "$WORKLINE")$PRESERVECOMMENT
-     OLDPLOTLOAD=$line
-  fi
-  if [[ $SETBATCHSIZE != '' && $SECTION == *harvester:* && $WORKLINE == *batch_size:* ]];
-  then
-     OLDBATCHSIZE=$(sed 's/batch_size: //' <<< "$WORKLINE" | awk '{$1=$1};1')
-     NEWBATCHSIZE=$(sed "s/$OLDBATCHSIZE/$SETBATCHSIZE/" <<< "$WORKLINE")$PRESERVECOMMENT
-     OLDBATCHSIZE=$line
-  fi
-  if [[ $SETBATCHSLEEP != '' && $SECTION == *harvester:* && $WORKLINE == *batch_sleep_milliseconds:* ]];
-  then
-     OLDBATCHSLEEP=$(sed 's/batch_sleep_milliseconds: //' <<< "$WORKLINE" | awk '{$1=$1};1')
-     NEWBATCHSLEEP=$(sed "s/$OLDBATCHSLEEP/$SETBATCHSLEEP/" <<< "$WORKLINE")$PRESERVECOMMENT
-     OLDBATCHSLEEP=$line
-  fi    
-  if [[ $SETFNTARGETPEERCOUNT != '' && $SECTION == *full_node:* && $WORKLINE == *target_peer_count:* ]];
-  then
-     OLDTGTPEERS=$(sed 's/target_peer_count: //' <<< "$WORKLINE" | awk '{$1=$1};1')
-     NEWTGTPEERS=$(sed "s/$OLDTGTPEERS/$SETFNTARGETPEERCOUNT/" <<< "$WORKLINE")$PRESERVECOMMENT
-     OLDTGTPEERS=$line
-     TARGETPEERLINENO=$LINENUMBER
-  fi
-  if [[ $SETFARMERPEER != '' && $SECTION == *harvester:* && $WORKLINE == *host:* ]];
-  then
-     OLDFARMPEER=$(grep "host: " <<< "$WORKLINE" | sed 's/host: //' | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
-     NEWFARMPEER=$(sed "s/$OLDFARMPEER/$SETFARMERPEER/" <<< "$WORKLINE")$PRESERVECOMMENT
-     OLDFARMPEER=$line
-     HARVHOSTLINENO=$LINENUMBER
-  fi
-done < $CURRENTCONFIG
-
-if [[ $SETMULTIPROC != '' ]]
-then
-   IFS=''
-   EXISTINGMULTIPROC=$(grep multiprocessing_limit $CURRENTCONFIG)
-   if [[ $EXISTINGMULTIPROC = '' ]]
-   then
-      IFS=''      
-      if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
-        FARMERPROCESS='\s'$FORKNAME'_farmer'
-        FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
-      else
-        FARMERRUNNING=1
-      fi
-      if [[ $FARMERRUNNING != '' ]]
-      then
-         FULLNODESYNCED='No'
-         . ftrpcinclude.sh
-         FULLNODESYNCED=$(c1grep '"synced":'  <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
-      fi   
-      if [[ $FULLNODESYNCED != 'true' ]]
-      then
-         echo "Full node is not synced or not running. Not adding 'multiprocessing_limit: $SETMULTIPROC' until sync is verified."
-         SETMULTIPROC=''
-      else 
-         OLDMULTIPROC='Synced status confirmed. Prepared to add setting.'
-      fi
-   else
-      OLDMULTIPROC=$EXISTINGMULTIPROC
-   fi
-   NEWMULTIPROC="multiprocessing_limit: $SETMULTIPROC"   
+if [[ $1 == 'all' ]]; then
+  . ftbuildharvesterlist.sh  
+  FORKLIST=$HARVESTERLIST
+elif [[ $1 == 'farmers' ]]; then
+  . ftbuildfarmerlist.sh  
+  FORKLIST=$FARMERLIST
+elif [[ $1 == 'harvesters' ]]; then
+  . ftbuildharvesterlist.sh  
+  . ftbuildfarmerlist.sh  
+  FORKLIST=$HARVESTERLIST
+  for fork in $FARMERLIST; do
+     OLDIFS=$IFS
+     IFS=''
+     FORKLIST=$(echo $FORKLIST | sed "/^$fork$/d" )
+     IFS=$OLDIFS          
+  done
+else
+  FORKLIST=$1
 fi
 
-IFS=$OLDIFS
-
-ANYCHANGES='No'
-echo 'Proposed changes to' $CURRENTCONFIG ':'
-if [[ $SETLOGLEVEL != '' && $OLDLOGLEVEL != $NEWLOGLEVEL ]]; then
-  echo "  Old Log Level: " $OLDLOGLEVEL
-  echo "  New Log Level: " $NEWLOGLEVEL
-  ANYCHANGES='Yes'
-fi
-if [[ $SETMAXLOGROTATION != '' && $OLDROTATION != $NEWROTATION ]]; then
-  echo "  Old Max Log Rotation: " $OLDROTATION
-  echo "  New Max Log Rotation: " $NEWROTATION
-  ANYCHANGES='Yes'
-fi
-if [[ $SETPLOTLOADFREQUENCY != '' && $OLDPLOTLOAD != $NEWPLOTLOAD ]]; then  
-  echo "  Old Plot Load Frequency: " $OLDPLOTLOAD
-  echo "  New Plot Load Frequency: " $NEWPLOTLOAD
-  ANYCHANGES='Yes'  
-fi
-if [[ $SETBATCHSIZE != '' && $OLDBATCHSIZE != $NEWBATCHSIZE ]]; then  
-  echo "  Old Batch Size: " $OLDBATCHSIZE
-  echo "  New Batch Size: " $NEWBATCHSIZE
-  ANYCHANGES='Yes'
-fi
-if [[ $SETBATCHSLEEP != '' && $OLDBATCHSLEEP != $NEWBATCHSLEEP ]]; then  
-  echo "  Old Batch Sleep: " $OLDBATCHSLEEP
-  echo "  New Batch Sleep: " $NEWBATCHSLEEP
-  ANYCHANGES='Yes'
-fi
-if [[ $SETFNTARGETPEERCOUNT != '' && $OLDTGTPEERS != $NEWTGTPEERS ]]; then  
-  echo "  Old Target Peer Count: " $OLDTGTPEERS
-  echo "  New Target Peer Count: " $NEWTGTPEERS
-  ANYCHANGES='Yes'
-fi
-if [[ $SETFARMERPEER != '' && $OLDFARMPEER != $NEWFARMPEER ]]; then  
-  echo "  Old Harvester Farmer_Peer IP: " $OLDFARMPEER
-  echo "  New Harvester Farmer_Peer IP: " $NEWFARMPEER
-  ANYCHANGES='Yes'
-fi
-if [[ $SETMULTIPROC != '' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then
-  echo "  Old Multiprocessing Limit: " $OLDMULTIPROC
-  echo "  New Multiprocessing Limit: " $NEWMULTIPROC
-  ANYCHANGES='Yes'
-fi
-
-
-if [[ $APPEND1 != '' ]]; then
-  APPEND1EXISTS=$(grep "$APPEND1" "$CURRENTCONFIG" | wc -l | awk '{$1=$1};1')
-  if [ $APPEND1EXISTS -gt 0 ]; then
-    echo "  Option \"$APPEND1\" already exists in $CURRENTCONFIG, skipping append."
-  else 
-    echo "  Appending: " $APPEND1
-    ANYCHANGES='Yes'
-  fi
-fi
-if [[ $APPEND2 != '' ]]; then
-  APPEND2EXISTS=$(grep "$APPEND2" "$CURRENTCONFIG" | wc -l | awk '{$1=$1};1')
-  if [ $APPEND2EXISTS -gt 0 ]; then
-    echo "  Option \"$APPEND2\" already exists in $CURRENTCONFIG, skipping append."
-  else 
-    echo "  Appending: " $APPEND2
-    ANYCHANGES='Yes'
-  fi
-fi
-if [[ $APPEND3 != '' ]]; then
-  APPEND3EXISTS=$(grep "$APPEND3" "$CURRENTCONFIG" | wc -l | awk '{$1=$1};1')
-  if [ $APPEND3EXISTS -gt 0 ]; then
-    echo "  Option \"$APPEND3\" already exists in $CURRENTCONFIG, skipping append."
-  else 
-    echo "  Appending: " $APPEND3
-    ANYCHANGES='Yes'
-  fi
-fi
-
-
-if [[ $ANYCHANGES == 'No' ]]; then
-  echo 'No requested changes or all parameters already set to preferred settings.'
-  exit
-fi
-echo "Should you proceed, a backup of your current config.yaml will be made called config.yaml.`date +%F`"
-read -p "Are you sure you wish to make these changes? (Y/y)" -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-   cp $CURRENTCONFIG $CURRENTCONFIG.`date +%F`
-   if [[ $SETLOGLEVEL != '' && $OLDLOGLEVEL != $NEWLOGLEVEL ]]; then
-      echo "Setting log level..."
-      sed -i "s/$OLDLOGLEVEL/$NEWLOGLEVEL/" $CURRENTCONFIG
+SETFARMERPEER=$2
+     
+for FORKNAME in $FORKLIST; do
+   CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
+   CONFIGFOUND=$(ls -lt $CURRENTCONFIG | wc -l )
+   echo
+   echo "forkfixconfig $FORKNAME:  Analyzing $CURRENTCONFIG."
+   if [[ $CONFIGFOUND == 0 ]]; then
+      echo "Configuration file for $FORKNAME not found.  Skipping..."
+      continue
    fi
-   if [[ $SETMAXLOGROTATION != '' && $OLDROTATION != $NEWROTATION ]]; then
-      echo "Setting log rotation..."
-      sed -i "s/$OLDROTATION/$NEWROTATION/" $CURRENTCONFIG
-   fi
-   if [[ $SETPLOTLOADFREQUENCY != '' && $OLDPLOTLOAD != $NEWPLOTLOAD ]]; then     
-      echo "Setting plot load frequency..."
-      sed -i "s/$OLDPLOTLOAD/$NEWPLOTLOAD/" $CURRENTCONFIG
-   fi
-   if [[ $SETBATCHSIZE != '' && $OLDBATCHSIZE != $NEWBATCHSIZE ]]; then  
-      echo "Setting batch size..."
-      sed -i "s/$OLDBATCHSIZE/$NEWBATCHSIZE/" $CURRENTCONFIG
-   fi
-   if [[ $SETBATCHSLEEP != '' && $OLDBATCHSLEEP != $NEWBATCHSLEEP ]]; then  
-      echo "Setting batch sleep..."
-      sed -i "s/$OLDBATCHSLEEP/$NEWBATCHSLEEP/" $CURRENTCONFIG
-   fi
-   if [[ $SETFNTARGETPEERCOUNT != '' && $OLDTGTPEERS != $NEWTGTPEERS ]]; then  
-      echo "Setting target peer count..."
-      sed -i "${TARGETPEERLINENO}s/$OLDTGTPEERS/$NEWTGTPEERS/" $CURRENTCONFIG
-   fi
-   if [[ $SETFARMERPEER != '' && $OLDFARMPEER != $NEWFARMPEER ]]; then
-      echo "Setting farmer peer in harvester section..."
-      # Some versions of config have " *self_hostname " as the original value.  sed sees * as wildcard and fails.  This fixes it.
-      OLDFARMPEER=$(echo "$OLDFARMPEER" | sed 's/\*/\\\*/' )
-      sed -i "${HARVHOSTLINENO}s/$OLDFARMPEER/$NEWFARMPEER/" $CURRENTCONFIG
-   fi
-   if [[ $SETMULTIPROC != '' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then  
-      echo "Adding/replacing multiprocessing limit..."
-      if [[ $EXISTINGMULTIPROC != '' ]]; then
-        sed -i '/multiprocessing_limit/d' $CURRENTCONFIG
-      fi
-      echo >> $CURRENTCONFIG
-      echo $NEWMULTIPROC >> $CURRENTCONFIG
-   fi
-   if [[ $APPEND1 != '' && $APPEND1EXISTS == 0 ]]; then
-      echo "Appending $APPEND1..."
-      echo >> $CURRENTCONFIG
-      echo $APPEND1 >> $CURRENTCONFIG
-   fi
-   if [[ $APPEND2 != '' && $APPEND2EXISTS == 0 ]]; then
-      echo "Appending $APPEND2..."
-      echo >> $CURRENTCONFIG
-      echo $APPEND2 >> $CURRENTCONFIG
-   fi
-   if [[ $APPEND3 != '' && $APPEND3EXISTS == 0 ]]; then
-      echo "Appending $APPEND3..."   
-      echo >> $CURRENTCONFIG
-      echo $APPEND3 >> $CURRENTCONFIG
-   fi
-   
-   echo 'Backed up original' $FORKNAME 'config.yaml to config.yaml.'`date +%F`'. ' $CURRENTCONFIG 'has had the proposed changes applied.'   
-fi
+   . ftfixconfig.sh
+done   
 
