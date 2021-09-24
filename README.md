@@ -2,11 +2,17 @@
 
 # Changelog, Version 2.3 (testing):
 
-- Mac OS X compatibility nearing completion
+- Mac OS X compatibility nearing completion.  Should work fine for everything except forkports, and Memory Usage and Full Node Worker Count stats in forkmon.
+- new tool forklist replaces the old forkcounth.  Instead of just giving a count of running harvesters and nothing else, forklist gives both farmer and harvester counts including a single line list of which forks are running for each.  I am finding this tool extremely handy and using it constantly.
+- new tool forkupdate updates a fork to the most recent tagged release from the fork's online repository (from the "latest" branch if the fork maintains one, from "main" if not) with a single command.  Removes the existing blockchain directory and recreates it with git clone as a fresh installtion.  Can optionally take a -b "tag" switch (to be applied to the git clone commmand).  Note that forkupdate will backup and then remove the existing config.yaml so that 'fork init' during the update process will recreate a fresh config.yaml that includes any new parameters added by the development team.  Target addresses and farmer peer will be transferred to the new config.yaml, and other settings will be configured via forkfixconfig (so your settings in config.forkfixconfig will be applied).
 - forkexplore can now handle 0 or just 1 transaction found without errors
+- changes to some scripts to allow compatibility with shells that run fork processes (and thus change the format of process lists), like SCREEN
+- forkmon now handles Last Block and Effort% calculations much better when a block hasn't been won yet.  Effort% will in that case be calculated from the date of the first successful harvest in the earliest log (so from when you started farming the fork).
 - new tool forkstop accepts switches, enabling it to replace forkstopa, forkstoph, forkstoptl and forkstopall. Run forkstop -h for details.
 - new tool forkstart accepts switches, enabling it to replace forkstartf, forkstartfnw, forkstarth, forkstartall and forkstarttl.  Run forkstart -h for details.
-- new tool forklist replaces the old forkcounth.  Instead of just giving a count of running harvesters and nothing else, forklist gives both farmer and harvester counts including a single line list of which forks are running for each.
+- forkaddplotdirs can now accept "all" instead of forkname as a parameter, which will add the drives specified in config.forkaddplotdirs to every fork with an active harvester.  Great for adding a brand new drive to all forks.
+- forkfixconfig can now accept "all" instead of forkname as a parameter, which will apply the settings specified in config.forkfixconfig to every fork with an active harvester.  Can also use "farmers" instead of forkname to only configure forks running a farmer, or "harvesters" instead to configure only forks running an active harvester but not an active farmer.
+
 
 # Changelog, Version 2.2:
 
@@ -232,14 +238,15 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 
 # COMMANDS WITH ONE PARAMETER: FORKNAME
 
-- `forkfixconfig chia`    \-  Provides automated editing of several entries in chia's config.yaml that require frequent editing - log level, plot loading frequency, farmer peer for harvesters, and several more.  Requires confirmation and creates backups.  Does not actually require editing of default options in config.forkfixconfig - the defaults I picked should work fine - but if you'd like to tweak them, you can do so there.  Please report if the defaults as I chose them cause you any issues so I can review.
+- `forkfixconfig chia`    \-  Provides automated editing of several entries in chia's config.yaml that require frequent editing - log level, plot loading frequency, farmer peer for harvesters, and several more.  Requires confirmation and creates backups.  Does not actually require editing of default options in config.forkfixconfig - the defaults I picked should work fine - but if you'd like to tweak them, you can do so there.  Please report if the defaults as I chose them cause you any issues so I can review.  As of v2.3, can now also accept "all", "farmers" or "harvesters" instead of forkname.
 - `forkconfig hddcoin`    \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit. You can now set your preferred text editor in config.forkconfig.
 - `forknodes avocado`     \-  prints a list of currently connected nodes for sharing with others having difficulty connecting. Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
 - `forksum scam`          \-  runs "scam farm summary"
 - `forkver flora`         \-  runs "flora version", returns the version # of the current install
 - `forkwalletshow maize`  \-  runs "maize wallet show"
 - `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
-- `forkaddplotdirs taco`  \-  Requires configuration in config.forkaddplotdirs to use.  List your plot directories there, then you can add them to any fork quickly with a single command.  Gives warnings if a drive listed in the config is not mounted.
+- `forkaddplotdirs taco`  \-  Requires configuration in config.forkaddplotdirs to use.  List your plot directories there, then you can add them to any fork quickly with a single command.  Gives warnings if a drive listed in the config is not mounted.  As of v2.3, can now also be run with "all" as the parameter instead of forkname to add directories to every fork with an active harvester. 
+- `forkupdate`            \-  Updates a fork to the most recent version with a single command.  Removes the existing blockchain directory and recreates it with git clone as a fresh installtion.  Can optionally take a -b "tag" switch (to be applied to the git clone commmand).  Note that forkupdate will backup and then remove the existing config.yaml so that 'fork init' during the update process will recreate a fresh config.yaml that includes any new parameters added by the development team.  Target addresses and farmer peer will be transferred to the new config.yaml, and other settings will be configured via forkfixconfig (so your settings in config.forkfixconfig will be applied).
 
 # COMMANDS WITH MULTIPLE PARAMETERS/SWITCHES
 
