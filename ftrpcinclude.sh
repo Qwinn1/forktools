@@ -54,6 +54,13 @@ if [[ $FORKNAME == 'silicoin' || $FORKNAME == 'nchain' || $FORKNAME == 'fishery'
 fi
 MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME ="| sed 's/.*=//' | sed 's/_//g' | awk '{$1=$1};1')
 MMMULTIPLIER=$(echo "(( $MMMULTIPLIER ))" | bc )
+if [[ $FORKNAME == 'fishery' ]]; then
+  # this is what they set "_mojo_per_chia" to in their block_rewards.py
+  # 1000000000 * 0.001 * 3
+  # this is exactly the first thing they teach you to always do in scripting school.  Declare all constants as calculations.
+  # shouldn't have changed your name
+  MMMULTIPLIER=3000000
+fi
 
 # Get wallet target address (can be different from what is set in config.yaml, if config was directly edited after last time farmer was started)
 ADDRESS=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{"search_for_private_key":false}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_reward_targets | python -m json.tool )
