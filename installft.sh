@@ -92,6 +92,11 @@ if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/chia-rosechain" ) && ( ! -d "$FORKTOOLSBLOC
   printf 'Created symlink: '
   ln -sv $FORKTOOLSBLOCKCHAINDIRS/chia-rosechain $FORKTOOLSBLOCKCHAINDIRS/rose-blockchain
 fi
+if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/Olive-blockchain" ) && ( ! -d "$FORKTOOLSBLOCKCHAINDIRS/olive-blockchain" ) ]]; then
+  printf 'Created symlink: '
+  ln -sv $FORKTOOLSBLOCKCHAINDIRS/Olive-blockchain $FORKTOOLSBLOCKCHAINDIRS/olive-blockchain
+fi
+
 
 # Symlink creation for .hidden dirs
 if [[ ( -d "$FORKTOOLSHIDDENDIRS/.spare-blockchain" ) && ( ! -d "$FORKTOOLSHIDDENDIRS/.spare" ) ]]; then
