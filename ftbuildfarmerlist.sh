@@ -40,6 +40,6 @@ if [[ $ROSEPORTINUSE == 1 ]]; then
   FARMERLIST=$(echo -e $FARMERLIST"\nrose" )
   FARMERCOUNT=$(echo $(( $FARMERCOUNT + 1 )) )  
 fi
-FARMERLIST=$(echo $FARMERLIST | sort)  
+FARMERLIST=$(echo $FARMERLIST | sort | uniq)  
 IFS=$OLDIFS
 

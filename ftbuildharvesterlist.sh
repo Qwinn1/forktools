@@ -40,7 +40,7 @@ if [[ $ROSEPORTINUSE == 1 ]]; then
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nrose" )
   HARVESTERCOUNT=$(echo $(( $HARVESTERCOUNT + 1 )) )  
 fi  
-HARVESTERLIST=$(echo $HARVESTERLIST | sort)  
+HARVESTERLIST=$(echo $HARVESTERLIST | sort | uniq)  
 IFS=$OLDIFS
 
 
