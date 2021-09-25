@@ -2,7 +2,7 @@ FARMERCOUNT=$(ps -ef | grep _farmer | grep -v grep | wc -l | awk '{$1=$1};1' )
 
 OLDIFS=$IFS
 IFS=''
-FARMERLIST=$(ps -ef | grep -v grep | grep -o [a-z]*_farmer | sed 's/_farmer//' | uniq | sort)
+FARMERLIST=$(ps -ef | grep -v grep | grep -o [A-Za-z]*_farmer | sed 's/_farmer//' | uniq | sort)
 # Verify chia farmer actually running - necessary because of shitforks that didn't rename their processes
 CHIAINLIST=$( echo $FARMERLIST | grep "^chia$" )
 if [[ $CHIAINLIST != '' ]]; then
