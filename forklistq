@@ -15,12 +15,12 @@ function print_usage () {
 . ftinit.sh
 
 . ftbuildfarmerlist.sh
-echo "Farmer count: " $(echo $FARMERLIST | wc -w | awk '{$1=$1};1' )
+echo "Farmer count:" $FARMERCOUNT
 echo $FARMERLIST
 
 echo
 
 . ftbuildharvesterlist.sh
-echo "Harvester count: " $(echo $HARVESTERLIST | wc -w | awk '{$1=$1};1' )
+echo "Harvester count:" $HARVESTERCOUNT
 echo $HARVESTERLIST
 echo
