@@ -1,0 +1,26 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "forklist help:"
+   echo
+   echo "SYNOPSIS:  Provides a count of running farmers and harvesters on the local server, with a single"
+   echo "     line list of the active forks running each type of service."
+   echo
+   echo "PARAMETERS:"
+   echo "     -help | --help      Show this information again."
+   echo
+   exit 0
+}
+
+. ftinit.sh
+
+. ftbuildfarmerlist.sh
+echo "Farmer count: " $(echo $FARMERLIST | wc -w | awk '{$1=$1};1' )
+echo $FARMERLIST
+
+echo
+
+. ftbuildharvesterlist.sh
+echo "Harvester count: " $(echo $HARVESTERLIST | wc -w | awk '{$1=$1};1' )
+echo $HARVESTERLIST
+echo

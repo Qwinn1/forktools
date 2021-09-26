@@ -1,67 +1,9 @@
 #! /usr/bin/env bash
 
-function print_usage () {
-   echo "Usage:  forkfixconfig"
-   echo "  forkname | all | farmers | harvesters    Applies settings as configured in config.forkfixconfig to:"
-   echo "                                              forkname: the specified fork, OR"
-   echo "                                              all:  all forks with active harvesters, OR"
-   echo "                                              farmers:  all forks with active farmers, OR"
-   echo "                                              harvesters:  only to forks with active harvester and no active farmer."
-   echo "  10.0.0.100                               Optional second parameter, farmer peer.  Should only be specified for pure"
-   echo "                                              harvesters.  Set the IP address of the farmer with this option."
-   echo "  -h | --help                              Show this information again."
-   exit 0
-}
+. $FORKTOOLSDIR/ftconfigs/config.logging
 
-
-if [[ $1 == '-h' || $1 == '--help' || $2 == '-h' || $2 == '--help' ]]; then
-  print_usage
-  exit
-fi   
-
-if [[ $3 != '' ]]; then
-  echo "forkstop:  Too many specified parameters."
-  print_usage
-fi
-
-if [[ $1 != 'all' && $1 != 'farmers' && $1 != 'harvesters' ]]; then
-  VALIDATEFORKNAME='Yes'
-fi
-
-. forktoolsinit.sh
-
-
-if [[ $1 == 'all' ]]; then
-  . ftbuildharvesterlist.sh  
-  FORKLIST=$HARVESTERLIST
-elif [[ $1 == 'farmers' ]]; then
-  . ftbuildfarmerlist.sh  
-  FORKLIST=$FARMERLIST
-elif [[ $1 == 'harvesters' ]]; then
-  . ftbuildharvesterlist.sh  
-  . ftbuildfarmerlist.sh  
-  FORKLIST=$HARVESTERLIST
-  for fork in $FARMERLIST; do
-     OLDIFS=$IFS
-     IFS=''
-     FORKLIST=$(echo $FORKLIST | sed "/^$fork$/d" )
-     IFS=$OLDIFS          
-  done
+if [[ $LOGFORKFIXCONFIG == 'true' ]]; then
+  forkfixconfigq $* | tee -a $FORKTOOLSDIR/ftlogs/forkfixconfig.log
 else
-  FORKLIST=$1
-fi
-
-SETFARMERPEER=$2
-     
-for FORKNAME in $FORKLIST; do
-   CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
-   CONFIGFOUND=$(ls -lt $CURRENTCONFIG | wc -l )
-   echo
-   echo "forkfixconfig $FORKNAME:  Analyzing $CURRENTCONFIG."
-   if [[ $CONFIGFOUND == 0 ]]; then
-      echo "Configuration file for $FORKNAME not found.  Skipping..."
-      continue
-   fi
-   . ftfixconfig.sh
-done   
-
+  forkfixconfigq $*
+fi  

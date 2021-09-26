@@ -1,8 +1,9 @@
 #! /usr/bin/env bash
 
-VALIDATEFORKNAME='Yes'
-. forktoolsinit.sh
+. $FORKTOOLSDIR/ftconfigs/config.logging
 
-$FORKCONFIGEDITOR $FORKTOOLSHIDDENDIRS/.$1/mainnet/config/config.yaml
-
+if [[ $LOGFORKCONFIG == 'true' ]]; then
+   echo "forkconfig $* initiated on" `date` >> $FORKTOOLSDIR/ftlogs/forkconfig.log
+fi
+forkconfigq $*
 

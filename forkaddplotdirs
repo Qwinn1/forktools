@@ -1,49 +1,9 @@
 #! /usr/bin/env bash
 
-function print_usage () {
-   echo "Usage:  forkaddplotdirs"
-   echo "  forkname | all                            Adds directories in config.forkaddplotdirs to the specified fork, or to"
-   echo "                                              'all' forks with active harvesters."
-   echo "  -h | --help                               Show this information again."
-   exit 0
-}
+. $FORKTOOLSDIR/ftconfigs/config.logging
 
-if [[ $3 != '' ]]; then
-  echo "forkaddplotdirs:  Too many specified parameters."
-  print_usage
-fi
-
-if [[ $1 == '-h' || $1 == '--help' || $2 == '-h' || $2 == '--help' ]]; then
-  print_usage
-  exit
-fi   
-
-if [[ $1 != 'all' ]]; then
-  VALIDATEFORKNAME='Yes'
-fi
-. forktoolsinit.sh
-
-. ftbuildharvesterlist.sh
-OLDIFS=$IFS
-IFS=$'\n'
-for fork in $HARVESTERLIST; do
-   if [[ $1 != 'all' && $1 != $fork ]]; then
-      continue
-   fi
-   cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain 
-   . ./activate          
-   for plotdir in $FORKADDPLOTDIRS; do
-      STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
-      if [ -n "$STRIPPEDCOMMENTS" ]; then
-         BUILDEXPR=$(echo "$fork plots add -d '$STRIPPEDCOMMENTS'")
-         echo 'forkaddplotdirs running: ' $BUILDEXPR 
-         if [[ ( ! -d "$STRIPPEDCOMMENTS" ) ]]; then
-           echo -e "\e[1;31m   WARNING:  \e[0m $STRIPPEDCOMMENTS is not a mounted directory.  \e[1;31m  :WARNING \e[0m"
-         fi
-         echo $(eval $BUILDEXPR)
-      fi
-   done  
-   deactivate
-done
-IFS=$OLDIFS
-
+if [[ $LOGFORKADDPLOTDIRS == 'true' ]]; then
+  forkaddplotdirsq $* | tee -a $FORKTOOLSDIR/ftlogs/forkaddplotdirs.log
+else
+  forkaddplotdirsq $*
+fi  

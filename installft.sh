@@ -97,7 +97,6 @@ if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/Olive-blockchain" ) && ( ! -d "$FORKTOOLSBL
   ln -sv $FORKTOOLSBLOCKCHAINDIRS/Olive-blockchain $FORKTOOLSBLOCKCHAINDIRS/olive-blockchain
 fi
 
-
 # Symlink creation for .hidden dirs
 if [[ ( -d "$FORKTOOLSHIDDENDIRS/.spare-blockchain" ) && ( ! -d "$FORKTOOLSHIDDENDIRS/.spare" ) ]]; then
   printf 'Created symlink: '
@@ -169,39 +168,44 @@ if [[ ( -f "$FORKTOOLSBLOCKCHAINDIRS/fishery-blockchain/venv/bin/chia" ) && ( ! 
   ln -sv $FORKTOOLSBLOCKCHAINDIRS/fishery-blockchain/venv/bin/chia $FORKTOOLSBLOCKCHAINDIRS/fishery-blockchain/venv/bin/fishery
 fi
 
-
-
+echo "Moving any config files in forktools folder to forktools/ftconfigs folder."
+mv $FORKTOOLSDIR/config.* $FORKTOOLSDIR/ftconfigs
 
 echo "Copying config.FORKTOOL.template files to config.FORKTOOL if necessary..."
-if [[ ( ! -f "$FORKTOOLSDIR/config.forkstartall" ) ]]; then
+if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkstartall" ) ]]; then
   echo "No existing config.forkstartall file found.  Copied from config.forkstartall.template."
   echo "  WARNING:  forkstartall will not function until config.forkstartall is manually configured."
-  cp $FORKTOOLSDIR/config.forkstartall.template $FORKTOOLSDIR/config.forkstartall
+  cp $FORKTOOLSDIR/ftconfigs/config.forkstartall.template $FORKTOOLSDIR/ftconfigs/config.forkstartall
 fi 
-if [[ ( ! -f "$FORKTOOLSDIR/config.forkaddplotdirs" ) ]]; then
+if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs" ) ]]; then
   echo "No existing config.forkaddplotdirs file found.  Copied from config.forkaddplotdirs.template."
   echo "  WARNING:  forkaddplotdirs will not function until config.forkaddplotdirs is manually configured."
-  cp $FORKTOOLSDIR/config.forkaddplotdirs.template $FORKTOOLSDIR/config.forkaddplotdirs
+  cp $FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs.template $FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs
 fi 
-if [[ ( ! -f "$FORKTOOLSDIR/config.forklog" ) ]]; then
+if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forklog" ) ]]; then
   echo "No existing config.forklog file found.  Copied from config.forklog.template."
   echo "  forklog will function correctly with forktools defaults, but user may change defaults as desired in config.forklog ."
-  cp $FORKTOOLSDIR/config.forklog.template $FORKTOOLSDIR/config.forklog
+  cp $FORKTOOLSDIR/ftconfigs/config.forklog.template $FORKTOOLSDIR/ftconfigs/config.forklog
 fi 
-if [[ ( ! -f "$FORKTOOLSDIR/config.forkexplore" ) ]]; then
+if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkexplore" ) ]]; then
   echo "No existing config.forkexplore file found.  Copied from config.forkexplore.template."
   echo "  forkexplore will function correctly with forktools defaults, but user may change defaults as desired in config.forkexplore ."
-  cp $FORKTOOLSDIR/config.forkexplore.template $FORKTOOLSDIR/config.forkexplore
+  cp $FORKTOOLSDIR/ftconfigs/config.forkexplore.template $FORKTOOLSDIR/ftconfigs/config.forkexplore
 fi 
-if [[ ( ! -f "$FORKTOOLSDIR/config.forkfixconfig" ) ]]; then
+if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkfixconfig" ) ]]; then
   echo "No existing config.forkfixconfig file found.  Copied from config.forkfixconfig.template."
   echo "  forkfixconfig will function correctly with forktools defaults, but user may change defaults as desired in config.forkfixconfig ."
-  cp $FORKTOOLSDIR/config.forkfixconfig.template $FORKTOOLSDIR/config.forkfixconfig
+  cp $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.template $FORKTOOLSDIR/ftconfigs/config.forkfixconfig
 fi 
-if [[ ( ! -f "$FORKTOOLSDIR/config.forkconfig" ) ]]; then
+if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkconfig" ) ]]; then
   echo "No existing config.forkconfig file found.  Copied from config.forkconfig.template."
   echo "  forkconfig will function correctly with forktools defaults, but user may change defaults as desired in config.forkconfig ."
-  cp $FORKTOOLSDIR/config.forkconfig.template $FORKTOOLSDIR/config.forkconfig
+  cp $FORKTOOLSDIR/ftconfigs/config.forkconfig.template $FORKTOOLSDIR/ftconfigs/config.forkconfig
+fi 
+if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.logging" ) ]]; then
+  echo "No existing config.logging file found.  Copied from config.logging.template."
+  echo "  Only forkmon logging is enabled by default.  Update config.logging to enable logs for any or every forktool (except forkconfig)."
+  cp $FORKTOOLSDIR/ftconfigs/config.logging.template $FORKTOOLSDIR/ftconfigs/config.logging
 fi 
 
 

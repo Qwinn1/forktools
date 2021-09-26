@@ -1,0 +1,16 @@
+#### FORKLOG SETTINGS
+
+# How many lines should forklog tail if you don't override it with -t parameter?
+FORKLOGTAIL=100
+
+# The below list allows you to set different default date ranges for each log-based or transaction-dated forktool.
+# FORKTOOLSTARTDATE - Do not show log entries or transactions before this date.  To show all, set this to 2021-03-19 (Chia Mainnet Launch)
+# FORKTOOLLASTXDAYS - Show only the last X days (ending today/now, midnight cutoff) for the given log/transaction results.
+# Set only one of the two above for a given forktool.  If both are set, the one by date takes precedence.  
+# FORKTOOLSENDDATE  - Defaults to tomorrow, which will almost always be the most desirable default
+# You can override these defaults at runtime with switches.  Run forklog -h or forkexplore -h for usage instructions.
+
+# Date Format:  2021-03-19
+FORKLOGSTARTDATE=
+FORKLOGLASTXDAYS=5
+FORKLOGENDDATE=$(DateOffset +1) # Tomorrow

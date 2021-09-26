@@ -59,7 +59,7 @@ if [[ $FORKNAME == 'fishery' ]]; then
   # 1000000000 * 0.001 * 3
   # this is exactly the first thing they teach you to always do in scripting school.  Declare all constants as calculations.
   # shouldn't have changed your name
-  MMMULTIPLIER=3000000
+  MMMULTIPLIER=1000000000   # For some reason, actually doing the full calculation breaks things.
 fi
 
 # Get wallet target address (can be different from what is set in config.yaml, if config was directly edited after last time farmer was started)
@@ -171,7 +171,7 @@ NETSPACE=$( assemble_bytestring "$RPCSPACEBYTES" )
 
 IFS=$'\n'
 #if [[ $FORKNAME = 'avocado' || $FORKNAME = 'seno' || $FORKNAME = 'chaingreen' || $FORKNAME = 'thyme' || $FORKNAME = 'equality' || $FORKNAME = 'goji' || $FORKNAME = 'achi' ]]; then
-  BADFORKSUM=$(forksum $FORKNAME);
+  BADFORKSUM=$(forksumq $FORKNAME);
   SIZEOFPLOTS=$(grep "Total size of plots:"  <<< "$BADFORKSUM" | sed 's/Total size of plots://' | awk '{$1=$1};1' )
   CANSEEHARVESTERS=$(grep "Plot count for all harvesters:" <<< "$BADFORKSUM" | wc -l | awk '{$1=$1};1' )
 #  echo $(grep "Plot count for all harvesters:" <<< "$BADFORKSUM" )

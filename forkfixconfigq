@@ -1,0 +1,81 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "forkfixconfig help:"
+   echo
+   echo "SYNOPSIS:  Automatically edits config.yaml files for certain values that can be useful to"
+   echo "    customize. The settings to be applied can be customized in ftconfigs/config.forkfixconfig."
+   echo "           Parameters that can be automatically set by forkfixconfig are log_level,"
+   echo "    log_maxfilesrotation, plot_load_frequency (forkfixconfig will edit interval_seconds"
+   echo "    instead if the fork uses that newer parameter), batch_size, batch_sleep_milliseconds,"
+   echo "    and target_peer_count.  'farmer_peer host:' can also be passed as a parameter for pure"
+   echo "    harvesters."
+   echo "           forkfixconfig can even add multiprocessing_limit, a fork-only parameter"
+   echo "    created by grayfallstown that some forks have implemented which limits the number of"
+   echo "    fullnode workers created in order to save memory.  The normal limit, which is"
+   echo "    dependent on number of CPU cores, is fine when doing a full sync from scratch, but overkill"
+   echo "    once full sync has been achieved.  In order to not accidentally cripple a fork's ability"
+   echo "    to achieve full sync on a new install, forkfixconfig will not add this parameter to"
+   echo "    a config until the fork is confirmed by forkfixconfig as being fully synced."
+   echo "           Running 'forkfixconfig all' will attempt to set configs for every fork with an"
+   echo "    active harvester. Confirmation for each fork will be asked before applying the proposed"
+   echo "    changes."
+   echo "           forkstart should be run for forks after these changes in order to make the new"
+   echo "    config settings actually take effect."
+   echo
+   echo "PARAMETERS:"
+   echo "    forkname            Required."
+   echo "    10.0.0.100          OPTIONAL second parameter. Sets 'host:' under 'farmer_peer' in the"
+   echo "                        harvester section of the config to point the harvester at the IP"
+   echo "                        address of the server running farmer services for that fork."
+   echo "    -help | --help      Show this information again."
+   echo
+   exit 0
+}
+
+if [[ $3 != '' ]]; then
+  echo "forkstop:  Too many specified parameters."
+  print_usage
+fi
+
+if [[ $1 != 'all' && $1 != 'farmers' && $1 != 'harvesters' ]]; then
+  VALIDATEFORKNAME='Yes'
+fi
+
+. ftinit.sh
+
+
+if [[ $1 == 'all' ]]; then
+  . ftbuildharvesterlist.sh  
+  FORKLIST=$HARVESTERLIST
+elif [[ $1 == 'farmers' ]]; then
+  . ftbuildfarmerlist.sh  
+  FORKLIST=$FARMERLIST
+elif [[ $1 == 'harvesters' ]]; then
+  . ftbuildharvesterlist.sh  
+  . ftbuildfarmerlist.sh  
+  FORKLIST=$HARVESTERLIST
+  for fork in $FARMERLIST; do
+     OLDIFS=$IFS
+     IFS=''
+     FORKLIST=$(echo $FORKLIST | sed "/^$fork$/d" )
+     IFS=$OLDIFS          
+  done
+else
+  FORKLIST=$1
+fi
+
+SETFARMERPEER=$2
+     
+for FORKNAME in $FORKLIST; do
+   CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
+   CONFIGFOUND=$(ls -lt $CURRENTCONFIG | wc -l )
+   echo
+   echo "forkfixconfig $FORKNAME:  Analyzing $CURRENTCONFIG."
+   if [[ $CONFIGFOUND == 0 ]]; then
+      echo "Configuration file for $FORKNAME not found.  Skipping..."
+      continue
+   fi
+   . ftfixconfig.sh
+done   
+

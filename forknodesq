@@ -1,0 +1,29 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "forknodes help:"
+   echo
+   echo "SYNOPSIS:  Prints a list of IP addresses and ports for all currently connected network nodes/peers"
+   echo "    for the specified fork in a format useful for sharing with others having difficulty connecting"
+   echo "    to the network."
+   echo "           Prepends each node and port with 'forkname show -a' for easy CLI connection command"
+   echo "    via cut and paste."
+   echo
+   echo "PARAMETERS:"
+   echo "    forkname            Required."   
+   echo "    -help | --help      Show this information again."
+   echo
+   exit 0
+}
+
+VALIDATEFORKNAME='Yes'
+. ftinit.sh
+
+cd $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain 
+. ./activate
+for port in $($1 show -c | grep "^FULL_NODE" | awk '{print $2,$3}' | sed 's/\s[0-9]*\//:/' ); do
+  echo $1 "show -a" $port
+done
+echo
+deactivate
+

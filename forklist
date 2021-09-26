@@ -1,13 +1,9 @@
 #! /usr/bin/env bash
-. forktoolsinit.sh
 
-. ftbuildfarmerlist.sh
-echo "Farmer count: " $(echo $FARMERLIST | wc -w | awk '{$1=$1};1' )
-echo $FARMERLIST
+. $FORKTOOLSDIR/ftconfigs/config.logging
 
-echo
-
-. ftbuildharvesterlist.sh
-echo "Harvester count: " $(echo $HARVESTERLIST | wc -w | awk '{$1=$1};1' )
-echo $HARVESTERLIST
-
+if [[ $LOGFORKLIST == 'true' ]]; then
+  forklistq $* | tee -a $FORKTOOLSDIR/ftlogs/forklist.log
+else
+  forklistq $*
+fi

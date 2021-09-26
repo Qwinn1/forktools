@@ -1,0 +1,176 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "forkexplore help:"
+   echo
+   echo "SYNOPSIS:  100% local address explorer. Gets your coin history with calls to your farmer"
+   echo "    RPC port, which itself queries your local blockchain db."
+   echo "           Does not require wallet sync, just a running farmer."
+   echo "           If -a switch is not specified, forkexplore explores your target receive address."
+   echo "           The -a switch allows you to specify any other receive address you wish to explore."
+   echo "    Works for hot or cold wallet addresses."
+   echo "           forexplore allows filtering with all the same date range options that forklog has."
+   echo "    The default date ranges can be modified in ftconfigs/config.forkexplore, or overridden"
+   echo "    for a single forkexplore run with the -l, -s and -u switches described below."
+   echo "           Transactions that appear in pairs in most other explorers, such as the 1/8 farmer/"
+   echo "    7/8 pool rewards that most forks split their farmed block rewards up as, are summed and" 
+   echo "    displayed as a single total reward in the transaction list for easier legibility."
+   echo
+   echo "PARAMETERS/SWITCHES:"
+   echo "    forkname                                  Required.  All switches optional."
+   echo "    -a <address> | --address <address>        To explore any address, pass it with this switch."
+   echo "    -l 10 | --lastxdays 10                    Show only results for the last 10 days."
+   echo "    -s YYYY-MM-DD | --startdate YYYY-MM-DD    Do not show results prior to this date.  If both"
+   echo "                                                 this and --lastxdays are set, this is used."
+   echo "    -u | --enddate YYYY-MM-DD                 Do not show results after this date."
+   echo "    -help | --help                            Show this information again."
+   echo
+   exit 0
+}
+
+
+function print_usage () {
+   echo "Usage:  forkexplore"
+   echo "  forkname                                  Required parameter.  All others optional."
+   echo "  -a <address> | --address <address>        forkexplore defaults to using your target address."
+   echo "                                            To see another address, pass it with this switch."
+   echo "  -l 10 | --lastxdays 10                    Shows only transactions for the last X days."
+   echo "                                            Default value can be set globally in config.forkexplore."
+   echo "  -s YYYY-MM-DD |                           Do not show transactions prior to this date."
+   echo "       --startdate YYYY-MM-DD                  If both this and -l / --lastxdays are set, this is used."
+   echo "                                            Default value can be set globally in ftconfigs/config.forkexplore."
+   echo "  -u YYYY-MM-DD | --enddate YYYY-MM-DD      Do not show results after this date."
+   echo "                                            Default value can be set globally in config.forkexplore."
+   echo "  -h | --help                               Show this information again."
+   exit 0
+}
+
+
+if [[ $1 = '-h' || $1 = '--help' ]]; then
+  print_usage
+  exit
+fi    
+
+VALIDATEFORKNAME='Yes'
+. ftinit.sh
+
+echo "forkexplore $1 $2 $3 $4 $5 $6 $7 $8 $9 initiated on" `date`
+echo
+
+FORKNAME=$1
+
+STARTDATE=$FORKEXPLORESTARTDATE
+LASTXDAYS=$FORKEXPLORELASTXDAYS
+ENDDATE=$FORKEXPLOREENDDATE # Tomorrow
+
+FIRSTLOOP=1
+while [[ $# -gt 0 ]]; do
+   if [[ $FIRSTLOOP = 1 ]]; then
+     FORKNAME="$1"
+     FIRSTLOOP=0
+     shift
+     continue
+   fi
+   opt="$1"
+   case "$opt" in
+     "-a"|"--address"        ) shift; SPECIFIEDADDRESS=$1; shift;;
+     "-l"|"--lastxdays"      ) shift; LASTXDAYS="$1";SETLASTXDAYS="$1"; shift;;
+     "-s"|"--startdate"      ) shift; STARTDATE="$1";SETSTARTDATE="$1"; shift;;
+     "-u"|"--enddate"        ) shift; ENDDATE="$1"; ENDDATE=$(DateOffset +1 $ENDDATE); shift;;
+     "-h"|"--help"           ) print_usage;;
+     *                       ) echo 'ERROR: Invalid option: '$opt >&2
+                               exit 1;;
+   esac
+done
+
+if [[ $LASTXDAYS != '' ]]; then
+   STARTFROM=$(echo "(($LASTXDAYS - 1))" | bc)
+   STARTFROM=$(DateOffset -${STARTFROM})
+fi
+
+if [[ $STARTDATE != '' && ($SETLASTXDAYS = '' || $SETSTARTDATE != '') ]]; then
+   STARTFROM=$STARTDATE
+fi
+
+. $FORKTOOLSDIR/ftrpcinclude.sh
+
+BUILDEXPR=$(echo 'awk -v start='"$STARTFROM"' -v end='"$ENDDATE")
+BUILDEXPR=$(echo $BUILDEXPR "'"'$0 >= start && $0 <= end'"'")
+BUILDEXPR=$(echo $BUILDEXPR '<<< "$MERGEDCOINLIST"')
+IFS=''
+TRANSACTIONLIST=$(eval $BUILDEXPR | sort)
+
+echo "                         EXPLORING Address:"
+echo "   $ADDRESS" 
+echo
+
+printf '                    Balance:    %10s %3s\n' "$ADDRESSBALANCE" "$COINNAME"
+printf '                    Today:      %10s %3s\n' "$TODAYADDRESSCHANGE" "$COINNAME"
+printf '                    Yesterday:  %10s %3s\n' "$YESTERDAYADDRESSCHANGE" "$COINNAME"
+
+if [[ $TRANSACTIONLIST == '' ]]; then
+  echo
+  printf '           No transactions from %10s to %10s\n' "$STARTFROM" "$ENDDATE"
+  echo
+  exit
+fi
+echo -e '---------------------------------------------------------------------'
+printf '                       Height      Height     Farmed         Total\n'
+printf 'DateTime               Confirmed   Spent      Block?        Amount\n'
+echo -e '---------------------------------------------------------------------'
+
+
+FIRSTLOOP=1
+PREVBLOCKAMOUNT=0
+TOTALFORRANGE=0
+COUNTFORRANGE=0
+while read line; do
+  DATETRANS=$(echo $line | awk '{print $1}')
+  BLOCKAMOUNT=$(echo $line | awk '{print $2}')
+  COINBASE=$(echo $line | awk '{print $3}')
+  HEIGHTCONFIRMED=$(echo $line | awk '{print $4}')
+  HEIGHTSPENT=$(echo $line | awk '{print $5}')
+
+  if [[ $FIRSTLOOP == 1 || ($HEIGHTCONFIRMED == $PREVHEIGHTCONFIRMED && $HEIGHTSPENT == $PREVHEIGHTSPENT && $COINBASE == $PREVCOINBASE && $DATETRANS == $PREVDATETRANS) ]]
+  then 
+     BLOCKAMOUNT=$(echo "(($BLOCKAMOUNT+$PREVBLOCKAMOUNT))" | bc)
+  else
+     BUILDEXPR=$(echo "echo 'scale = 2; (($PREVBLOCKAMOUNT / $MMMULTIPLIER))' | bc -l")
+     PRINTAMOUNT=$(eval $BUILDEXPR)
+     TOTALFORRANGE=$(echo "(($TOTALFORRANGE + $PRINTAMOUNT))" | bc -l)
+     COUNTFORRANGE=$(echo "(($COUNTFORRANGE + 1))" | bc -l)
+     if [[ $PREVCOINBASE = true ]]; then
+       FARMEDBLOCK='Yes'
+     else
+       FARMEDBLOCK='No'
+     fi
+     printf '%19s    %-10s  %-10s %-3s %12.12s %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
+  fi
+  FIRSTLOOP=0
+  PREVDATETRANS=$DATETRANS
+  PREVBLOCKAMOUNT=$BLOCKAMOUNT
+  PREVCOINBASE=$COINBASE
+  PREVHEIGHTCONFIRMED=$HEIGHTCONFIRMED
+  PREVHEIGHTSPENT=$HEIGHTSPENT
+done <<< "$TRANSACTIONLIST"
+
+# Add the last line.
+BUILDEXPR=$(echo "echo 'scale = 2; (($PREVBLOCKAMOUNT / $MMMULTIPLIER))' | bc -l")
+PRINTAMOUNT=$(eval $BUILDEXPR)
+if [[ $PREVCOINBASE = true ]]; then
+  FARMEDBLOCK='Yes'
+else
+  FARMEDBLOCK='No'
+fi
+printf '%19s    %-10s  %-10s %-3s %12.12s %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
+TOTALFORRANGE=$(echo "(($TOTALFORRANGE + $PRINTAMOUNT))" | bc -l)
+COUNTFORRANGE=$(echo "(($COUNTFORRANGE + 1))" | bc)
+
+echo -e '---------------------------------------------------------------------'
+# Set ENDDATE one day back for display purposes
+ENDDATE=$(DateOffset -1 $ENDDATE)
+printf '%6.6s transactions from %10s to %10s:%12s %-5s\n' "$COUNTFORRANGE" "$STARTFROM" "$ENDDATE" "$TOTALFORRANGE" "$COINNAME"
+echo
+IFS=DEFAULT_IFS
+. ftexit.sh
+

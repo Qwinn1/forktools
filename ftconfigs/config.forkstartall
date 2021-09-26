@@ -1,0 +1,44 @@
+#### FORKSTARTALL settings
+
+#  Set the 3 variables below to specify which forks you want forkstartall to start with forkstartf, forkstartfnw, and/or forkstarth)
+#  forkstartf is (re)start farmer with wallet, forkstartfnw is (re)start farmer without wallet, forkstarth is (re)start harvester
+
+# All these lines will be ignored until you remove the # at the beginning of each.
+
+FORKSTARTFLIST='# List forks to start with forkname start farmer -r
+'
+
+FORKSTARTFNWLIST='# List forks to start with forkname start farmer-no-wallet -r
+apple
+avocado
+beet
+btcgreen
+cannabis
+covid
+flax
+flora
+goji
+goldcoin
+greendoge
+maize
+scam
+stor
+'
+FORKSTARTHLIST='# List forks to start with forkname start harvester -r
+cactus
+chia
+cryptodoge
+dogechia
+hddcoin
+kale
+melati
+olive
+pipscoin
+sector
+seno
+silicoin
+socks
+taco
+tad
+'
+

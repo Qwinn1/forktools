@@ -1,0 +1,19 @@
+#### FORKADDPLOTDIRS SETTINGS
+# List all plot directories to add here.  Make as many lines as you need, modify to fit your own paths, then remove the #s to activate the lines:
+
+FORKADDPLOTDIRS='
+/media/qwinn/dsk15/Plot15
+/media/qwinn/dsk16/Plot16
+/media/qwinn/dsk22/Plot22
+/media/qwinn/dsk24/Plot24
+/media/qwinn/dsk25/Plot25
+/media/qwinn/dsk26/Plot26
+/media/qwinn/dsk28/Plot28
+/media/qwinn/dsk29/Plot29
+/media/qwinn/dsk30/Plot30
+/media/qwinn/dsk31/Plot31
+/media/qwinn/dsk43/Plot43
+/plotter3/stage1
+/plotter4/stage2
+'
+

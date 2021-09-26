@@ -1,0 +1,31 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "forkports help:"
+   echo
+   echo "SYNOPSIS:   Checks port locking contention on all forks with an active _harvester process."
+   echo "            Extracts a list of every port used by each fork from the fork's config.yaml, then"
+   echo "   runs 'ss' scanning for any process using those ports that does not contain that fork's"
+   echo "   name as the owner of the process."
+   echo "            If the listed processes don't have a *different* fork or app's name as the owner of the"
+   echo "    process, that output can probably be safely disregarded. If no processes are listed under a"
+   echo "    given fork in the output, no ports were locked by a different fork - i.e., no conflict found."
+   echo
+   echo "PARAMETERS:"
+   echo "     -help | --help      Show this information again."
+   echo
+   exit 0
+}
+
+. ftinit.sh
+. ftbuildharvesterlist.sh
+
+for fork in $HARVESTERLIST; do
+  echo "Scanning: $fork"
+  for port in $(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml | grep "port: " | grep -v "default_full_node_port" | sed 's/\s*[a-z_]*port: //g' | sed 's/\s*[#].*//g' | sort | uniq); do
+     forkss | grep :$port[^0-9] | grep -v '"'$fork_
+  done
+done
+echo
+
+

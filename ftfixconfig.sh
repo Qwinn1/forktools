@@ -7,7 +7,7 @@ while read line; do
    ((LINENUMBER=$LINENUMBER+1))
    PRESERVECOMMENT=$(grep '#' <<< "$line" | sed 's/.*#/#/')
    WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
-   TESTSECTION=$(grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
+   TESTSECTION=$(grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^pool:' -e '^logging:' <<< "$WORKLINE" )
 
   if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]];
   then 
