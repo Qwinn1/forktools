@@ -11,7 +11,7 @@ fi
 # Display forktool startup string.  Silenced after first time so forktools can call other forktools without redisplaying in the call.
 # Also makes sure that any redirected errors go to the parent forktool's error log, not to the log of a called forktool.
 if [[ $FTBASECOMMAND == '' ]]; then
-  export FTBASECOMMAND=$( echo $0 | sed 's|.*forktools/||' | sed 's/q$//' )
+  export FTBASECOMMAND=$( basename $0 | sed 's/q$//' )
   export FTFULLCOMMAND=$( echo $FTBASECOMMAND $* )  
   echo "'$FTFULLCOMMAND' initiated on `date`..."
   echo
@@ -44,7 +44,7 @@ stopforkscript() {
 
 #### Call corresponding include for the forktool we're running.  
 # We'll include forkstartall for any run of forkstart, even if it's not 'forkstart all'
-FTCURRENTTOOL=$( echo $0 | sed 's|.*forktools/||' | sed 's/q$//' )
+FTCURRENTTOOL=$( basename $0 | sed 's/q$//' )
 if [[ $FTCURRENTTOOL == 'forkstart' ]]; then
   FTCURRENTTOOL='forkstartall'
 fi
