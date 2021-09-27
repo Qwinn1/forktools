@@ -33,6 +33,16 @@ if [[ $ROSEPORTINUSE == 1 ]]; then
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nrose" )
 fi  
 HARVESTERLIST=$(echo $HARVESTERLIST | sort | uniq )  
-IFS=$OLDIFS
+
+# Verify the blockchain and hidden directories are actually accessible.  Dockers, for example, have the processes but nothing else accessible.
+HARVESTERLISTCHECK=$HARVESTERLIST
+IFS=$'\n' 
+for fork in $HARVESTERLISTCHECK; do
+  if [[ ! -d $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log || ! -d $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain ]]; then
+     HARVESTERLIST=$(echo $HARVESTERLIST | sed "/^$fork$/d" )
+  fi
+done  
+
 HARVESTERCOUNT=$(echo $HARVESTERLIST | wc -w | awk '{$1=$1};1')
+IFS=$OLDIFS
 
