@@ -36,11 +36,17 @@ fi
 FARMERLIST=$(echo $FARMERLIST | sort | uniq)  
 
 # Verify the blockchain and hidden directories are actually accessible.  Dockers, for example, have the processes but nothing else accessible.
+FARMERLIST='
+chia
+achi
+'
+
 FARMERLISTCHECK=$FARMERLIST
 IFS=$'\n' 
 for fork in $FARMERLISTCHECK; do
   if [[ ! -d $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log || ! -d $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain ]]; then
-     FARMERLIST=$(echo $FARMERLIST | sed "/^$fork$/d" )
+     IFS=''
+     FARMERLIST=$(echo $FARMERLIST | grep -v "^$fork$" )
   fi
 done  
 

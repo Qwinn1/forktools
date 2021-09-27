@@ -38,6 +38,7 @@ HARVESTERLIST=$(echo $HARVESTERLIST | sort | uniq )
 HARVESTERLISTCHECK=$HARVESTERLIST
 IFS=$'\n' 
 for fork in $HARVESTERLISTCHECK; do
+  IFS=''
   if [[ ! -d $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log || ! -d $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain ]]; then
      HARVESTERLIST=$(echo $HARVESTERLIST | sed "/^$fork$/d" )
   fi
