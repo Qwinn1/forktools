@@ -6,12 +6,25 @@ if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $F
   FARMERPROCESS='\s'$FORKNAME'_farmer'
   FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
   if [ -z "$FARMERRUNNING" ]; then
-     echo "Farmer for $FORKNAME is not running, process aborted."
-     exit
+     echo "Farmer for $FORKNAME is not running, skipping."
+     continue
   fi
 else
   FARMERRUNNING=1
 fi
+
+# Excepting the forks with chia_ process names, we've already checked if farmer is running via ss port check in forkmon.
+if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
+  FULLNODEPROCESS='\s'$FORKNAME'_full_n'
+  FULLNODERUNNING=$(ps -ef | grep -e $FULLNODEPROCESS | grep -v grep)
+  if [ -z "$FULLNODERUNNING" ]; then
+     echo "Full Node for $FORKNAME is not running, skipping."
+     continue
+  fi
+else
+  FULLNODERUNNING=1
+fi
+
 
 CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
 

@@ -43,9 +43,11 @@ if [[ $VALIDATEFORKNAME == 'No' ]]; then
   echo -e "------------------------------------------------------------------- FARMERS: $FARMERCOUNT -----------------------------------------------------------------"
   printf '\n'
 fi
-printf '                                                                              FulNode   Memory   NoHarv       Address              Last\n'
-printf 'Farmer            Version         Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort\n'
-echo -e "-------------------------------------------------------------------------------------------------------------------------------------------------"
+if [[ $FARMERCOUNT > 0 ]]; then
+   printf '                                                                              FulNode   Memory   NoHarv       Address              Last\n'
+   printf 'Farmer            Version         Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort\n'
+   echo -e "-------------------------------------------------------------------------------------------------------------------------------------------------"
+fi
 for fork in $FARMERLIST; do
    FORKNAME=$fork
    if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $1 ]]; then
@@ -111,8 +113,8 @@ for fork in $HARVESTERLIST; do
    LASTRESPONSETIME=$(sed 's/.*Time: //' <<< "$LASTHARVESTERLINE" | sed 's/ s\. Total.*//' | awk '{$1=$1};1')
    TODAYMAX=$(grep -a $TODAYSTAMP debug.log* | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
    YESTERDAYMAX=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
-   TODAYAVG=$(grep -a $TODAYSTAMP debug.log* | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total += $2; count++} END { print total/count }')
-   YESTERDAYAVG=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total2 += $2; count2++} END { print total2/count2 }')   
+   TODAYAVG=$(grep -a $TODAYSTAMP debug.log* | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total += $2; count++} END { if ( count > 0 ) print total/count }')
+   YESTERDAYAVG=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total2 += $2; count2++} END { if ( count2 > 0 ) print total2/count2 }')   
    PROOFSTODAYLIST=$(grep -a $TODAYSTAMP debug.log* | grep -a "Found [1-9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )
    PROOFSYESTERDAYLIST=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a "Found [1-9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )   
    PROOFCOUNT=0
@@ -127,5 +129,5 @@ done
 echo
 
 . ftexit.sh
-
+# if ( count = 0 ) print 0 else 
 

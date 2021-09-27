@@ -28,36 +28,32 @@ function print_usage () {
    exit 0
 }
 
-
-function print_usage () {
-   echo "Usage:  forkexplore"
-   echo "  forkname                                  Required parameter.  All others optional."
-   echo "  -a <address> | --address <address>        forkexplore defaults to using your target address."
-   echo "                                            To see another address, pass it with this switch."
-   echo "  -l 10 | --lastxdays 10                    Shows only transactions for the last X days."
-   echo "                                            Default value can be set globally in config.forkexplore."
-   echo "  -s YYYY-MM-DD |                           Do not show transactions prior to this date."
-   echo "       --startdate YYYY-MM-DD                  If both this and -l / --lastxdays are set, this is used."
-   echo "                                            Default value can be set globally in ftconfigs/config.forkexplore."
-   echo "  -u YYYY-MM-DD | --enddate YYYY-MM-DD      Do not show results after this date."
-   echo "                                            Default value can be set globally in config.forkexplore."
-   echo "  -h | --help                               Show this information again."
-   exit 0
-}
-
-
-if [[ $1 = '-h' || $1 = '--help' ]]; then
-  print_usage
-  exit
-fi    
-
 VALIDATEFORKNAME='Yes'
 . ftinit.sh
 
-echo "forkexplore $1 $2 $3 $4 $5 $6 $7 $8 $9 initiated on" `date`
-echo
-
 FORKNAME=$1
+
+if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
+  FARMERPROCESS='\s'$FORKNAME'_farmer'
+  FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
+  if [ -z "$FARMERRUNNING" ]; then
+     echo "forkexplore requires a running farmer process, which is not detected.  Aborting."
+     continue
+  fi
+else
+  FARMERRUNNING=1
+fi
+
+if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
+  FULLNODEPROCESS='\s'$FORKNAME'_full_n'
+  FULLNODERUNNING=$(ps -ef | grep -e $FULLNODEPROCESS | grep -v grep)
+  if [ -z "$FULLNODERUNNING" ]; then
+     echo "forkexplore requires a running full node process, which is not detected.  Aborting."
+     continue
+  fi
+else
+  FULLNODERUNNING=1
+fi
 
 STARTDATE=$FORKEXPLORESTARTDATE
 LASTXDAYS=$FORKEXPLORELASTXDAYS
