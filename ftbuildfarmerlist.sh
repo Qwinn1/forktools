@@ -36,11 +36,6 @@ fi
 FARMERLIST=$(echo $FARMERLIST | sort | uniq)  
 
 # Verify the blockchain and hidden directories are actually accessible.  Dockers, for example, have the processes but nothing else accessible.
-FARMERLIST='
-chia
-achi
-'
-
 FARMERLISTCHECK=$FARMERLIST
 IFS=$'\n' 
 for fork in $FARMERLISTCHECK; do
