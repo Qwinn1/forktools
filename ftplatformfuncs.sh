@@ -8,7 +8,7 @@ if [[ $OSTYPE == 'darwin'* ]]; then
       fi
     }
     function forkss () {
-      join <(ps x -o pid,comm | awk '{print $1 " \"" $2 "\""}' | sort) <(lsof -i4 -n | awk '{print $2 " " $9 " :"}' | sort) 
+      join <(ps x -o pid,comm | awk '{print $1 " \"" $2 "\""}' | sort) <(lsof -i4 -i TCP -n | grep LISTEN | awk '{print $2 " " $9 " :"}' | sort)
     }
     function forkmemory () {
       echo 'N/A'
