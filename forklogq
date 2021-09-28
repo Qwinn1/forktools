@@ -61,11 +61,11 @@ while [[ $# -gt 0 ]]; do
    fi
    opt="$1"
    case "$opt" in
-     "-e"|"--error"          ) GREPTERM=$(echo "$GREPTERM" '-e ERROR'); shift;;
-     "-w"|"--warning"        ) GREPTERM=$(echo "$GREPTERM" '-e WARNING'); shift;;
-     "-p"|"--proofs"         ) GREPTERM=$(echo "$GREPTERM" '-e "Found [1.9].* proofs\."'); shift;;
-     "-h"|"--harv"           ) GREPTERM=$(echo "$GREPTERM" '-e harvester'); shift;;
-     "-g"|"--grep"           ) shift; GREPTERM=$(echo $GREPTERM '-e ' $1); shift;;
+     "-e"|"--error"          ) GREPTERM=$(printf "%s -e ERROR" "$GREPTERM" ); shift;;
+     "-w"|"--warning"        ) GREPTERM=$(printf "%s -e WARNING" "$GREPTERM" ); shift;;
+     "-p"|"--proofs"         ) GREPTERM=$(printf "%s -e 'Found [1.9].* proofs\.'" "$GREPTERM" ); shift;;
+     "-h"|"--harv"           ) GREPTERM=$(printf "%s -e harvester" "$GREPTERM" ); shift;;
+     "-g"|"--grep"           ) shift; GREPTERM=$(printf "%s -e $1" "$GREPTERM" ); shift;;
      "-l"|"--lastxdays"      ) shift; LASTXDAYS="$1"; SETLASTXDAYS="$1"; shift;;
      "-s"|"--startdate"      ) shift; STARTDATE="$1"; SETSTARTDATE="$1"; shift;;
      "-u"|"--enddate"        ) shift; ENDDATE="$1"; ENDDATE=$(DateOffset +1 $ENDDATE); shift;;
