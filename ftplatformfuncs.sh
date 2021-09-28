@@ -11,7 +11,7 @@ if [[ $OSTYPE == 'darwin'* ]]; then
       join <(ps x -o pid,comm | awk '{print $1 " \"" $2 "\""}' | sort) <(lsof -i4 -i TCP -n | grep LISTEN | awk '{print $2 " " $9 " :"}' | sort)
     }
     function forkmemory () {
-      echo 'N/A'
+      ps -x -o rss= -p $(pgrep ^${fork}_) | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
     }
     function DateToEpoch () {
       xargs -I {} date -j -f "%Y-%m-%dT%H:%M:%S" "{}" "+%s" | awk '{$1=$1};1'
