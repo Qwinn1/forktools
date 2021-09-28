@@ -14,23 +14,23 @@ fi
 # Add special handling for obnoxious horribly coded forks that use "chia_farmer" as process name
 # I do this under protest.
 XCHAPORTINUSE=$(forkss | grep '"chia_farm' | grep ":5159 " | wc -l | awk '{$1=$1};1')
-if [[ $XCHAPORTINUSE == 1 ]]; then 
+if [[ $XCHAPORTINUSE > 0 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nxcha" )
 fi  
 LUCKYPORTINUSE=$(forkss | grep '"chia_farm' | grep ":16659 " | wc -l | awk '{$1=$1};1')
-if [[ $LUCKYPORTINUSE == 1 ]]; then 
+if [[ $LUCKYPORTINUSE > 0 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nlucky" )
 fi  
 NCHAINPORTINUSE=$(forkss | grep '"chia_farm' | grep ":38559 " | wc -l | awk '{$1=$1};1')
-if [[ $NCHAINPORTINUSE == 1 ]]; then 
+if [[ $NCHAINPORTINUSE > 0 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nnchain" )
 fi  
 FISHERYPORTINUSE=$(forkss | grep '"chia_farm' | grep ":4799 " | wc -l | awk '{$1=$1};1')
-if [[ $FISHERYPORTINUSE == 1 ]]; then 
+if [[ $FISHERYPORTINUSE > 0 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nfishery" )
 fi  
 ROSEPORTINUSE=$(forkss | grep '"chia_farm' | grep ":8459 " | wc -l | awk '{$1=$1};1')
-if [[ $ROSEPORTINUSE == 1 ]]; then 
+if [[ $ROSEPORTINUSE > 0 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nrose" )
 fi
 FARMERLIST=$(echo $FARMERLIST | sort | uniq)  

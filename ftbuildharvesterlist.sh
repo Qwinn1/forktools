@@ -13,23 +13,23 @@ fi
 # Add special handling for obnoxious horribly coded forks that use "chia_harvester" as process names
 # I do this under protest.
 XCHAPORTINUSE=$(forkss | grep '"chia_harv' | grep ":5160 " | wc -l | awk '{$1=$1};1')
-if [[ $XCHAPORTINUSE == 1 ]]; then 
+if [[ $XCHAPORTINUSE > 0 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nxcha" )
 fi  
 LUCKYPORTINUSE=$(forkss | grep '"chia_harv' | grep ":16660 " | wc -l | awk '{$1=$1};1')
-if [[ $LUCKYPORTINUSE == 1 ]]; then 
+if [[ $LUCKYPORTINUSE > 0 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nlucky" )
 fi  
 NCHAINPORTINUSE=$(forkss | grep '"chia_harv' | grep ":38560 " | wc -l | awk '{$1=$1};1')
-if [[ $NCHAINPORTINUSE == 1 ]]; then 
+if [[ $NCHAINPORTINUSE > 0 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nnchain" )
 fi  
 FISHERYPORTINUSE=$(forkss | grep '"chia_harv' | grep ":4790 " | wc -l | awk '{$1=$1};1')
-if [[ $FISHERYPORTINUSE == 1 ]]; then 
+if [[ $FISHERYPORTINUSE > 0 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nfishery" )
 fi  
 ROSEPORTINUSE=$(forkss | grep '"chia_harv' | grep ":8561 " | wc -l | awk '{$1=$1};1')
-if [[ $ROSEPORTINUSE == 1 ]]; then 
+if [[ $ROSEPORTINUSE > 0 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nrose" )
 fi  
 HARVESTERLIST=$(echo $HARVESTERLIST | sort | uniq )  
