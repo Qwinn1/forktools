@@ -8,7 +8,7 @@ if [[ $OSTYPE == 'darwin'* ]]; then
       fi
     }
     function forkss () {
-      netstat -atnp 2>/dev/null | grep -v TIME_WAIT
+      join <(ps x -o pid,comm | awk '{print $1 " \"" $2 "\""}' | sort) <(lsof -i4 -n | awk '{print $2 " " $9 " :"}' | sort) 
     }
     function forkmemory () {
       echo 'N/A'
