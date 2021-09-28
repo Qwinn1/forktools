@@ -222,7 +222,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
       OLDFARMPEER=$(echo "$OLDFARMPEER" | sed 's/\*/\\\*/' )
       sed -i "${HARVHOSTLINENO}s/$OLDFARMPEER/$NEWFARMPEER/" $CURRENTCONFIG
    fi
-   if [[ $SETMULTIPROC != '' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then  
+   if [[ $SETMULTIPROC != '' && $SKIPMULTIPROC == 'No' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then  
       echo "Adding/replacing multiprocessing limit..."
       if [[ $EXISTINGMULTIPROC != '' ]]; then
         sed -i '/multiprocessing_limit/d' $CURRENTCONFIG
