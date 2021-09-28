@@ -1,8 +1,7 @@
 
 # All RPC calls and most data assembly for forkmon and forkexplorer occurs in this include.
 
-# Excepting the forks with chia_ process names, we've already checked if farmer is running via ss port check in forkmon.
-if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
+if [[ $FORKNAME != 'chia' && $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
   FARMERPROCESS='\s'$FORKNAME'_farmer'
   FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
   if [ -z "$FARMERRUNNING" ]; then
@@ -10,11 +9,23 @@ if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $F
      continue
   fi
 else
-  FARMERRUNNING=1
+  FARMERRUNNING=1  # if it isn't, we'll be skipping the fork completely
+  case "$FORKNAME" in
+    "chia"            ) PORTTOSEARCH=":8559 ";;
+    "xcha"            ) PORTTOSEARCH=":5159 ";;
+    "lucky"           ) PORTTOSEARCH=":16659 ";;
+    "nchain"          ) PORTTOSEARCH=":38559 ";;
+    "fishery"         ) PORTTOSEARCH=":4799 ";;
+    "rose"            ) PORTTOSEARCH=":8459 ";;
+  esac
+  CHIAPORTINUSE=$(forkss | grep '"chia_farm' | grep $PORTTOSEARCH | wc -l | awk '{$1=$1};1')
+  if [[ $CHIAPORTINUSE == 0 ]]; then
+     echo "Farmer for $FORKNAME is not running, skipping."
+     continue
+  fi
 fi
 
-# Excepting the forks with chia_ process names, we've already checked if farmer is running via ss port check in forkmon.
-if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
+if [[ $FORKNAME != 'chia' && $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
   FULLNODEPROCESS='\s'$FORKNAME'_full_n'
   FULLNODERUNNING=$(ps -ef | grep -e $FULLNODEPROCESS | grep -v grep)
   if [ -z "$FULLNODERUNNING" ]; then
@@ -22,7 +33,19 @@ if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $F
      continue
   fi
 else
-  FULLNODERUNNING=1
+  case "$FORKNAME" in
+    "chia"            ) PORTTOSEARCH=":8555 ";;
+    "xcha"            ) PORTTOSEARCH=":5155 ";;
+    "lucky"           ) PORTTOSEARCH=":16655 ";;
+    "nchain"          ) PORTTOSEARCH=":38555 ";;
+    "fishery"         ) PORTTOSEARCH=":4795 ";;
+    "rose"            ) PORTTOSEARCH=":8025 ";;
+  esac
+  CHIAPORTINUSE=$(forkss | grep '"chia_full' | grep $PORTTOSEARCH | wc -l | awk '{$1=$1};1')
+  if [[ $CHIAPORTINUSE == 0 ]]; then
+     echo "Full node for $FORKNAME is not running, skipping."
+     continue
+  fi
 fi
 
 
