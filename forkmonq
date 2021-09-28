@@ -89,12 +89,12 @@ done
 
 printf '\n'
 if [[ $VALIDATEFORKNAME == 'No' ]]; then
-  echo -e "-------------------------------------------- HARVESTERS: $HARVESTERCOUNT ------------------------------------------------"
+  echo -e "-------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ------------------------------------------------------"
 fi
-printf '                                                         Average    Average    Longest    Longest     Proofs\n'
-printf '                                                 Last   Response   Response   Response   Response      Since\n'
-printf 'Harvester         Version      # Plots        Harvest      Today  Yesterday      Today  Yesterday  Yesterday\n'
-echo -e "------------------------------------------------------------------------------------------------------------"
+printf '                                                         Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
+printf '                                                 Last   Response   Response   Response   Response   Warns  Warns   Since\n'
+printf 'Harvester         Version      # Plots        Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
+echo -e "------------------------------------------------------------------------------------------------------------------------"
 for fork in $HARVESTERLIST; do
    if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $1 ]]; then
      continue
@@ -106,6 +106,8 @@ for fork in $HARVESTERLIST; do
    CURRENTTIME=$(date "+%s")
    LASTHARVESTTIME=$(sed 's/\..*//' <<< "$LASTHARVESTERLINE" | awk '{$1=$1};1')
    LASTHARVESTEPOCH=$(echo "$LASTHARVESTTIME" | DateToEpoch )
+   TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP debug.log* | grep -a ' below 5 seconds ' | wc -l )
+   YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a ' below 5 seconds ' | wc -l )   
    if [[ $LASTHARVESTEPOCH = '' ]]; then
      LASTHARVESTEPOCH=0
    fi
@@ -124,7 +126,7 @@ for fork in $HARVESTERLIST; do
    for proof in $(echo $PROOFSYESTERDAYLIST); do
      let PROOFCOUNT=$PROOFCOUNT+$proof
    done
-   printf '%-17.17s %-15s %-8s %5ss ago %9.2fs %9.2fs %9.2fs %9.2fs %10s\n' "$fork" "$FORKVERSION" "$PLOTCOUNT" "$LASTHARVESTAGO" "$TODAYAVG" "$YESTERDAYAVG" "$TODAYMAX" "$YESTERDAYMAX" "$PROOFCOUNT"
+   printf '%-17.17s %-15s %-8s %5ss ago %9.2fs %9.2fs %9.2fs %9.2fs %7s %6s %7s\n' "$fork" "$FORKVERSION" "$PLOTCOUNT" "$LASTHARVESTAGO" "$TODAYAVG" "$YESTERDAYAVG" "$TODAYMAX" "$YESTERDAYMAX" "$TODAYFIVESECWARNS" "$YESTERDAYFIVESECWARNS" "$PROOFCOUNT" 
 done
 echo
 
