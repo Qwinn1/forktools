@@ -49,7 +49,7 @@ FOREVER AFTER, you can update forktools at any time by simply running the follow
 
 ```
 cd forktools
-bash installft.sh   # or 'bash installfttest.sh` for testing branch
+bash installft.sh   # or 'bash installfttest.sh' for testing branch
 ```
 
 
