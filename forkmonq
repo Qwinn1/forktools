@@ -53,13 +53,12 @@ for fork in $FARMERLIST; do
    if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $1 ]]; then
      continue
    fi
-   cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log   
-   HARVESTERERRORS=$(grep -a "Harvester did not respond" debug.log* | grep -c -e $TODAYSTAMP -e $YESTERDAYSTAMP )
+   cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log 
+   HARVESTERERRORS=$(grep -a "Harvester did not respond" debug.log debug.log.1 | grep -c -e $TODAYSTAMP -e $YESTERDAYSTAMP )
    FORKMEM=$(forkmemory)
    FORKVERSION=$($FORKTOOLSDIR/forkverq $fork)
    FULLNODEPROCESS='\s'$FORKNAME'_full'   
    FNWORKERS=$(ps -ef | grep -v grep | grep -c "$FULLNODEPROCESS" )
-   
    . $FORKTOOLSDIR/ftrpcinclude.sh   
    EFFORT=${EFFORT%.*}
    ADDRESSBALANCE=${ADDRESSBALANCE%.*}
@@ -99,19 +98,19 @@ for fork in $HARVESTERLIST; do
    CURRENTTIME=$(date "+%s")
    LASTHARVESTTIME=$(sed 's/\..*//' <<< "$LASTHARVESTERLINE" | awk '{$1=$1};1')
    LASTHARVESTEPOCH=$(echo "$LASTHARVESTTIME" | DateToEpoch )
-   TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP debug.log* | grep -ac ' below 5 seconds ' )
-   YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP debug.log* | grep -ac ' below 5 seconds ')   
+   TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP debug.log debug.log.1 debug.log.2 | grep -ac ' below 5 seconds ' )
+   YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP debug.log debug.log.1 debug.log.2 | grep -ac ' below 5 seconds ')   
    if [[ $LASTHARVESTEPOCH = '' ]]; then
      LASTHARVESTEPOCH=0
    fi
    let LASTHARVESTAGO=$CURRENTTIME-$LASTHARVESTEPOCH
    LASTRESPONSETIME=$(sed 's/.*Time: //' <<< "$LASTHARVESTERLINE" | sed 's/ s\. Total.*//' | awk '{$1=$1};1')
-   TODAYMAX=$(grep -a $TODAYSTAMP debug.log* | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
-   YESTERDAYMAX=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
-   TODAYAVG=$(grep -a $TODAYSTAMP debug.log* | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total += $2; count++} END { if ( count > 0 ) print total/count }')
-   YESTERDAYAVG=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total2 += $2; count2++} END { if ( count2 > 0 ) print total2/count2 }')   
-   PROOFSTODAYLIST=$(grep -a $TODAYSTAMP debug.log* | grep -a "Found [1-9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )
-   PROOFSYESTERDAYLIST=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a "Found [1-9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )   
+   TODAYMAX=$(grep -a $TODAYSTAMP debug.log debug.log.1 debug.log.2 | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
+   YESTERDAYMAX=$(grep -a $YESTERDAYSTAMP debug.log debug.log.1 debug.log.2 | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
+   TODAYAVG=$(grep -a $TODAYSTAMP debug.log debug.log.1 debug.log.2 | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total += $2; count++} END { if ( count > 0 ) print total/count }')
+   YESTERDAYAVG=$(grep -a $YESTERDAYSTAMP debug.log debug.log.1 debug.log.2 | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total2 += $2; count2++} END { if ( count2 > 0 ) print total2/count2 }')   
+   PROOFSTODAYLIST=$(grep -a $TODAYSTAMP debug.log debug.log.1 debug.log.2 | grep -a "Found [1-9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )
+   PROOFSYESTERDAYLIST=$(grep -a $YESTERDAYSTAMP debug.log debug.log.1 debug.log.2 | grep -a "Found [1-9].* proofs" | sed 's/.*Found //' | sed 's/ proofs.*//' )   
    PROOFCOUNT=0
    for proof in $(echo $PROOFSTODAYLIST); do
      let PROOFCOUNT=$PROOFCOUNT+$proof

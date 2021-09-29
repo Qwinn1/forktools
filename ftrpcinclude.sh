@@ -18,7 +18,7 @@ else
     "fishery"         ) PORTTOSEARCH=":4799 ";;
     "rose"            ) PORTTOSEARCH=":8459 ";;
   esac
-  CHIAPORTINUSE=$(forkss | grep '"chia_farm' | grep $PORTTOSEARCH | wc -l | awk '{$1=$1};1')
+  CHIAPORTINUSE=$(forkss | grep '"chia_farm' | grep -c $PORTTOSEARCH )
   if [[ $CHIAPORTINUSE == 0 ]]; then
      echo "Farmer for $FORKNAME is not running, skipping."
      continue
@@ -41,7 +41,7 @@ else
     "fishery"         ) PORTTOSEARCH=":4795 ";;
     "rose"            ) PORTTOSEARCH=":8025 ";;
   esac
-  CHIAPORTINUSE=$(forkss | grep '"chia_full' | grep $PORTTOSEARCH | wc -l | awk '{$1=$1};1')
+  CHIAPORTINUSE=$(forkss | grep '"chia_full' | grep -c $PORTTOSEARCH )
   if [[ $CHIAPORTINUSE == 0 ]]; then
      echo "Full node for $FORKNAME is not running, skipping."
      continue
@@ -55,10 +55,10 @@ CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
 cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain
 . ./activate
 
-
 # Get full_node, harvester and farmer rpc ports.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
 OLDIFS=$IFS
 IFS=''
+MEMORYCONFIG=$(cat $CURRENTCONFIG | c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' -e 'rpc_port: ') 
 while read line; do
    WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
    TESTSECTION=$(c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
@@ -74,7 +74,7 @@ while read line; do
   if [[ $SECTION == *harvester:* && $WORKLINE == *rpc_port:* ]]; then 
     HARVESTRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
   fi  
-done < $CURRENTCONFIG
+done < <(printf '%s\n' "$MEMORYCONFIG")
 IFS=$OLDIFS
 
 PEERCOUNT=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_connections | python -m json.tool)
@@ -93,7 +93,7 @@ MMMULTIPLIERNAME=$FORKNAME
 if [[ $FORKNAME == 'silicoin' || $FORKNAME == 'nchain' || $FORKNAME == 'fishery' || $FORKNAME == 'xcha' || $FORKNAME = 'lucky' || $FORKNAME = 'rose' ]]; then
   MMMULTIPLIERNAME='chia'
 fi
-MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME ="| sed 's/.*=//' | sed 's/_//g' | awk '{$1=$1};1')
+MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME =" | sed 's/.*=//' | sed 's/_//g' | awk '{$1=$1};1')
 MMMULTIPLIER=$(echo "(( $MMMULTIPLIER ))" | bc )
 if [[ $FORKNAME == 'fishery' ]]; then
   # this is what they set "_mojo_per_chia" to in their block_rewards.py
@@ -116,6 +116,7 @@ fi
 PUZZLEHASH=$(echo "python3 -c 'import $FORKNAME.util.bech32m as b; print(b.decode_puzzle_hash(\""$ADDRESS"\"). hex())'")
 PUZZLEHASH=$(eval $PUZZLEHASH)
 
+
 # Get coin history for address
 COININFO=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"puzzle_hash\":\""$PUZZLEHASH"\", \"include_spent_coins\":true}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_coin_records_by_puzzle_hash | python -m json.tool")
 COININFO=$(eval $COININFO)
@@ -130,12 +131,14 @@ SPENTLIST=$(grep "spent_block_index"  <<< "$COININFO" | sed 's/"spent_block_inde
 
 MERGEDCOINLIST=$(paste <(printf %s "$TIMESTAMPEPOCHLIST") <(printf %s "$COINAMOUNTLIST") <(printf %s "$COINBASELIST") <(printf %s "$CONFIRMEDLIST") <(printf %s "$SPENTLIST") | sort)
 
-# Sum address balance from unspent MERGEDCOINLIST
-ADDRESSBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
-# A ton of extra formatting work for ridiculous forks with like 20000 block rewards (looking at you cryptodoge and chaingreen)
-if [[ "$ADDRESSBALANCE" > 9999 ]]; then
-   ADDRESSBALANCE= $( (($ADDRESSBALANCE / 1000)) | bc )
-   ADDRESSBALANCE="$ADDRESSBALANCE"K
+if [[ $HIDEBALANCE != 1 ]]; then
+   # Sum address balance from unspent MERGEDCOINLIST
+   ADDRESSBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
+   # A ton of extra formatting work for ridiculous forks with like 20000 block rewards (looking at you cryptodoge and chaingreen)
+   if [[ "$ADDRESSBALANCE" > 9999 ]]; then
+      ADDRESSBALANCE= $( (($ADDRESSBALANCE / 1000)) | bc )
+      ADDRESSBALANCE="$ADDRESSBALANCE"K
+   fi
 fi
 
 TODAYADDRESSCHANGE=$(grep $TODAYSTAMP <<< "$MERGEDCOINLIST")
@@ -203,20 +206,26 @@ AVGBLOCKTIME=$(echo "($DIFFTIME / $DIFFHEIGHT)" | bc -l)
 RPCSPACEBYTES=$(grep '"space":' <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
 NETSPACE=$( assemble_bytestring "$RPCSPACEBYTES" )
 
-
 # This works only on Avocado, normally get_plots is a harvester rpc call, not a farmer.  But it works like get_harvesters.  Will keep this here as reminder,
 # but will otherwise get the plot info from farm summary, which is correct for avocado, unlike the other bunch of un-maintained forks I have to make an 
 # exception for.
 # GETPLOTS=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_plots | python -m json.tool )
 # echo "$GETPLOTS"
 
+# RPC calls works on most forks and is much faster than farm summary.  If it doesn't work, we'll use farm summary.
+# Avocado is weird in that they renamed "get_harvesters" to "get_plots", so we call it differently
+IFS=''
+if [[ $FORKNAME = "avocado" ]]; then
+   HARVESTERLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_plots | python -m json.tool )
+else
+   HARVESTERLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_harvesters | python -m json.tool )
+fi
+
 IFS=$'\n'
-#if [[ $FORKNAME = 'avocado' || $FORKNAME = 'seno' || $FORKNAME = 'chaingreen' || $FORKNAME = 'thyme' || $FORKNAME = 'equality' || $FORKNAME = 'goji' || $FORKNAME = 'achi' ]]; then
+if [[ $HARVESTERLIST == '' ]]; then
   BADFORKSUM=$(forksumq $FORKNAME);
   SIZEOFPLOTS=$(grep "Total size of plots:"  <<< "$BADFORKSUM" | sed 's/Total size of plots://' | awk '{$1=$1};1' )
-  CANSEEHARVESTERS=$(grep "Plot count for all harvesters:" <<< "$BADFORKSUM" | wc -l | awk '{$1=$1};1' )
-#  echo $(grep "Plot count for all harvesters:" <<< "$BADFORKSUM" )
-#  echo $CANSEEHARVESTERS
+  CANSEEHARVESTERS=$(grep -c "Plot count for all harvesters:" <<< "$BADFORKSUM" )
   if [[ "$CANSEEHARVESTERS" > 0 ]]; then
     PLOTCOUNT=$(grep "Plot count for all harvesters:"  <<< "$BADFORKSUM" | sed 's/Plot count for all harvesters://' | awk '{$1=$1};1' )  
   else
@@ -238,15 +247,12 @@ IFS=$'\n'
   fi
   PLOTSPACEBYTES=$(echo "($PLOTSPACEBYTES * 1073741824)" | bc) # Number of bytes in a GiB.  1024 cubed.
   PLOTSPACEUNIT="bytes"  
-
-
-#else
-#  HARVESTERLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_harvesters | python -m json.tool )
-#  IFS=''
-#  PLOTSIZELIST=$(grep "file_size" <<< "$HARVESTERLIST" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' ) 
-#  PLOTCOUNT=$(echo "$PLOTSIZELIST" | wc -l | awk '{$1=$1};1')
-#  PLOTSPACEBYTES=$(awk 'END { print s } { s += $1 }' OFMT='%.20g' <<< "$PLOTSIZELIST" )
-#fi
+else
+  PLOTSIZELIST=$(grep "file_size" <<< "$HARVESTERLIST" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' ) 
+  PLOTCOUNT=$(echo "$PLOTSIZELIST" | wc -l )
+  PLOTSPACEBYTES=$(awk 'END { print s } { s += $1 }' OFMT='%.20g' <<< "$PLOTSIZELIST" )
+fi
+IFS=$OLDIFS
 
 PROPORTION=$(echo "scale = 20; ($PLOTSPACEBYTES / $RPCSPACEBYTES)" | bc -l)
 ETWMIN=$(echo "scale = 20; ($AVGBLOCKTIME / 60)" | bc -l )
