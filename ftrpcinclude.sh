@@ -77,6 +77,11 @@ while read line; do
 done < $CURRENTCONFIG
 IFS=$OLDIFS
 
+PEERCOUNT=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_connections | python -m json.tool)
+IFS=''
+PEERCOUNT=$(echo $PEERCOUNT | grep -c '"type": 1' )
+IFS=$OLDIFS
+
 # Get coin name
 COINNAME=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_network_info | python -m json.tool)
 COINNAME=$(echo $COINNAME | sed 's/.*"network_prefix": "//' | sed 's/",.*//' | tr [a-z] [A-Z] | awk '{$1=$1};1')
