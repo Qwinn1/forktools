@@ -1,9 +1,0 @@
-#! /usr/bin/env bash
-
-. $FORKTOOLSDIR/ftconfigs/config.logging
-
-if [[ $LOGFORKWALLETSHOW == 'true' ]]; then
-  forkwalletshowq $* | tee -a $FORKTOOLSDIR/ftlogs/forkwalletshow.log
-else
-  forkwalletshowq $*
-fi  

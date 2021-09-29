@@ -1,9 +1,0 @@
-#! /usr/bin/env bash
-
-. $FORKTOOLSDIR/ftconfigs/config.logging
-
-if [[ $LOGFORKSUM == 'true' ]]; then
-  forksumq $* | tee -a $FORKTOOLSDIR/ftlogs/forksum.log
-else
-  forksumq $*
-fi  
