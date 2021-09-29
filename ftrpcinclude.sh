@@ -266,7 +266,10 @@ LASTBLOCKDATE=$(c1grep 'true' <<< "$MERGEDCOINLIST" | tail -1 | awk '{print $1}'
 if [[ $LASTBLOCKDATE == '' ]]; then
   BLOCKWON='false'
   # Calculate effort from date of first harvest in logs if possible
-  FIRSTHARVESTLINE=$(cat $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log* | grep "eligible for farming" | sort | head -1)  
+  # For speed purposes, find the highest log available instead of grabbing them all
+  FIRSTLOG=$( find $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log.* | sed 's/.*debug\.log\.//' | sort -n | tail -1 )
+  FIRSTLOG=$( echo "debug.log.$FIRSTLOG" )
+  FIRSTHARVESTLINE=$(cat $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/$FIRSTLOG | grep "eligible for farming" | sort | head -1)  
   if [[ $FIRSTHARVESTLINE != '' ]]; then
     FIRSTHARVESTTIME=$(sed 's/\..*//' <<< "$FIRSTHARVESTLINE" | awk '{$1=$1};1')
     FIRSTHARVESTEPOCH=$(echo "$FIRSTHARVESTTIME" | DateToEpoch )
