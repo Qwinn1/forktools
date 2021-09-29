@@ -2,12 +2,12 @@
 
 # Changelog, Version 3.0 (testing):
 
-- Full Mac OS X compatibility has been achieved.  Thanks, SolarHash, for all the help with this!
+- full Mac OS X compatibility has been achieved.  Thanks, SolarHash, for all the help with this!
 - all tools now have far more detailed online -help
 - all tools now print the datetime it was initiated as the first line of output.
 - all configuration files are now moved to and searched for in new forktools/ftconfigs directory.
-- all tools can now have their output logged to files created in the new ftlogs directory.  Only forkmon output is logged by default.  Edit ftconfigs/config.logging to enable logging for any other forktool.
-- there are now two install scripts.  `bash installft.sh` will update you to the latest code in the main branch. `bash installfttest.sh` will update you to the latest code in the testing branch.  Once you are updated to this version, there should no longer be any need to run 
+- all tools can now have their output logged to files created in the new forktools/ftlogs directory.  Only forkmon output is logged by default.  Edit ftconfigs/config.logging to enable logging for any other forktool.
+- there are now two install scripts.  `bash installft.sh` will update you to the latest code in the main branch. `bash installfttest.sh` will update you to the latest code in the testing branch.
 - forkexplore can now handle 0 or just 1 transaction found without errors
 - forkmon now handles Last Block and Effort% calculations much better when a block hasn't been won yet.  Effort% will in that case be calculated from the date of the first successful harvest in the earliest log (so, assuming you haven't deleted logs, from when you started farming the fork).
 - forkmon has been optimized for faster performance
