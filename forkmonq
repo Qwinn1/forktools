@@ -106,8 +106,8 @@ for fork in $HARVESTERLIST; do
    CURRENTTIME=$(date "+%s")
    LASTHARVESTTIME=$(sed 's/\..*//' <<< "$LASTHARVESTERLINE" | awk '{$1=$1};1')
    LASTHARVESTEPOCH=$(echo "$LASTHARVESTTIME" | DateToEpoch )
-   TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP debug.log* | grep -a ' below 5 seconds ' | wc -l )
-   YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a ' below 5 seconds ' | wc -l )   
+   TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP debug.log* | grep -a ' below 5 seconds ' | wc -l | awk '{$1=$1};1' )
+   YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a ' below 5 seconds ' | wc -l | awk '{$1=$1};1' )   
    if [[ $LASTHARVESTEPOCH = '' ]]; then
      LASTHARVESTEPOCH=0
    fi
