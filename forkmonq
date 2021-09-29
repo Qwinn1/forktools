@@ -54,11 +54,7 @@ for fork in $FARMERLIST; do
      continue
    fi
    cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log   
-   HARVERRORSTODAY=$(grep -a "Harvester did not respond" debug.log* | grep -c $TODAYSTAMP )
-   HARVERRORSYESTERDAY=$(grep -a "Harvester did not respond" debug.log* | grep -c $YESTERDAYSTAMP )
-   
-  
-   let HARVESTERERRORS=$HARVERRORSTODAY+$HARVERRORSYESTERDAY
+   HARVESTERERRORS=$(grep -a "Harvester did not respond" debug.log* | grep -c -e $TODAYSTAMP -e $YESTERDAYSTAMP )
    FORKMEM=$(forkmemory)
    FORKVERSION=$($FORKTOOLSDIR/forkverq $fork)
    FULLNODEPROCESS='\s'$FORKNAME'_full'   
@@ -103,8 +99,8 @@ for fork in $HARVESTERLIST; do
    CURRENTTIME=$(date "+%s")
    LASTHARVESTTIME=$(sed 's/\..*//' <<< "$LASTHARVESTERLINE" | awk '{$1=$1};1')
    LASTHARVESTEPOCH=$(echo "$LASTHARVESTTIME" | DateToEpoch )
-   TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP debug.log* | grep -a ' below 5 seconds ' | wc -l | awk '{$1=$1};1' )
-   YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP debug.log* | grep -a ' below 5 seconds ' | wc -l | awk '{$1=$1};1' )   
+   TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP debug.log* | grep -ac ' below 5 seconds ' )
+   YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP debug.log* | grep -ac ' below 5 seconds ')   
    if [[ $LASTHARVESTEPOCH = '' ]]; then
      LASTHARVESTEPOCH=0
    fi
