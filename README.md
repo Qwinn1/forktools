@@ -12,8 +12,8 @@
 - forkmon now handles Last Block and Effort% calculations much better when a block hasn't been won yet.  Effort% will in that case be calculated from the date of the first successful harvest in the earliest log (so, assuming you haven't deleted logs, from when you started farming the fork).
 - forkmon has been optimized for faster performance
 - forkmon can now accept -f | --farmeronly or -h | --harvesteronly switches to skip the other section of forkmon's output.
-- forkaddplotdirs can now accept "all" instead of forkname as a parameter, which will add the drives specified in config.forkaddplotdirs to every fork with an active harvester.  Great for adding a brand new drive to all forks.
-- forkfixconfig can now accept "all" instead of forkname as a parameter, which will apply the settings specified in config.forkfixconfig to every fork with an active harvester.  Can also use "farmers" instead of forkname to only configure forks running a farmer, or "harvesters" instead to configure only forks running an active harvester but not an active farmer.
+- forkaddplotdirs can now accept "all" instead of forkname as a parameter, which will add the drives specified in ftconfigs/config.forkaddplotdirs to every fork with an active harvester.  Great for adding a brand new drive to all forks.
+- forkfixconfig can now accept "all" instead of forkname as a parameter, which will apply the settings specified in ftconfigs/config.forkfixconfig to every fork with an active harvester.  Can also use "farmers" instead of forkname to only configure forks running a farmer, or "harvesters" instead to configure only forks running an active harvester but not an active farmer.
 - new tool forklist replaces the old forkcounth.  Instead of just giving a count of running harvesters and nothing else, forklist gives both farmer and harvester counts including a single line list of which forks are running for each.  I am finding this tool extremely handy and using it constantly.
 - new tool forkstop accepts switches, enabling it to replace forkstopa, forkstoph, forkstoptl and forkstopall. Run forkstop -help for details.
 - new tool forkstart accepts switches, enabling it to replace forkstartf, forkstartfnw, forkstarth, forkstartall and forkstarttl.  Run forkstart -help for details.
@@ -25,20 +25,32 @@
 
 # INSTALLATION INSTRUCTIONS:
 
-For initial update to version 2.2, I recommend (for one final time) simply wiping out your forktools directory and doing a fresh `git clone https://github.com/qwinn1/forktools`.  If you helped in the testing branch and haven't already gotten the very latest version of the install script, preserve your config.* files.  If you are still on the main branch of version 2.0, preserve your forktoolsinit.sh for transfer of your configuration settings to the new config.fork* file structure.
+For new installations:
 
-FOREVER AFTER THAT, you can update forktools at any time by simply running the following:
+```
+git clone https://github.com/Qwinn1/forktools
+cd forktools
+bash installft.sh
+source ~/.bashrc
+```
+
+For existing users:
+```
+# back up your forktools/config.* files
+# cd to parent directory of your current forktools directory
+sudo rm -r forktools
+git clone https://github.com/Qwinn1/forktools
+# copy your configs to the forktools/ftconfigs folder
+cd forktools
+bash installft.sh
+```
+
+FOREVER AFTER, you can update forktools at any time by simply running the following:
 
 ```
 cd forktools
-bash installft.sh  # This will update all scripts without touching your config files.
-bash installft.sh  # Run it a second time just in case the install script itself was updated during the first run.
-
-# Only needed if this is your first ever install of forktools
-source ~/.bashrc  # or source ~/.bash_profile if you're on MacOS X
+`bash installft.sh`   # or 'bash installfttest.sh` for testing branch
 ```
-
-That's it!  Forever after, you can run `bash installft.sh` at any time without harm (including whenever you've installed a new fork which needs symlinks created).  Shouldn't ever need to re-git-clone forktools again.  Once version 2.2 is on your system, updating forktools solely via the install script has become super easy, barely an inconvenience.
 
 
 # FORKTOOLS MAJOR FEATURES:
