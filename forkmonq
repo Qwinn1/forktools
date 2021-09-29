@@ -13,9 +13,9 @@ function print_usage () {
    echo "    24 hours, and 36 hours have passed since you farmed your last block to your target address - or since"
    echo "    you started farming the fork if you've never won a block - then your Effort% would be 150%.)"
    echo "           For harvester processes, this includes version of the fork code, local plot count, time of last"
-   echo "    harvest, longest response time since midnight today and since midnight yesterday, and number of proofs"
-   echo "    found since midnight yesterday."
-   echo "           MacOS X users:  fullnode worker count and memory usage in the farmer section are not yet supported."
+   echo "    harvest, average response time today and yesterday (each starting at midnight), longest response"
+   echo "    time today and yesterday (each starting at midnight), the number of '5 second' warnings in the logs"
+   echo "    today and yesterday (each starting at midnight), and the number of proofs found since midnight yesterday."
    echo
    echo "PARAMETERS:"
    echo "    forkname               OPTIONAL.  If set, must be the first parameter.  Only show output for this fork."
