@@ -57,7 +57,16 @@ if [[ $HARVESTERONLY != 1 ]]; then
        continue
      fi
      cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log 
-     HARVESTERERRORS=$(grep -a "Harvester did not respond" debug.log debug.log.1 | grep -c -e $TODAYSTAMP -e $YESTERDAYSTAMP )
+     YESTERDAYLOGLIST='debug.log'
+     TESTDEBUG1=$(tail -1 debug.log.1)
+     TESTDEBUG2=$(tail -1 debug.log.2)
+     if [[ $TESTDEBUG1 > $YESTERDAYSTAMP ]]; then
+        YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.1')
+     fi
+     if [[ $TESTDEBUG2 > $YESTERDAYSTAMP ]]; then
+        YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.2')
+     fi
+     HARVESTERERRORS=$(grep -a "Harvester did not respond" $YESTERDAYLOGLIST | grep -c -e $TODAYSTAMP -e $YESTERDAYSTAMP )
      FORKMEM=$(forkmemory)
      FORKVERSION=$($FORKTOOLSDIR/forkverq $fork)
      FULLNODEPROCESS='\s'$FORKNAME'_full'   
