@@ -12,7 +12,7 @@ fi
 # Also makes sure that any redirected errors go to the parent forktool's error log, not to the log of a called forktool.
 if [[ $FTBASECOMMAND == '' ]]; then
   export FTBASECOMMAND=$( basename $0 | sed 's/q$//' )
-  export FTFULLCOMMAND=$( printf '%s %s' $FTBASECOMMAND $* )  
+  export FTFULLCOMMAND=$( printf '%s %s' "$FTBASECOMMAND" "$*" )  
   echo "'$FTFULLCOMMAND' initiated on `date`..."
   echo
   if [[ $FTERRORSTOFILE == 'Yes' ]]; then
