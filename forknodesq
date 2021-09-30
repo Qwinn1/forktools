@@ -21,7 +21,7 @@ VALIDATEFORKNAME='Yes'
 
 cd $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain 
 . ./activate
-for port in $($1 show -c | grep "^FULL_NODE" | awk '{print $2,$3}' | sed 's/\s[0-9]*\//:/' ); do
+for port in $($1 show -c | grep "^FULL_NODE" | awk '{print $2,$3}' | sed 's/ [0-9]*\//:/' ); do
   echo $1 "show -a" $port
 done
 echo
