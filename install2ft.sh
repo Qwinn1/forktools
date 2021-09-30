@@ -176,10 +176,10 @@ if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkfixconfig" ) ]]; then
   echo "  forkfixconfig will function correctly with forktools defaults, but user may change defaults as desired in config.forkfixconfig ."
   cp $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.template $FORKTOOLSDIR/ftconfigs/config.forkfixconfig
 fi 
-if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkconfig" ) ]]; then
-  echo "No existing config.forkconfig file found.  Copied from config.forkconfig.template."
-  echo "  forkconfig will function correctly with forktools defaults, but user may change defaults as desired in config.forkconfig ."
-  cp $FORKTOOLSDIR/ftconfigs/config.forkconfig.template $FORKTOOLSDIR/ftconfigs/config.forkconfig
+if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkedit" ) ]]; then
+  echo "No existing config.forkedit file found.  Copied from config.forkedit.template."
+  echo "  forkedit will use gedit as the text editor by default, but this can be changed to your preferred editor in config.forkedit."
+  cp $FORKTOOLSDIR/ftconfigs/config.forkedit.template $FORKTOOLSDIR/ftconfigs/config.forkedit
 fi 
 if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.logging" ) ]]; then
   echo "No existing config.logging file found.  Copied from config.logging.template."
