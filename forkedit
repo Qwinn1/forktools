@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+. $FORKTOOLSDIR/ftconfigs/config.logging
+
+if [[ $LOGFORKEDIT == 'true' ]]; then
+   echo "forkedit $* initiated on" `date` >> $FORKTOOLSDIR/ftlogs/forkedit.log
+fi
+forkeditq $*
+

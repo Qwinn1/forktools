@@ -1,9 +1,0 @@
-#! /usr/bin/env bash
-
-. $FORKTOOLSDIR/ftconfigs/config.logging
-
-if [[ $LOGFORKCONFIG == 'true' ]]; then
-   echo "forkconfig $* initiated on" `date` >> $FORKTOOLSDIR/ftlogs/forkconfig.log
-fi
-forkconfigq $*
-

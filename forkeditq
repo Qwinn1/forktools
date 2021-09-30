@@ -1,10 +1,10 @@
 #! /usr/bin/env bash
 
 function print_usage () {
-   echo "forkconfig help:"
+   echo "forkedit help:"
    echo
    echo "SYNOPSIS:  Opens the specified fork's config.yaml in a text editor, gedit by"
-   echo "    default.  The user can set a preferred editor in ftconfigs/config.forkconfig."  
+   echo "    default.  The user can set a preferred editor in ftconfigs/config.forkedit."  
    echo
    echo "PARAMETERS:"
    echo "    forkname            Required."
@@ -16,6 +16,6 @@ function print_usage () {
 VALIDATEFORKNAME='Yes'
 . ftinit.sh
 
-$FORKCONFIGEDITOR $FORKTOOLSHIDDENDIRS/.$1/mainnet/config/config.yaml
+$FORKEDITEDITOR $FORKTOOLSHIDDENDIRS/.$1/mainnet/config/config.yaml
 
 
