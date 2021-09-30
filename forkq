@@ -1,0 +1,40 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "fork help:"
+   echo
+   echo "SYNOPSIS:  Changed into the specified fork's directory, activates the venv, and runs whatever command follows the forkname."
+   echo "           Three abbreviations are provided:  'fork chia sum' runs 'chia farm summary'."
+   echo "                                              'fork chia wal' runs 'chia wallet show'."
+   echo "                                              'fork chia ver' runs 'chia version'."
+   echo
+   echo "PARAMETERS:"
+   echo "    forkname              Required first parameter."
+   echo "    Second parameter:"
+   echo "      sum | wal | ver     2nd parameter. Abbreviations for 'farm summary', 'wallet show' and 'version' respectively."
+   echo "      anything else       Anything other than the 3 abbreviations in the second parameter means the 2nd, 3rd and all other"
+   echo "                            passed parameters get run exactly as passed. e.g. 'fork chia show -a 123.45.67.8910:8444'"
+   echo "    -help | --help      Show this information again."
+   echo
+   exit 0
+}
+
+VALIDATEFORKNAME='Yes'
+. ftinit.sh
+
+FORKNAME=$1
+shift;
+
+case "$1" in
+  "sum"             ) FORKCOMMAND="farm summary";;
+  "wal"             ) FORKCOMMAND="wallet show";;
+  "ver"             ) FORKCOMMAND="version";;
+  *                 ) FORKCOMMAND=$*;;
+esac
+
+cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain 
+. ./activate 
+$FORKNAME $FORKCOMMAND
+deactivate
+
+

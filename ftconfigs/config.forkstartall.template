@@ -38,4 +38,9 @@ FORKSTARTHLIST='# List forks to start with forkname start harvester -r
 # maize
 # scam
 '
-
+FORKSTARTFOLIST='# List forks to start with forkname start farmer-only -r
+# kiwi
+'
+FORKSTARTFHLIST='# List forks to start with forkname start farmer-only harvester -r
+# lotus
+'

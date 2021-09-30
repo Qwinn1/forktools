@@ -1,0 +1,21 @@
+# Turn logging on and off with these settings.  
+# If set to true, whatever is output to the screen by these tools will also be appended to forktools/ftlogs/"forktoolname".log
+
+LOGFORKADDPLOTDIRS="false"
+LOGFORKBENCHIPS="false"
+LOGFORKEDIT="false"
+LOGFORKEXPLORE="false"
+LOGFORKFIXCONFIG="false"
+LOGFORKLIST="false"
+LOGFORKLOG="false"             # Set to true with caution, as the size of this output can be substantial.
+LOGFORKMON="true"
+LOGFORKNODES="false"
+LOGFORKPORTS="false"
+LOGFORKSTART="false"
+LOGFORKSTOP="false"
+LOGFORKSUM="false"
+LOGFORKTARGETS="false"
+LOGFORKUPDATE="false"
+LOGFORKVER="false"
+LOGFORKWALLETSHOW="false"
+

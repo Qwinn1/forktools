@@ -1,82 +1,61 @@
 # To be included in all forktools.  Calls all configuration includes and defines forktools functions.
 
+HELPREQUEST=$( printf '%s' $* | grep '-help' ) 
+if [[ $HELPREQUEST != '' ]]; then
+  print_usage
+  exit
+fi   
+
 . ftplatformfuncs.sh
 
-
-#### START CONFIGURATION INCLUDE CALLS
-
-# In version 2.1+, all configurations have been moved to sub-includes in order to keep them totally separated from the code,
-# so they will not need to be overwritten by future updates.
-
-
-#### FORKADDPLOTDIRS SETTINGS
-# List all your plot directories in config.forkaddplotdirs.
-
-. config.forkaddplotdirs
-
-
-#### FORKSTARTALL settings
-# Configure the 3 variables in config.forkstartall to specify which forks you want forkstartall to start with forkstartf, forkstartfnw, and/or forkstarth
-# forkstartf is (re)start farmer with wallet, forkstartfnw is (re)start farmer without wallet, forkstarth is (re)start harvester
-
-. config.forkstartall
-
-
-#### FORKLOG SETTINGS
-
-# View and edit config.forklog for instructions on how to customize forklog behavior
-
-. config.forklog
-
-
-#### FORKEXPLORE SETTINGS
-# View and edit config.forkexplore for instructions on how to customize forkexplore behavior
-
-. config.forkexplore
-
-
-#### FORKFIXCONFIG SETTINGS
-# View and edit config.forkfixconfig for instructions on how to customize the settings forkfixconfig will set in your forks' config.yaml files
-
-. config.forkfixconfig
-
-#### FORKCONFIG SETTINGS
-# The only current setting is which default text editor to use.  Defaults to gedit.
-
-. config.forkconfig
-
-#### END CONFIGURATION INCLUDE CALLS
-
-
-# These two lines reroute ugly error messages after a Control-C to /dev/null.  Mainly so we don't get a lot of ugly python errors when user uses Ctrl-C while
-# a fork's python function is running.
-
-# Attempt graceful exit on Ctrl-C
-trap stopForkScript SIGINT
-stopForkScript() {
-   echo -e "\nCtrl-C detected.  $0 aborted."
-   exec 2> /dev/null #Restore stderr destination
-   exit
-}
-
-function print_usage_forkname_only() {
-   echo "Usage:  $0"
-   echo "  forkname          Required parameter.  Name of fork executable to work with."
-   echo "  -h | --help       Show this information again."
-   exit
-}
-
-RUNNINGSCRIPT=$( echo $0 | sed 's|.*forktools/||' )
-if [[ $VALIDATEFORKNAME = 'Yes' ]]; then
-   if [[ $1 = '-h' || $1 = '--help' ]]; then
-      print_usage_forkname_only
-      exit
-   fi
-   if [ ! -d $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain ]; then
-      echo $RUNNINGSCRIPT "requires a valid forkname.  Directory $1-blockchain does not exist.  $RUNNINGSCRIPT aborted."
-      exit
-   fi
+# Display forktool startup string.  Silenced after first time so forktools can call other forktools without redisplaying in the call.
+# Also makes sure that any redirected errors go to the parent forktool's error log, not to the log of a called forktool.
+if [[ $FTBASECOMMAND == '' ]]; then
+  export FTBASECOMMAND=$( basename $0 | sed 's/q$//' )
+  if [[ "$*" == '' ]]; then
+    export FTFULLCOMMAND=$(printf '%s' "$FTBASECOMMAND" )
+  else
+    export FTFULLCOMMAND=$(printf '%s %s' "$FTBASECOMMAND" "$*")
+  fi
+  echo "'$FTFULLCOMMAND' initiated on `date`..."
+  echo
+  if [[ $FTERRORSTOFILE == 'Yes' ]]; then
+    exec 3>&2  # capture current stderr output destination
+    exec 2>> "$FORKTOOLSDIR/ftlogs/$FTBASECOMMAND.errors" #reroute stderr
+    echo "'$FTFULLCOMMAND' initiated on" $(date) >> "$FORKTOOLSDIR/ftlogs/$FTBASECOMMAND.errors"
+  fi  
 fi
+
+if [[ $VALIDATEFORKNAME == 'Yes' && ! -d $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain ]]; then
+   echo "$FTFULLCOMMAND:  Directory $1-blockchain does not exist.  '$FTBASECOMMAND' aborted."
+   exit
+fi
+   
+trap stopforkscript SIGINT
+stopforkscript() {
+   echo -e "\nCtrl-C detected.  $FTPARENTSCRIPT aborted."
+   echo
+   echo "'$FTFULLCOMMAND' interrupted by user (errors immediately above likely due to this) on" $(date) >> "$FORKTOOLSDIR/ftlogs/$FTBASECOMMAND.errors"
+   if [[ $FTERRORSTOFILE == 'Yes' ]]; then   
+     exec 2>&3 #Restore stderr destination"
+   fi
+   exit
+}
+
+#### LOGGING SETTINGS
+. $FORKTOOLSDIR/ftconfigs/config.logging
+
+
+#### Call corresponding include for the forktool we're running.  
+# We'll include forkstartall for any run of forkstart, even if it's not 'forkstart all'
+FTCURRENTTOOL=$( basename $0 | sed 's/q$//' )
+if [[ $FTCURRENTTOOL == 'forkstart' ]]; then
+  FTCURRENTTOOL='forkstartall'
+fi
+if [[ -f $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL ]]; then
+  . $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL
+fi
+
 
 # Constants and Dates
 DEFAULT_IFS=$' \t\n'
@@ -166,7 +145,7 @@ assemble_bytestring() {
 }
 
 # Used to make sure that a grep that is expected to sometimes not find any results doesn't return a 1 and trigger error trapping
-c1grep() { grep "$@" || test $? = 1; }
+c1grep() { grep -a "$@" || test $? = 1; }
 
 
 
