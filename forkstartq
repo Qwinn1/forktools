@@ -3,8 +3,8 @@
 function print_usage () {
    echo "forkstart help:"
    echo
-   echo "SYNOPSIS:  Starts fork services.  Use one and only one switch to start the fork as"
-   echo "     (-f) farmer, (-fnw) farmer-no-wallet, (-h) harvester, or (-t) timelord."
+   echo "SYNOPSIS:  Starts fork services.  Use one and only one switch to choose services:"
+   echo "     -f (farmer), -fnw (farmer-no-wallet), -h (harvester), or -t (timelord)."
    echo "           The options -fo (farmer only) and -fh (farmer-only harvester) can also be"
    echo "     used to start those services without a full node, but this is not recommended"
    echo "     for typical farming setups."
