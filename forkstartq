@@ -52,10 +52,10 @@ fi
 if [[ $2 == '-fnw' || $2 == '--farmernowallet' ]]; then
   STARTMETHOD='farmer-no-wallet -r'
 fi
-if [[ $2 == '-fo' || $2 == '--farmernonly' ]]; then
+if [[ $2 == '-fo' || $2 == '--farmeronly' ]]; then
   STARTMETHOD='farmer-only -r'
 fi
-if [[ $2 == '-fh' || $2 == '--farmernonly' ]]; then
+if [[ $2 == '-fh' || $2 == '--farmerharvester' ]]; then
   STARTMETHOD='farmer-only harvester -r'
 fi
 if [[ $2 == '-h' || $2 == '--harvester' ]]; then
