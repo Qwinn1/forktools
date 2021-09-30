@@ -1,6 +1,9 @@
 # Qwinn's forktools
 
-# Changelog, Version 3.0 (testing):
+SYNOPSIS:  Fifteen 100% local, 100% bash scripts to make fork maintenance and monitoring infinitely easier.  Very useful even if you're only farming Chia.  Includes a 100% local blockchain explorer that can provide full history of any wallet address, deeply detailed monitoring stats, automated service starting and stopping, automated config.yaml editing, fully scripted updating of any fork to the latest released version, all forktool output can now be logged to files, and most commands can now be run for a single fork or all of them at once.  Requires extremely little configuration (really only have to supply your plot directories for 'forkaddplotdirs' to work, and which services for which forks 'forkstart all' should start), but there are lots of optional configuration options available to fine tune other forktools to your taste.
+
+
+# Changelog, Version 3.0:
 
 - full Mac OS X compatibility has been achieved.  Thanks, SolarHash, for all the help with this!
 - all tools now have far more detailed online -help
@@ -91,62 +94,37 @@ DateTime               Confirmed   Spent      Block?        Amount
 - forkmon ( Detailed overview of all running farmers and harvesters ) :
 
 ```
-(venv) qwinn@Muninn:~/forktools$ forkmon
-
-------------------------------------------------------------------- FARMERS: 14 -----------------------------------------------------------------
+------------------------------------------------------------------- FARMERS: 15 -----------------------------------------------------------------
 
                                                                               FulNode   Memory   NoHarv       Address              Last
 Farmer            Version         Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort
 -------------------------------------------------------------------------------------------------------------------------------------------------
-apple             1.2.31.dev1     Farming       8     4424  268478   381 PiB     20    1974 MB      42        414 APPLE 4h47m    3h31m ago    73%
-avocado           1.1.7.dev124    Farming       8     4424  324927   404 PiB     20    1971 MB       5        280 AVO   4h44m     5h4m ago   106%
-beet              2.1.1           Farming       8     4424  114123    55 PiB     20    1334 MB      28        980 XBT   40m        19m ago    47%
-btcgreen          2.1.0           Farming       8     4424  173656   252 PiB     20    2369 MB      41        494 XBTC  3h7m      1h5m ago    35%
-cannabis          1.2.301         Farming       8     4424  280697   239 PiB     20    1820 MB      28       4896 CANS  2h57m    2h39m ago    90%
-covid             1.2.3           Farming       8     4424  232792   244 PiB     20    1816 MB      28       3740 COV   2h50m    2h52m ago   101%
-flax              0.1.1           Farming       8     4424  451807   2.6 EiB     20    3273 MB      28        140 XFX   1d10h    7h33m ago    21%
-flora             0.2.5           Farming       8     4424  351214   736 PiB     20    2392 MB      40        496 XFL   8h34m       7h ago    81%
-goji              0.2.3           Farming       8     1377  383528   553 PiB     20    2802 MB       0        194 XGJ   21h53m   4h40m ago    21%
-goldcoin          1.0.1.dev11     Farming       8     4424   37045    53 PiB      6     515 MB      29        736 OZT   32m        44m ago   133%
-greendoge         1.2.6           Farming       8     4424  321717   528 PiB     20    1016 MB      28       3440 GDOG  6h1m     2h21m ago    39%
-maize             1.2.3.dev14     Farming       8     4424  268535   342 PiB     20    1881 MB      41        514 XMZ   4h6m     3h11m ago    77%
-mint              0.1.0           Farming      20     4424   91489     5 PiB     19    1577 MB       0         40 XQM   2m          2m ago   119%
-scam              1.0.5           Farming       8     4424  174416   126 PiB     20    1639 MB      42       5680 SCM   1h25m    1h20m ago    93%
+apple             1.2.30          Farming      26     4970  343297   372 PiB     20    2307 MB       0          0 APPLE 3h44m       4m ago     2%
+avocado           1.1.7.dev124    Farming      10     4970  400048   384 PiB     20    2278 MB       0          0 AVO   4h2m        6m ago     2%
+beet              2.1.3b0         Farming      26     4970  191771    57 PiB     20    1668 MB       0          0 XBT   34m      1h49m ago   313%
+btcgreen          2.1.0           Farming      47     4969  244892   227 PiB     20    2318 MB       2          0 XBTC  2h37m    9h28m ago   361%
+cannabis          1.2.301         Farming      12     4970  353211   243 PiB     20    1991 MB       0          0 CANS  2h33m     6h1m ago   235%
+covid             1.2.3           Farming      22     4971  307010   245 PiB     20    2111 MB       0          0 COV   2h33m      37m ago    24%
+flax              0.1.2           Farming      42     4970  525263   2.5 EiB     20    2838 MB       0          0 XFX   1d7h      2d2h ago   159%
+flora             0.2.5           Farming      12     4970  425441   738 PiB     20    2657 MB       0          0 XFL   7h56m   14h11m ago   178%
 
--------------------------------------------- HARVESTERS: 29 ------------------------------------------------
-                                                            Longest      Longest     Proofs
-                                                 Last      Response     Response      Since
-Harvester         Version      # Plots        Harvest         Today    Yesterday  Yesterday
-------------------------------------------------------------------------------------------------------------
-apple             1.2.31.dev1     1377         7s ago         5.63s        4.32s          4
-avocado           1.1.7.dev124    1377        10s ago         3.49s        3.94s          3
-beet              2.1.1           1377        12s ago         3.52s        4.43s         14
-btcgreen          2.1.0           1377         8s ago         3.85s        3.75s          4
-cactus            1.2.2.dev7      1377         6s ago         3.29s        3.68s         10
-cannabis          1.2.301         1377         9s ago         4.46s        2.77s          3
-chia              1.2.6           1377         8s ago         4.25s        3.98s          0
-covid             1.2.3           1377         3s ago         2.63s        4.70s          4
-cryptodoge        1.2.6           1377         8s ago         2.86s        3.00s          4
-dogechia          1.0.9           1377         6s ago         4.07s        4.40s          1
-flax              0.1.1           1377         1s ago         3.42s        3.29s          0
-flora             0.2.5           1377         2s ago         3.89s        4.30s          1
-goji              0.2.3           1377         0s ago         3.66s        3.70s          6
-goldcoin          1.0.1.dev11     1377         5s ago         3.58s        5.10s         66
-greendoge         1.2.6           1377         3s ago         5.25s        3.38s          2
-hddcoin           1.2.5.dev2      1377         3s ago         4.31s        2.36s          1
-kale              0.1.111         1377         5s ago         2.74s        4.01s          1
-maize             1.2.3.dev14     1377         7s ago         3.45s        3.19s          1
-melati            1.1.7141.dev13  1377         2s ago         2.76s        3.23s          4
-mint              0.1.0           1377         7s ago         1.01s        0.00s          1
-olive             0.2976          1377         7s ago         3.49s        4.05s          9
-pipscoin          1.1.0           1377         7s ago         2.64s        4.36s         10
-scam              1.0.5           1377         1s ago         4.02s        3.55s         10
-sector            1.1.7.dev112    1377         3s ago         4.97s        3.54s          5
-seno              1.1.8.dev36     1377         2s ago         3.08s        3.85s          5
-silicoin          0.2.1.dev4      1377         6s ago         3.24s        6.74s          1
-socks             0.1.dev4802     1377         3s ago         3.15s        4.63s          6
-taco              2.1.1.dev1      1377         2s ago         1.89s        6.36s          6
-tad               1.0.2           1377         7s ago         3.16s        3.29s          6
+...
+
+-------------------------------------------------- HARVESTERS: 32 ------------------------------------------------------
+                                                         Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs
+                                                 Last   Response   Response   Response   Response   Warns  Warns   Since
+Harvester         Version      # Plots        Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day
+------------------------------------------------------------------------------------------------------------------------
+apple             1.2.30          1636         0s ago      0.85s      0.71s     64.49s     58.33s     131    156       2      
+avocado           1.1.7.dev124    1636         1s ago      0.85s      0.70s     88.74s     67.60s     144    147       3      
+beet              2.1.3b0         1636         0s ago      0.84s      0.72s     92.75s     75.68s     137    166      19      
+btcgreen          2.1.0           1636         0s ago      0.84s      0.75s     58.53s    143.27s     154    161       3      
+cactus            1.2.2.dev7      1636         7s ago      0.83s      0.70s     66.14s     62.16s     131    147       8      
+cannabis          1.2.301         1636         3s ago      0.82s      0.71s     58.44s     66.78s     116    150       7      
+chia              1.2.7           1636         4s ago      0.83s      0.62s     88.28s     73.64s     129    132       0      
+covid             1.2.3           1636         2s ago      0.88s      0.72s     72.08s     53.36s     137    165       9      
+cryptodoge        1.2.6           1636         1s ago      0.87s      0.71s     67.90s     89.14s     143    169       3      
+dogechia          1.0.9           1636         2s ago      0.87s      0.69s     83.03s     94.74s     132    150       3   
 ```
 
 - forkfixconfig ( Automated editing of fork config.yamls to preferred settings as set up in config.forkfixconfig. )
@@ -197,23 +175,38 @@ qwinn@Huginn:~/forktools$
 
 - forklog :  ( Extremely versatile debug.log parser with multiple runtime switches including date range available. ) 
 
-```(venv) qwinn@Muninn:~/forktools$ forklog -help
-Usage:  forklog
-  forkname                                  Required parameter.  All others optional, but need at least one to get any results.
-  -e | --error                              Adds 'ERROR' as a search term.
-  -w | --warning                            Adds 'WARNING' as a search term.
-  -h | --harv                               Adds 'harvester' as a search term.
-  -p | --proof                              Adds any positive # of found proofs as a search term.
-  -g 'word' | --grep 'word'                 Adds 'word' as a search term.  Multiple uses allowed.
-  -l 10 | --lastxdays 10                    Shows only results for the last 10 days.
-                                            Default value can be set globally in config.forklog.
-  -s YYYY-MM-DD | --startdate YYYY-MM-DD    Do not show results prior to this date.  If both this and -l / --lastxdays are set, this is used.
-                                            Default value can be set globally in config.forklog.
-  -u | --enddate YYYY-MM-DD                 Do not show results after this date.
-                                            Default value can be set globally in config.forklog
-  -t 100 | --tail 100                       Tails the last 100 lines of the result.
-                                            forklog always tails FORKLOGTAIL lines as set in config.forklog. Use -t to change that number.
-  -help | --help                               Show this information again.
+```qwinn@Muninn:~/forktools$ forklog -help
+forklog help:
+
+SYNOPSIS:  Extremely versatile and powerful log parsing tool.  See parameters below.
+           The 'forklog running:' first line of output is the bash command generated
+    after interpretation of the switches that actually produces the resulting output,
+    albeit prior to some path variable substitution.
+           As many search terms as desired can be added by the various switches.
+    A line will show if any one of the search terms are found in that line.
+           The file ftconfigs/config.forklog allows for setting some default filters
+    such as a specific date range or only the previous X days worth of log entries.
+           Note that the config setting FORKLOGTAIL effectively sets the maximum number
+    of lines this tool can output.  This number can be overridden with -t switch.
+           Running 'forklog forkname' with no switches produces the last FORKLOGTAIL
+    lines of the log with no filters or search terms.
+
+PARAMETERS/SWITCHES:
+    forkname                                Required.  All others optional.
+    -e | --error                            Adds 'ERROR' as a search term.
+    -w | --warning                          Adds 'WARNING' as a search term.
+    -h | --harv                             Adds 'harvester' as a search term.
+    -p | --proof                            Adds any positive # of found proofs as a search term.
+    -g 'word' | --grep 'word'               Adds 'word' as a search term.  Multiple uses allowed.
+    -l 10 | --lastxdays 10                  Shows only results for the last 10 days.
+    -s YYYY-MM-DD | --startdate YYYY-MM-DD  Do not show results prior to this date.  If both this
+                                               and -l / --lastxdays are set, this is used.
+    -u | --enddate YYYY-MM-DD               Do not show results after this date.
+    -t 100 | --tail 100                     Tails the last 100 lines of the result. forklog always
+                                               tails FORKLOGTAIL lines as set in ftconfigs/
+                                               config.forklog. Use -t to override that default.
+    -help | --help                   Show this information again.
+
 ```
 
 
@@ -244,23 +237,13 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 
 # COMMANDS WITH MULTIPLE PARAMETERS/SWITCHES
 
-- `fork`                  \-  Allows you to issue commands from any directory as if you were cd'd into the fork's -blockchain directory and activated. It allows for 3 3-letter abbreviations for the 2nd parameter - sum for 'farm summary', wal for 'wallet show' and ver for 'version'.  This effectively replaces forksum, forkver and forkwalletshow from previous versions of forktools.
+- `fork`                  \-  Allows you to issue commands from any directory as if you were cd'd into the fork's -blockchain directory and activated. It allows for 3 3-letter abbreviations for the 2nd parameter - 'sum' for 'farm summary', 'wal' for 'wallet show' and 'ver' for 'version'.  This effectively replaces forksum, forkver and forkwalletshow from previous versions of forktools.
 - `forkstart`             \-  Use this to start up one, or all, of your farmers, harvesters, and timelords.  By editing config.forkstartall, you can run `forkstart all` to start every farmer and harvester you like sequentially (great for use following a reboot).  This single command has now replaced all previous forkstart* tools.  Instead of `forkstartall`, run `forkstart all`.  Instead of `forkstartf chia`, run `forkstart chia -f`.  Other switches are -fnw for farmer-no-wallet, -h for harvester and -t for timelord.  Run `forkstart -help` for usage details.
 - `forkstop`              \-  Use this to stop all services for one or all forks (great for prepping for a shutdown).  This single command has now replaced all previous forkstop* tools.  Instead of `forkstopall`, run `forkstop all`.  Instead of `forkstopa flax`, run `forkstop flax`.  Instead of `forkstoptl hddcoin`, run `forkstop hddcoin -t` to stop timelord.  Run `forkstop -help` for usage details.  (Note - there is no longer an equivalent way to reproduce the old `forkstoph`, as I decided there is no good reason to stop just the harvester service without also shutting down the daemon and all other services.)
-- `forklog`               \-  This single function has now replaced all previous log parsing forktools. You need to pass at least one switch after the forkname to get any output.  You can manipulate log output now any way I could think of if you get creative with the switches, but you're still able to duplicate the quick and simple older versions with a single switch for each.  Just run forklog -help to get a full list of options. The first line of forklog output will be the actual bash command that is constructed after all the switches and parameters are interpreted that produces the output that follows.
-- `forkexplore`           \-  100% local address explorer.  Provides address balances for your target receive address for the selected fork, but has an additional -a switch which allows you to explore any receive address you wish, hot or cold, and all the same date range options that forklog has.  Does not require sync, just a running farmer.  Run forkexplore -help for detailed usage instructions.
+- `forklog`               \-  This single function has now replaced all previous log parsing forktools. Running it without switches
+will just get you a tail of the log.  You can manipulate log output now any way I could think of if you get creative with the switches, but you're still able to duplicate the quick and simple older versions with a single switch for each.  Just run forklog -help to get a full list of options. The first line of forklog output will be the actual bash command that is constructed after all the switches and parameters are interpreted that produces the output that follows.
+- `forkexplore`           \-  100% local address explorer.  Provides address balances for your target receive address for the selected fork, but has an additional -a switch which allows you to explore any receive address you wish, hot or cold, and all the same date range options that forklog has.  Does not require sync, just a running farmer and full node.  Run forkexplore -help for detailed usage instructions.
 
-
-## HOW WE GOT HERE - notes from version 1.0, updated slightly
-
-#### Several command line tools to greatly simplify CLI maintenance of one or many Chia forks
-
-
-I created these CLI scripts, currently only for Ubuntu environment (but very very workable on Windows by installing WSL2, I do it myself), because I was farming 21 separate Chia forks and maintenance started becoming a chore, having to CD into the fork's hidden directories to view logs or config files, or to the fork-blockchain directory and . ./activate to issue any fork commands.  So what I was doing was opening a terminal box with 20 tabs, with each one cd'd into that fork's proper directories so I could quickly issue commands.  That worked well enough when it was only up to a dozen forks or so, but quickly grew cumbersome, ESPECIALLY recreating all the tabs after a reboot.
-
-The scripts herein allow me to maintain and work with all the forks from a single terminal tab, without having to change directories.  Feel free to modify them for your own needs.  I think these tools make even maintaining a single fork (such as just chia) a lot easier, saving a great many keystrokes.
-
-These are all very simple bash scripts (EDIT:  some are not so simple anymore!).  No compiling is necessary.  Simply cat or grep them however you like and verify they're not doing anything you wouldn't want to do yourself.
 
 # DISCORD SERVER
 
