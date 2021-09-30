@@ -4,7 +4,10 @@ function print_usage () {
    echo "forkstart help:"
    echo
    echo "SYNOPSIS:  Starts fork services.  Use one and only one switch to start the fork as"
-   echo "     farmer (-f), farmer-no-wallet (-fnw), harvester (-h) or timelord (-t)."
+   echo "     (-f) farmer, (-fnw) farmer-no-wallet, (-h) harvester, or (-t) timelord."
+   echo "           The options -fo (farmer only) and -fh (farmer-only harvester) can also be"
+   echo "     used to start those services without a full node, but this is not recommended"
+   echo "     for typical farming setups."
    echo "           If you wish to restart a running service, there is no need to stop services"
    echo "     prior to running forkstart.  forkstart will stop and restart the services as needed."
    echo "           Using 'forkstart all' to start up all forks requires configuring file"
