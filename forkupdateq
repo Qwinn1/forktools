@@ -42,7 +42,7 @@ fi
 GITREPO=$(git remote -v | grep "fetch" | awk '{print $2}' )
 BLOCKDIR=$(echo $GITREPO | sed 's/.*\///g')
 
-OLDVERSION=$(forkverq $FORKNAME)
+OLDVERSION=$(forkq $FORKNAME ver)
 echo "forkupdate:  Updating from current version # :" $OLDVERSION
 
 
@@ -188,7 +188,7 @@ echo "forkupdate:  Setting farmer and pool reward target addresses in new config
 sed -i "${OLDFARMTARGETLINENO}s/$OLDFARMTARGET/$SETFARMTARGET/" $CURRENTCONFIG
 sed -i "${OLDPOOLTARGETLINENO}s/$OLDPOOLTARGET/$SETPOOLTARGET/" $CURRENTCONFIG
 
-NEWVERSION=$(forkverq $FORKNAME)
+NEWVERSION=$(forkq $FORKNAME ver)
 deactivate
 echo
 echo "forkupdate complete:  Updated to $FORKNAME version # :" $NEWVERSION

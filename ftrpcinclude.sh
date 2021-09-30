@@ -223,7 +223,7 @@ fi
 
 IFS=$'\n'
 if [[ $HARVESTERLIST == '' ]]; then
-  BADFORKSUM=$(forksumq $FORKNAME);
+  BADFORKSUM=$(fork $FORKNAME sum);
   SIZEOFPLOTS=$(grep "Total size of plots:"  <<< "$BADFORKSUM" | sed 's/Total size of plots://' | awk '{$1=$1};1' )
   CANSEEHARVESTERS=$(grep -c "Plot count for all harvesters:" <<< "$BADFORKSUM" )
   if [[ "$CANSEEHARVESTERS" > 0 ]]; then

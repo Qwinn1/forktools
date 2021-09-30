@@ -68,7 +68,7 @@ if [[ $HARVESTERONLY != 1 ]]; then
      fi
      HARVESTERERRORS=$(grep -a "Harvester did not respond" $YESTERDAYLOGLIST | grep -c -e $TODAYSTAMP -e $YESTERDAYSTAMP )
      FORKMEM=$(forkmemory)
-     FORKVERSION=$($FORKTOOLSDIR/forkverq $fork)
+     FORKVERSION=$($FORKTOOLSDIR/fork $fork ver)
      FULLNODEPROCESS='\s'$FORKNAME'_full'   
      FNWORKERS=$(ps -ef | grep -v grep | grep -c "$FULLNODEPROCESS" )
      . $FORKTOOLSDIR/ftrpcinclude.sh   
@@ -125,7 +125,7 @@ if [[ $FARMERONLY != 1 ]]; then
         YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.2')
      fi
 
-     FORKVERSION=$($FORKTOOLSDIR/forkverq $fork)
+     FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
      LASTHARVESTERLINE=$(cat debug.log | grep -a "plots were eligible" | tail -1)
      PLOTCOUNT=$(sed 's/.*Total //' <<< "$LASTHARVESTERLINE" | sed 's/ plots//' | awk '{$1=$1};1')
      CURRENTTIME=$(date "+%s")
