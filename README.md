@@ -13,6 +13,7 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 - all configuration files are now moved to and searched for in new forktools/ftconfigs directory.
 - all tools can now have their output logged to files created in the new forktools/ftlogs directory.  Only forkmon output is logged by default.  Edit ftconfigs/config.logging to enable logging for any other forktool.
 - there are now two install scripts.  `bash installft.sh` will update you to the latest code in the main branch. `bash installfttest.sh` will update you to the latest code in the testing branch.
+- forkconfig has been renamed to forkedit, to prevent confusion with forkfixconfig
 - forkexplore can now handle 0 or just 1 transaction found without errors
 - forkmon now handles Last Block and Effort% calculations much better when a block hasn't been won yet.  Effort% will in that case be calculated from the date of the first successful harvest in the earliest log (so, assuming you haven't deleted logs, from when you started farming the fork).
 - forkmon has been optimized for faster performance
@@ -231,7 +232,7 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 # COMMANDS WITH ONE PARAMETER: FORKNAME
 
 - `forkfixconfig chia`    \-  Provides automated editing of several entries in chia's config.yaml that require frequent editing - log level, plot loading frequency, farmer peer for harvesters, and several more.  Requires confirmation and creates backups.  Does not actually require editing of default options in config.forkfixconfig - the defaults I picked should work fine - but if you'd like to tweak them, you can do so there.  Please report if the defaults as I chose them cause you any issues so I can review.  As of v2.3, can now also accept "all", "farmers" or "harvesters" instead of forkname.
-- `forkconfig hddcoin`    \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit. You can now set your preferred text editor in config.forkconfig.
+- `forkedit hddcoin`      \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit. You can now set your preferred text editor in config.forkedit.
 - `forknodes avocado`     \-  prints a list of currently connected nodes for sharing with others having difficulty connecting. Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
 - `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
 - `forkaddplotdirs taco`  \-  Requires configuration in config.forkaddplotdirs to use.  List your plot directories there, then you can add them to any fork quickly with a single command.  Gives warnings if a drive listed in the config is not mounted.  As of v2.3, can now also be run with "all" as the parameter instead of forkname to add directories to every fork with an active harvester. 
@@ -275,7 +276,7 @@ https://discord.gg/XmTEZ4SHtj
    - Can now run forklog with *just* a -t parameter, to just tail the last bunch of lines.
 6. forkaddplotdirs will now show warnings if a drive specified in config.forkaddplotdirs is not mounted.
 7. forkshowwallet renamed to forkwalletshow to be consistent with the format of the manual command.
-8. forkconfig default text editor can now be changed via editing config.forkconfig (defaults to gedit as before)
+8. forkedit default text editor can now be changed via editing config.forkedit (defaults to gedit as before) (this entry revised as of version 3.0 due to renaming of forkconfig to forkedit)
 9. A great deal of work has been made to make forktools MacOS X compatible, though some work still needs to be done.  The simpler tools should work fine on MaxOS X, but forklog, forkmon and forkexplore probably won't until at least next version.
 
 
