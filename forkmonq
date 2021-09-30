@@ -30,9 +30,10 @@ function print_usage () {
 VALIDATEFORKNAME='No'
 FTERRORSTOFILE='Yes'
 
-FARMERONLY=$(echo $* | grep -c -e '\-f' -e '\-\-farmeronly')
-HARVESTERONLY=$(echo $* | grep -c -e '\-h' -e '\-\-harvesteronly')
-HIDEBALANCES=$(echo $* | grep -c -e '\-n' -e '\-\-nobalance')
+
+FARMERONLY=$(printf '%s' $* | grep -c -e '\-f' -e '\-\-farmeronly')
+HARVESTERONLY=$(printf '%s' $* | grep -c -e '\-h' -e '\-\-harvesteronly')
+HIDEBALANCE=$(printf '%s' $* | grep -c -e '\-n' -e '\-\-nobalance')
 if [[ $1 != '' && $1 != '-n' && $1 != '--nowallet' && $1 != '-f' && $1 != '--farmeronly' && $1 != '-h' && $1 != '--harvesteronly' ]]; then
   VALIDATEFORKNAME='Yes'
 fi
@@ -74,7 +75,7 @@ if [[ $HARVESTERONLY != 1 ]]; then
      . $FORKTOOLSDIR/ftrpcinclude.sh   
      EFFORT=${EFFORT%.*}
      ADDRESSBALANCE=${ADDRESSBALANCE%.*}
-     if [[ $HIDEBALANCES == 1 ]]; then
+     if [[ $HIDEBALANCE > 0 ]]; then
        ADDRESSBALANCE=0
      fi
      if [[ $BLOCKWON == 'false' ]]; then
