@@ -184,14 +184,19 @@ while read line; do
 done < $CURRENTCONFIG
 IFS=$OLDIFS
 
-echo "forkupdate:  Setting farmer and pool reward target addresses in new config.yaml to pre-forkupdate values."
-sed -i "${OLDFARMTARGETLINENO}s/$OLDFARMTARGET/$SETFARMTARGET/" $CURRENTCONFIG
-sed -i "${OLDPOOLTARGETLINENO}s/$OLDPOOLTARGET/$SETPOOLTARGET/" $CURRENTCONFIG
+if [[ $OLDFARMTARGET != '' && $OLDPOOLTARGET != '' ]]; then
+  echo "forkupdate:  Setting farmer and pool reward target addresses in new config.yaml to pre-forkupdate values."
+  sed -i "${OLDFARMTARGETLINENO}s/$OLDFARMTARGET/$SETFARMTARGET/" $CURRENTCONFIG
+  sed -i "${OLDPOOLTARGETLINENO}s/$OLDPOOLTARGET/$SETPOOLTARGET/" $CURRENTCONFIG
+else
+  echo "forkupdate:  Original config did not have settings for both target addresses, so no address transfer is attempted."
+  echo "             This is normal when this is just a harvester. If this is a farmer, make sure to edit your addresses."
+fi
 
 NEWVERSION=$(forkq $FORKNAME ver)
 deactivate
 echo
 echo "forkupdate complete:  Updated to $FORKNAME version # :" $NEWVERSION
-echo "You should now run forkstart -f, -fnw or -ha to restart whichever service you prefer for this fork."
+echo "You should now run forkstart -f, -fnw or -h to restart whichever service you prefer for this fork."
 echo
 
