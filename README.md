@@ -6,21 +6,23 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 
 # The Short List Of Commands And What They Do
 
-- `forklist`         \- Displays count and quick list of all running farmers and harvesters
-- `forkmon`          \- Displays detailed statistics for all running farmers and harvesters
-- `forkexplore`      \- Provides transaction history for your target wallet address by default, but can explore any specified address
-- `forkports`        \- Checks to make sure the ports used by each fork are only being used by that fork
-- `forktargets`      \- Displays a list of the target receive addresses for every fork running a farmer
-- `forkfixconfig`    \- Allows you to quickly set your preferred settings in one or all fork's config.yamls.
-- `forkedit`         \- Simply opens up a fork's config.yaml in your preferred text editor (gedit by default)
-- `forknodes`        \- Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
-- `forkaddplotdirs`  \- Uses a list you provide to add multiple plot directories to a fork, or all forks running a harvester at once
-- `forkupdate`       \- Updates your fork to a new version. Only parameters it needs are the forkname and optionally the version you want.
-- `forkstart`        \- Start or restart fork services.  Can start all of your fork services sequentially after some configuration.
-- `forkstop`         \- Stop all fork services for one fork or all forks running a harvester.
-- `forklog`          \- Powerful and versatile debug.log parser
-- `forkbenchips`     \- Benchmarks your server's capacity for running a timelord
-- `fork`             \- Allows you to run any command for any fork from any directory, with some abbreviations for frequently used commands
+```
+fork             - Allows you to run any command for any fork from any directory, with some abbreviations for frequently used commands
+forklist         - Displays count and quick list of all running farmers and harvesters
+forkmon          - Displays detailed statistics for all running farmers and harvesters
+forkexplore      - Provides transaction history for your target wallet address by default, but can explore any specified address
+forkports        - Checks to make sure the ports used by each fork are only being used by that fork
+forktargets      - Displays a list of the target receive addresses for every fork running a farmer
+forkfixconfig    - Allows you to quickly set your preferred settings in one or all fork's config.yamls.
+forkedit         - Simply opens up a fork's config.yaml in your preferred text editor (gedit by default)
+forknodes        - Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
+forkaddplotdirs  - Uses a list you provide to add multiple plot directories to a fork, or all forks running a harvester at once
+forkupdate       - Updates your fork to a new version. Only parameters it needs are the forkname and optionally the version you want.
+forkstart        - Start or restart fork services.  Can start all of your fork services sequentially after some configuration.
+forkstop         - Stop all fork services for one fork or all forks running a harvester.
+forklog          - Powerful and versatile debug.log parser
+forkbenchips     - Benchmarks your server's capacity for running a timelord
+```
 
 # Changelog, Version 3.0:
 
