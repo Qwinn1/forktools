@@ -1,8 +1,0 @@
-#! /usr/bin/env bash
-
-VALIDATEFORKNAME='Yes'
-. forktoolsinit.sh
-
-$FORKCONFIGEDITOR $FORKTOOLSHIDDENDIRS/.$1/mainnet/config/config.yaml
-
-

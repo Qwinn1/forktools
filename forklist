@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+. $FORKTOOLSDIR/ftconfigs/config.logging
+
+if [[ $LOGFORKLIST == 'true' ]]; then
+  forklistq $* | tee -a $FORKTOOLSDIR/ftlogs/forklist.log
+else
+  forklistq $*
+fi

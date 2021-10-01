@@ -1,0 +1,28 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "forkbenchips help:"
+   echo
+   echo "SYNOPSIS:  Runs 'vdf_bench square_asm 400000', a benchmark of your system's capacity to run a"
+   echo "    timelord for the specified fork, in ips."
+   echo "           Requires having previously run sh install-timelord.sh for the fork."
+   echo "           Anything over 100ips can probably maintain fork stability under normal found proof load"
+   echo "    without too much trouble.  Anything over 200 can be considered relatively fast and more than"
+   echo "    enough to keep a well coded blockchain stable.  Any timelord can be overwhelmed if the fork's"
+   echo "    difficulty is set too low creating too many found proofs for any timelord to handle in time."
+   echo
+   echo "PARAMETERS:"
+   echo "    forkname            Required."
+   echo "    -help | --help      Show this information again."
+   echo
+   exit 0
+}
+
+VALIDATEFORKNAME='Yes'
+. ftinit.sh
+
+cd $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain 
+. ./activate 
+./vdf_bench square_asm 400000
+deactivate
+

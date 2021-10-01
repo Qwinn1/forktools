@@ -1,0 +1,52 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "forkstop help:"
+   echo
+   echo "SYNOPSIS:  Runs 'forkname stop -d all' for the specified fork, or all forks with an active harvester process."
+   echo "     This shuts down the daemon in addition to all other fork processes."
+   echo "           If you only want to restart a running fork, you don't need to run forkstop then forkstart."
+   echo "     Just forkstart will stop and restart the fork all by itself."
+   echo "           Always run 'forkstop all' before a server shutdown/reboot."
+   echo
+   echo "PARAMETERS:"
+   echo "    forkname | all      Required.  Stop services for the specified fork, or all forks with active harvesters."
+   echo "    -t | --timelord     OPTIONAL.  Only stop any running timelord service."
+   echo "    -help | --help      Show this information again."
+   echo
+   exit 0
+}
+
+if [[ $3 != '' ]]; then
+  echo "forkstop:  Too many specified parameters."
+  print_usage
+fi
+
+if [[ $1 == '-h' || $1 == '--help' || $2 == '-h' || $2 == '--help' ]]; then
+  print_usage
+  exit
+fi   
+
+if [[ $1 != 'all' ]]; then
+  VALIDATEFORKNAME='Yes'
+fi
+. ftinit.sh
+
+. ftbuildharvesterlist.sh
+for fork in $HARVESTERLIST; do
+   if [[ $1 != 'all' && $1 != $fork ]]; then
+      continue
+   fi
+   cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain 
+   . ./activate 
+   if [[ $2 == '-t' || $2 == '--timelord' ]]; then
+      echo "Stopping timelord: " $fork
+      $fork stop timelord-launcher-only      
+      $fork stop timelord-only
+   else      
+      echo "Stopping all services: " $fork      
+      $fork stop -d all
+   fi
+   deactivate
+done
+

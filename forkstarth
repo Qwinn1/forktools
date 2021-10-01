@@ -1,9 +1,0 @@
-#! /usr/bin/env bash
-
-VALIDATEFORKNAME='Yes'
-. forktoolsinit.sh
-
-cd $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain 
-. ./activate 
-$1 start harvester -r
-
