@@ -6,7 +6,7 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 
 # The Short List Of Commands And What They Do
 
-```
+
 fork             - Allows you to run any command for any fork from any directory, with some abbreviations for frequently used commands
 forklist         - Displays count and quick list of all running farmers and harvesters
 forkmon          - Displays detailed statistics for all running farmers and harvesters
@@ -22,7 +22,7 @@ forkstart        - Start or restart fork services.  Can start all of your fork s
 forkstop         - Stop all fork services for one fork or all forks running a harvester.
 forklog          - Powerful and versatile debug.log parser
 forkbenchips     - Benchmarks your server's capacity for running a timelord
-```
+
 
 # Changelog, Version 3.0:
 
