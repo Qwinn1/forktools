@@ -63,7 +63,7 @@ while [[ $# -gt 0 ]]; do
    case "$opt" in
      "-e"|"--error"          ) GREPTERM=$(printf "%s -e ERROR" "$GREPTERM" ); shift;;
      "-w"|"--warning"        ) GREPTERM=$(printf "%s -e WARNING" "$GREPTERM" ); shift;;
-     "-p"|"--proofs"         ) GREPTERM=$(printf "%s -e 'Found [1.9].* proofs\.'" "$GREPTERM" ); shift;;
+     "-p"|"--proofs"         ) GREPTERM=$(printf "%s -e 'Found [1.9].* proofs'" "$GREPTERM" ); shift;;
      "-h"|"--harv"           ) GREPTERM=$(printf "%s -e harvester" "$GREPTERM" ); shift;;
      "-g"|"--grep"           ) shift; GREPTERM=$(printf "%s -e $1" "$GREPTERM" ); shift;;
      "-l"|"--lastxdays"      ) shift; LASTXDAYS="$1"; SETLASTXDAYS="$1"; shift;;
