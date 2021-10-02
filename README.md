@@ -6,7 +6,6 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 
 # The Short List Of Commands And What They Do
 
-
 - `fork`             \- Allows you to run any command for any fork from any directory, with some abbreviations for frequently used commands
 - `forklist`         \- Displays count and quick list of all running farmers and harvesters
 - `forkmon`          \- Displays detailed statistics for all running farmers and harvesters
@@ -23,6 +22,9 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 - `forknodes`        \- Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
 - `forkbenchips`     \- Benchmarks your server's capacity for running a timelord
 
+# Changelog, Version 3.01:
+
+- Lucky has properly renamed their processes in their latest version.  This update just removes the special handling that was previously required.  Update to latest version of lucky for it to be compatible with latest forktools versions.
 
 # Changelog, Version 3.0:
 
@@ -279,7 +281,7 @@ https://discord.gg/XmTEZ4SHtj
 
 1. All configuration options have been moved out of forktoolsinit.sh and into sub-includes named config.forkstartall, config.forkaddplotdirs, etc.   For your own convenience, please preserve your settings when updating for transfer to the new config file structure.
 2. New `bash installft.sh` installation script.  Updates code to latest version, tests for curl installation, sets up environment variables, creates all known needed symlinks, sets up new config.forktool files from .template versions if not already configured (see previous changelog entry) and makes forktools executable.
-3. Compatibility added for forks that do not rename their processes, folders or code directories from "chia".  Prime examples are lucky, xcha, nchain, rose and fishery.  Please note that adding this compatibility is NOT an endorsement on my part recommending farming of any forks with such terrible lazy coding practices.  Quite the opposite.  KNOWN ISSUE:  Everything works except memory usage, which cannot be fixed at this time due to process names being indistinguishable from chia and each other. 
+3. Compatibility added for forks that do not rename their processes, folders or code directories from "chia".  Prime examples are lucky (edit: lucky processes have since been fixed), xcha, nchain, rose and fishery.  Please note that adding this compatibility is NOT an endorsement on my part recommending farming of any forks with such terrible lazy coding practices.  Quite the opposite.  KNOWN ISSUE:  Everything works except memory usage, which cannot be fixed at this time due to process names being indistinguishable from chia and each other. 
 4. Forkmon fixes and enhancements:
    - Issue with a minority of forks showing "1 plot" should be fixed.
    - Can now accept optional first parameter FORKNAME to only show output for the specified fork

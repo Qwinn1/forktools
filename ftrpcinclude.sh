@@ -1,7 +1,7 @@
 
 # All RPC calls and most data assembly for forkmon and forkexplorer occurs in this include.
 
-if [[ $FORKNAME != 'chia' && $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
+if [[ $FORKNAME != 'chia' && $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' ]]; then
   FARMERPROCESS='\s'$FORKNAME'_farmer'
   FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
   if [ -z "$FARMERRUNNING" ]; then
@@ -13,7 +13,6 @@ else
   case "$FORKNAME" in
     "chia"            ) PORTTOSEARCH=":8559 ";;
     "xcha"            ) PORTTOSEARCH=":5159 ";;
-    "lucky"           ) PORTTOSEARCH=":16659 ";;
     "nchain"          ) PORTTOSEARCH=":38559 ";;
     "fishery"         ) PORTTOSEARCH=":4799 ";;
     "rose"            ) PORTTOSEARCH=":8459 ";;
@@ -25,7 +24,7 @@ else
   fi
 fi
 
-if [[ $FORKNAME != 'chia' && $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
+if [[ $FORKNAME != 'chia' && $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' ]]; then
   FULLNODEPROCESS='\s'$FORKNAME'_full_n'
   FULLNODERUNNING=$(ps -ef | grep -e $FULLNODEPROCESS | grep -v grep)
   if [ -z "$FULLNODERUNNING" ]; then
@@ -36,7 +35,6 @@ else
   case "$FORKNAME" in
     "chia"            ) PORTTOSEARCH=":8555 ";;
     "xcha"            ) PORTTOSEARCH=":5155 ";;
-    "lucky"           ) PORTTOSEARCH=":16655 ";;
     "nchain"          ) PORTTOSEARCH=":38555 ";;
     "fishery"         ) PORTTOSEARCH=":4795 ";;
     "rose"            ) PORTTOSEARCH=":8025 ";;

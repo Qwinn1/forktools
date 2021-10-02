@@ -76,7 +76,7 @@ then
       IFS=''      
       FARMERRUNNING=''
       FULLNODERUNNING=''
-      if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' && $FORKNAME != 'lucky' ]]; then
+      if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' ]]; then
         FARMERPROCESS='\s'$FORKNAME'_farmer'
         FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
         FULLNODEPROCESS='\s'$FORKNAME'_full_n'
