@@ -17,10 +17,6 @@ XCHAPORTINUSE=$(forkss | grep '"chia_farm' | grep ":5159 " | wc -l | awk '{$1=$1
 if [[ $XCHAPORTINUSE > 0 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nxcha" )
 fi  
-LUCKYPORTINUSE=$(forkss | grep '"chia_farm' | grep ":16659 " | wc -l | awk '{$1=$1};1')
-if [[ $LUCKYPORTINUSE > 0 ]]; then 
-  FARMERLIST=$(echo -e $FARMERLIST"\nlucky" )
-fi  
 NCHAINPORTINUSE=$(forkss | grep '"chia_farm' | grep ":38559 " | wc -l | awk '{$1=$1};1')
 if [[ $NCHAINPORTINUSE > 0 ]]; then 
   FARMERLIST=$(echo -e $FARMERLIST"\nnchain" )

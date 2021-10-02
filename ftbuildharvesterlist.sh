@@ -16,10 +16,6 @@ XCHAPORTINUSE=$(forkss | grep '"chia_harv' | grep ":5160 " | wc -l | awk '{$1=$1
 if [[ $XCHAPORTINUSE > 0 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nxcha" )
 fi  
-LUCKYPORTINUSE=$(forkss | grep '"chia_harv' | grep ":16660 " | wc -l | awk '{$1=$1};1')
-if [[ $LUCKYPORTINUSE > 0 ]]; then 
-  HARVESTERLIST=$(echo -e $HARVESTERLIST"\nlucky" )
-fi  
 NCHAINPORTINUSE=$(forkss | grep '"chia_harv' | grep ":38560 " | wc -l | awk '{$1=$1};1')
 if [[ $NCHAINPORTINUSE > 0 ]]; then 
   HARVESTERLIST=$(echo -e $HARVESTERLIST"\nnchain" )
