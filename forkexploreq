@@ -38,7 +38,7 @@ if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $F
   FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
   if [ -z "$FARMERRUNNING" ]; then
      echo "forkexplore requires a running $FORKNAME farmer process, which is not detected.  Aborting."
-     continue
+     exit
   fi
 else
   FARMERRUNNING=1  # if it isn't, we'll be skipping the fork completely
@@ -52,7 +52,7 @@ else
   CHIAPORTINUSE=$(forkss | grep '"chia_farm' | grep -c $PORTTOSEARCH )
   if [[ $CHIAPORTINUSE == 0 ]]; then
      echo "Farmer for $FORKNAME is not running, skipping."
-     continue
+     exit
   fi
 fi
 fi
