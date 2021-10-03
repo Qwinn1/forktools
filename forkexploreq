@@ -55,7 +55,6 @@ else
      exit
   fi
 fi
-fi
 
 if [[ $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' ]]; then
   FULLNODEPROCESS='\s'$FORKNAME'_full_n'
