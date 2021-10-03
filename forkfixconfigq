@@ -24,10 +24,11 @@ function print_usage () {
    echo "    config settings actually take effect."
    echo
    echo "PARAMETERS:"
-   echo "    forkname            Required."
+   echo "    forkname | all      Required. Either one forkname or 'all' to run for all forks"
+   echo "                           with an active harvester process.
    echo "    10.0.0.100          OPTIONAL second parameter. Sets 'host:' under 'farmer_peer' in the"
-   echo "                        harvester section of the config to point the harvester at the IP"
-   echo "                        address of the server running farmer services for that fork."
+   echo "                           harvester section of the config to point the harvester at the IP"
+   echo "                           address of the server running farmer services for that fork."
    echo "    -help | --help      Show this information again."
    echo
    exit 0
