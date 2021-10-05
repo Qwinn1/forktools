@@ -43,7 +43,7 @@ fi
 
 FIRSTLOOP=1
 while [[ $# -gt 0 ]]; do
-   if [[ $FIRSTLOOP = 1 ]]; then
+   if [[ $FIRSTLOOP = 1 && $VALIDATEFORKNAME = 'Yes' ]]; then
      FORKNAME="$1"
      FIRSTLOOP=0
      shift
