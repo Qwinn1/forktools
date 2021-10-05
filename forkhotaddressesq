@@ -1,0 +1,27 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "forkhotwallets help:"
+   echo
+   echo "SYNOPSIS:  Lists the hot wallet address for each fork, by running 'forkname keys show' for every"
+   echo "    active farmer, in a format that can be easily pasted into config.hotwallets.  See the comments"
+   echo "    in ftconfigs/config.hotwallets for details."
+   echo "           Assumes you only have one loaded key per fork.  If you have multiple, you may get odd"
+   echo "    results."
+   echo
+   echo "PARAMETERS:"
+   echo "     -help | --help      Show this information again."
+   echo
+   exit 0
+}
+
+. ftinit.sh
+. ftbuildfarmerlist.sh
+
+for fork in $FARMERLIST; do
+   cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain
+   . ./activate
+   HOTADDRESS=$($fork keys show | grep "First wallet address: " | sed 's/First wallet address: //' )
+   printf '%-18s %s\n' $fork $HOTADDRESS
+done
+
