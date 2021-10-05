@@ -33,6 +33,15 @@ function print_usage () {
 }
 
 
+VALIDATEFORKNAME='No'
+FTERRORSTOFILE='Yes'
+
+if [[ $1 != '' && $1 != '-n' && $1 != '--nowallet' && $1 != '-f' && $1 != '--farmeronly' && $1 != '-h' && $1 != '--harvesteronly' && $1 != '-p' && $1 != '--plotkey' && $1 != '-help' && $1 != '--help' ]]; then
+  VALIDATEFORKNAME='Yes'
+fi
+. ftinit.sh
+
+FIRSTLOOP=1
 while [[ $# -gt 0 ]]; do
    if [[ $FIRSTLOOP = 1 ]]; then
      FORKNAME="$1"
@@ -47,20 +56,10 @@ while [[ $# -gt 0 ]]; do
      "-h"|"--harvesteronly"  ) HARVESTERONLY=1; shift;;
      "-p"|"--plotkey"        ) HOTSWITCH='on'; shift;;
      "-help"|"--help"        ) print_usage; exit;;
-     *                       ) echo 'ERROR: Invalid option: '$opt >&2
+     *                       ) echo 'ERROR: Invalid option: '$opt >&2;
                                exit 1;;
    esac
 done
-
-
-VALIDATEFORKNAME='No'
-FTERRORSTOFILE='Yes'
-
-if [[ $1 != '' && $1 != '-n' && $1 != '--nowallet' && $1 != '-f' && $1 != '--farmeronly' && $1 != '-h' && $1 != '--harvesteronly' && $1 != '-k' ]]; then
-  VALIDATEFORKNAME='Yes'
-fi
-. ftinit.sh
-
 
 if [[ $HARVESTERONLY != 1 ]]; then
   . ftbuildfarmerlist.sh
@@ -75,10 +74,10 @@ if [[ $HARVESTERONLY != 1 ]]; then
      echo -e "-------------------------------------------------------------------------------------------------------------------------------------------------"
   fi
   for fork in $FARMERLIST; do
-     FORKNAME=$fork
-     if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $1 ]]; then
+     if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
      fi
+     FORKNAME=$fork     
      cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log 
      YESTERDAYLOGLIST='debug.log'
      TESTDEBUG1=$(tail -1 debug.log.1)
@@ -126,9 +125,10 @@ if [[ $FARMERONLY != 1 ]]; then
   printf 'Harvester         Version      # Plots        Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
   echo -e "------------------------------------------------------------------------------------------------------------------------"
   for fork in $HARVESTERLIST; do
-     if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $1 ]]; then
+     if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
      fi
+     FORKNAME=$fork     
      cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log
      # For speed purposes, let's check how far we have to go back in logs to get everything since TODAYSTAMP and YESTERDAYSTAMP
      TODAYLOGLIST='debug.log'
