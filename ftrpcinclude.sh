@@ -102,8 +102,12 @@ if [[ $FORKNAME == 'fishery' ]]; then
 fi
 
 # Get wallet target address (can be different from what is set in config.yaml, if config was directly edited after last time farmer was started)
-ADDRESS=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{"search_for_private_key":false}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_reward_targets | python -m json.tool )
-ADDRESS=$(echo $ADDRESS | sed 's/.*"farmer_target": "//' | sed 's/",.*//' | awk '{$1=$1};1')
+if [[ $HOTSWITCH == '' ]]; then
+   ADDRESS=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{"search_for_private_key":false}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_reward_targets | python -m json.tool )
+   ADDRESS=$(echo $ADDRESS | sed 's/.*"farmer_target": "//' | sed 's/",.*//' | awk '{$1=$1};1')
+else
+   ADDRESS=$($FORKNAME keys show | grep "First wallet address: " | head -1 | sed 's/First wallet address: //' )
+fi
 
 # Address override.  Pass to forkexplore as -a parameter.
 if [[ $SPECIFIEDADDRESS != '' ]]; then
