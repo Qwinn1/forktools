@@ -15,6 +15,10 @@ function print_usage () {
    echo "           Transactions that appear in pairs in most other explorers, such as the 1/8 farmer/"
    echo "    7/8 pool rewards that most forks split their farmed block rewards up as, are summed and" 
    echo "    displayed as a single total reward in the transaction list for easier legibility."
+   echo "           If you specify the -p switch, forkexplore will attempt to use your hot wallet address"
+   echo "    instead of your target receive address for balances and effort calculations.  This would"
+   echo "    primarily be used by people who use cold wallets and NFT plots, and want to check their"
+   echo "    hot wallets for NFT pool rewards."   
    echo
    echo "PARAMETERS/SWITCHES:"
    echo "    forkname                                  Required.  All switches optional."
@@ -23,6 +27,9 @@ function print_usage () {
    echo "    -s YYYY-MM-DD | --startdate YYYY-MM-DD    Do not show results prior to this date.  If both"
    echo "                                                 this and --lastxdays are set, this is used."
    echo "    -u | --enddate YYYY-MM-DD                 Do not show results after this date."
+   echo "    -p | --plotkey                            If set, the first 'First Wallet Address' returned by"
+   echo "                                                 'forkname keys show' (presumably your hot wallet"
+   echo "                                                 address) will be used instead of target address."
    echo "    -help | --help                            Show this information again."
    echo
    exit 0
@@ -83,6 +90,7 @@ LASTXDAYS=$FORKEXPLORELASTXDAYS
 ENDDATE=$FORKEXPLOREENDDATE # Tomorrow
 
 FIRSTLOOP=1
+
 while [[ $# -gt 0 ]]; do
    if [[ $FIRSTLOOP = 1 ]]; then
      FORKNAME="$1"
@@ -96,7 +104,8 @@ while [[ $# -gt 0 ]]; do
      "-l"|"--lastxdays"      ) shift; LASTXDAYS="$1";SETLASTXDAYS="$1"; shift;;
      "-s"|"--startdate"      ) shift; STARTDATE="$1";SETSTARTDATE="$1"; shift;;
      "-u"|"--enddate"        ) shift; ENDDATE="$1"; ENDDATE=$(DateOffset +1 $ENDDATE); shift;;
-     "-h"|"--help"           ) print_usage;;
+     "-p"|"--plotkey"        ) HOTSWITCH='on'; shift;;
+     "-help"|"--help"        ) print_usage; exit;;
      *                       ) echo 'ERROR: Invalid option: '$opt >&2
                                exit 1;;
    esac

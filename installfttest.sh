@@ -20,5 +20,5 @@ else
   exit
 fi
 
-chmod +x $PWD/install2ft.sh
+chmod +x $PWD/install*.sh
 $PWD/install2ft.sh

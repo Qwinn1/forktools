@@ -13,28 +13,31 @@ function print_usage () {
    echo "           Using 'forkstart all' to start up all forks requires configuring file"
    echo "     forktools/ftconfigs/config.forkstartall.  List forks you want to start with -f,"
    echo "     -fnw and -h in each of the three corresponding variables for those services."
+   echo "           If using 'forkstart all', you can specify (as an example) -s 10 to set"
+   echo "     a ten second delay between each fork start.  Recommended to set it to that or"
+   echo "     even higher if you've been down for a while and all forks will need to resync."
    echo "           Between 'forkstop all' and 'forkstart all', server reboots become super"
    echo "     easy, barely an inconvenience."
    echo
    echo "PARAMETERS:"
    echo "    forkname | all                   If all, all forks will be started per configuration set in file"
-   echo "                                        ftconfigs/config.forkstartall"
-   echo "                                     If forkname, one and only one of the following switches is also required."
+   echo "                                        ftconfigs/config.forkstartall.  The only switch for 'all' is -s"
+   echo "                                        (see below for details)"
+   echo "                                     If forkname, one and only one of the following 6 switches is also required."
    echo "    -f | --farmer                    Starts farmer for forkname."
    echo "    -fnw | --farmernowallet          Starts farmer-no-wallet for forkname."   
    echo "    -fo | --farmeronly               Starts farmer-only for forkname."
    echo "    -fh | --farmerharvester          Starts farmer-only and harvester for forkname."
    echo "    -h | --harvester                 Starts harvester for forkname."
    echo "    -t | --timelord                  Starts timelord service only for forkname."
+   echo 
+   echo "    -s | --sleep                     Only usable with 'forkstart all'.  Allows you to set a delay, in"
+   echo "                                        seconds, between each forkstart."
+   echo
    echo "    -help | --help                   Show this information again."
    echo
    exit 0
 }
-
-if [[ $3 != '' ]]; then
-  echo "forkstart:  Too many specified parameters.  Aborting forkstart."
-  print_usage
-fi
 
 if [[ $1 != 'all' ]]; then
   VALIDATEFORKNAME='Yes'
@@ -84,6 +87,11 @@ if [[ $1 != 'all' ]]; then
 else
    ORIGIFS=$IFS
    IFS=$'\n'
+   if [[  $2 == '-s' || $2 == '-- sleep' ]]; then
+      if [ "$3" -eq "$3" ]; then  # this oddly but correctly only returns true if the value is an integer
+         SLEEPDELAY=$3
+      fi
+   fi   
    # Validate entire config.forkstartall file before starting.
    for plotdir in $FORKSTARTFLIST; do
       STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
@@ -147,7 +155,11 @@ else
       cd $FORKTOOLSBLOCKCHAINDIRS/$STRIPPEDCOMMENTS-blockchain 
       . ./activate
       $STRIPPEDCOMMENTS start harvester -r
-      deactivate      
+      deactivate
+      if [[ $SLEEPDELAY != '' ]]; then
+        echo "forkstart:  Sleeping for $SLEEPDELAY seconds..."      
+        sleep "$SLEEPDELAY"
+      fi
    done
    for plotdir in $FORKSTARTFNWLIST; do
       STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
@@ -158,6 +170,10 @@ else
       . ./activate
       $STRIPPEDCOMMENTS start farmer-no-wallet -r
       deactivate      
+      if [[ $SLEEPDELAY != '' ]]; then
+        echo "forkstart:  Sleeping for $SLEEPDELAY seconds..."      
+        sleep "$SLEEPDELAY"
+      fi
    done
    for plotdir in $FORKSTARTFLIST; do
       STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
@@ -168,6 +184,10 @@ else
       . ./activate
       $STRIPPEDCOMMENTS start farmer -r
       deactivate
+      if [[ $SLEEPDELAY != '' ]]; then
+        echo "forkstart:  Sleeping for $SLEEPDELAY seconds..."      
+        sleep "$SLEEPDELAY"
+      fi
    done
    for plotdir in $FORKSTARTFHLIST; do
       STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
@@ -178,6 +198,10 @@ else
       . ./activate
       $STRIPPEDCOMMENTS start farmer-only harvester -r
       deactivate
+      if [[ $SLEEPDELAY != '' ]]; then
+        echo "forkstart:  Sleeping for $SLEEPDELAY seconds..."      
+        sleep "$SLEEPDELAY"
+      fi
    done
    for plotdir in $FORKSTARTFOLIST; do
       STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
@@ -188,6 +212,10 @@ else
       . ./activate
       $STRIPPEDCOMMENTS start farmer-only -r
       deactivate
+      if [[ $SLEEPDELAY != '' ]]; then
+        echo "forkstart:  Sleeping for $SLEEPDELAY seconds..."
+        sleep "$SLEEPDELAY"
+      fi
    done
    IFS=$ORIGIFS
 fi

@@ -55,6 +55,16 @@ if [[ $2 == '-b' ]]; then
       print_usage
       exit
    elif [[ $3 == 'main' || $3 == 'latest' ]]; then
+      GITLATESTEXISTS=$(git branch -a | grep "\slatest$" | wc -l)
+      GITMAINEXISTS=$(git branch -a | grep "\smain$" | wc -l)
+      if [[ $3 == 'latest' && $GITLATESTEXISTS == 0 ]]; then
+         echo "Specified branch latest does not exist.  Aborting forkupdate."
+         exit
+      fi
+      if [[ $3 == 'main' && $GITMAINEXISTS == 0 ]]; then
+         echo "Specified branch main does not exist.  Aborting forkupdate."
+         exit
+      fi
       GITBRANCH=$(echo $2 $3)
    else
       GITTAGS=$(git tag | grep "^$3$" | wc -l)

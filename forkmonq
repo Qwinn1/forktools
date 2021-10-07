@@ -16,29 +16,50 @@ function print_usage () {
    echo "    harvest, average response time today and yesterday (each starting at midnight), longest response"
    echo "    time today and yesterday (each starting at midnight), the number of '5 second' warnings in the logs"
    echo "    today and yesterday (each starting at midnight), and the number of proofs found since midnight yesterday."
+   echo "           If you specify the -p switch, forkmon will attempt to use your hot wallet address instead of"
+   echo "    your target receive address for balances and effort calculations.  This would primarily be used by"
+   echo "    people who use cold wallets and NFT plots, and want to check their hot wallets for NFT pool rewards."
    echo
    echo "PARAMETERS:"
    echo "    forkname               OPTIONAL.  If set, must be the first parameter.  Only show output for this fork."
    echo "    -n | --nobalance       OPTIONAL.  If set, all balances will show 0.  For privacy when posting results online."
    echo "    -f | --farmeronly      OPTIONAL.  If set, the harvester section will be skipped."
-   echo "    -h | --harvesteronly   OPTIONAL.  If set, the farmer section will be skipped."   
+   echo "    -h | --harvesteronly   OPTIONAL.  If set, the farmer section will be skipped."
+   echo "    -p | --plotkey         OPTIONAL.  If set, the first 'First Wallet Address' returned by 'forkname keys show'"
+   echo "                              (presumably your hot wallet address) will be used instead of target address."
    echo "    -help | --help         Show this information again."
    echo
    exit 0
 }
 
+
 VALIDATEFORKNAME='No'
 FTERRORSTOFILE='Yes'
 
-
-FARMERONLY=$(printf '%s' $* | grep -c -e '\-f' -e '\-\-farmeronly')
-HARVESTERONLY=$(printf '%s' $* | grep -c -e '\-h' -e '\-\-harvesteronly')
-HIDEBALANCE=$(printf '%s' $* | grep -c -e '\-n' -e '\-\-nobalance')
-if [[ $1 != '' && $1 != '-n' && $1 != '--nowallet' && $1 != '-f' && $1 != '--farmeronly' && $1 != '-h' && $1 != '--harvesteronly' ]]; then
+if [[ $1 != '' && $1 != '-n' && $1 != '--nowallet' && $1 != '-f' && $1 != '--farmeronly' && $1 != '-h' && $1 != '--harvesteronly' && $1 != '-p' && $1 != '--plotkey' && $1 != '-help' && $1 != '--help' ]]; then
   VALIDATEFORKNAME='Yes'
 fi
 . ftinit.sh
 
+FIRSTLOOP=1
+while [[ $# -gt 0 ]]; do
+   if [[ $FIRSTLOOP = 1 && $VALIDATEFORKNAME = 'Yes' ]]; then
+     FORKNAME="$1"
+     FIRSTLOOP=0
+     shift
+     continue
+   fi
+   opt="$1"
+   case "$opt" in
+     "-n"|"--nobalance"      ) HIDEBALANCE=1; shift;;
+     "-f"|"--farmeronly"     ) FARMERONLY=1; shift;;
+     "-h"|"--harvesteronly"  ) HARVESTERONLY=1; shift;;
+     "-p"|"--plotkey"        ) HOTSWITCH='on'; shift;;
+     "-help"|"--help"        ) print_usage; exit;;
+     *                       ) echo 'ERROR: Invalid option: '$opt >&2;
+                               exit 1;;
+   esac
+done
 
 if [[ $HARVESTERONLY != 1 ]]; then
   . ftbuildfarmerlist.sh
@@ -53,10 +74,10 @@ if [[ $HARVESTERONLY != 1 ]]; then
      echo -e "-------------------------------------------------------------------------------------------------------------------------------------------------"
   fi
   for fork in $FARMERLIST; do
-     FORKNAME=$fork
-     if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $1 ]]; then
+     if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
      fi
+     FORKNAME=$fork     
      cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log 
      YESTERDAYLOGLIST='debug.log'
      TESTDEBUG1=$(tail -1 debug.log.1)
@@ -104,9 +125,10 @@ if [[ $FARMERONLY != 1 ]]; then
   printf 'Harvester         Version      # Plots        Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
   echo -e "------------------------------------------------------------------------------------------------------------------------"
   for fork in $HARVESTERLIST; do
-     if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $1 ]]; then
+     if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
      fi
+     FORKNAME=$fork     
      cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log
      # For speed purposes, let's check how far we have to go back in logs to get everything since TODAYSTAMP and YESTERDAYSTAMP
      TODAYLOGLIST='debug.log'
