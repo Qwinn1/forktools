@@ -132,6 +132,11 @@ if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/lucky-blockchain/chia" ) && ( ! -d "$FORKTO
   printf 'Created symlink: '
   ln -sv $FORKTOOLSBLOCKCHAINDIRS/lucky-blockchain/chia $FORKTOOLSBLOCKCHAINDIRS/lucky-blockchain/lucky
 fi
+if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/flora-blockchain/chia" ) && ( ! -d "$FORKTOOLSBLOCKCHAINDIRS/flora-blockchain/flora" ) ]]; then
+  printf 'Created symlink: '
+  ln -sv $FORKTOOLSBLOCKCHAINDIRS/flora-blockchain/chia $FORKTOOLSBLOCKCHAINDIRS/flora-blockchain/flora
+fi
+
 
 # Symlink creation for executables
 if [[ ( -f "$FORKTOOLSBLOCKCHAINDIRS/ext9-blockchain/venv/bin/chia" ) && ( ! -f "$FORKTOOLSBLOCKCHAINDIRS/ext9-blockchain/venv/bin/nchain" ) ]]; then
