@@ -22,6 +22,14 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 - `forknodes`        \- Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
 - `forkbenchips`     \- Benchmarks your server's capacity for running a timelord
 
+# Changelog, Version 3.02:
+
+- `forkstart all` can now take a `-s #` switch, where # is the number of seconds to sleep in between starting each fork.  Good for if it's been a while since you ran your forks and they'll need to resync, or for weaker CPUs that have trouble starting that many processes consecutively without a pause.
+- forkmon and forkexplore can now take a -p switch, which makes them report on hot wallet address instead of target address.  Intended for folks who use cold wallets and NFT plots to quickly see if any pool rewards have gone to their hot wallets so they can transfer them to their cold wallets.
+- Flora has renamed their code directory and major-to-minor multiplier code to 'chia'.  Added special handling to make forktools compatible to Flora 1.2.9+.
+- forkupdate:  if -b main or -b latest was explicitly specified, forkupdate would fail if those branches didn't exist.  They are now validated prior to attempting to run forkupdate.
+- Install script for main will now make install script for testing executable, and vice versa.
+
 # Changelog, Version 3.01:
 
 - Lucky has properly renamed their processes in their latest version.  This update just removes the special handling that was previously required.  Update to latest version of lucky for it to be compatible with latest forktools versions.
