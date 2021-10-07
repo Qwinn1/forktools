@@ -23,10 +23,13 @@ function print_usage () {
    exit 0
 }
 
+REALPWD=$PWD
+
 VALIDATEFORKNAME='Yes'
 . ftinit.sh
 
 FORKNAME=$1
+
 
 # CD and activate venv
 cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain
@@ -40,7 +43,20 @@ fi
 
 # Get repository using git remote -v
 GITREPO=$(git remote -v | grep "fetch" | awk '{print $2}' )
-BLOCKDIR=$(echo $GITREPO | sed 's/.*\///g')
+BLOCKDIR=$(echo $GITREPO | sed 's/.*\///g' | sed 's/\.git//' )
+
+if [[ ! -d $FORKTOOLSBLOCKCHAINDIRS/$BLOCKDIR ]]; then 
+   echo "The directory $FORKTOOLSBLOCKCHAINDIRS/$BLOCKDIR does not seem to currently exist.  Aborting forkupdate."
+   exit
+fi
+
+INDIRECTORY=$(echo $REALPWD | grep "$BLOCKDIR" )
+if [[ $INDIRECTORY != '' ]]; then
+   echo "forkupdate will destroy and recreate the $FORKTOOLSBLOCKCHAINDIRS/$BLOCKDIR directory, and you appear to currently be inside that directory."
+   echo "This could lead to errors after forkupdate completes."
+   echo "Please navigate to a directory safely outside of the $BLOCKDIR directory and then restart forkupdate."
+   exit
+fi
 
 OLDVERSION=$(forkq $FORKNAME ver)
 echo "forkupdate:  Updating from current version # :" $OLDVERSION
@@ -55,8 +71,8 @@ if [[ $2 == '-b' ]]; then
       print_usage
       exit
    elif [[ $3 == 'main' || $3 == 'latest' ]]; then
-      GITLATESTEXISTS=$(git branch -a | grep "\slatest$" | wc -l)
-      GITMAINEXISTS=$(git branch -a | grep "\smain$" | wc -l)
+      GITLATESTEXISTS=$(git branch -a | grep "latest$" | wc -l)
+      GITMAINEXISTS=$(git branch -a | grep "main$" | wc -l)
       if [[ $3 == 'latest' && $GITLATESTEXISTS == 0 ]]; then
          echo "Specified branch latest does not exist.  Aborting forkupdate."
          exit
