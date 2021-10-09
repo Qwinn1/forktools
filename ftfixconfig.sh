@@ -194,38 +194,38 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
    cp $CURRENTCONFIG $CURRENTCONFIG.`date +%F`
    if [[ $SETLOGLEVEL != '' && $OLDLOGLEVEL != $NEWLOGLEVEL ]]; then
       echo "Setting log level..."
-      sed -i "s/$OLDLOGLEVEL/$NEWLOGLEVEL/" $CURRENTCONFIG
+      sed -i.bak "s/$OLDLOGLEVEL/$NEWLOGLEVEL/" $CURRENTCONFIG
    fi
    if [[ $SETMAXLOGROTATION != '' && $OLDROTATION != $NEWROTATION ]]; then
       echo "Setting log rotation..."
-      sed -i "s/$OLDROTATION/$NEWROTATION/" $CURRENTCONFIG
+      sed -i.bak "s/$OLDROTATION/$NEWROTATION/" $CURRENTCONFIG
    fi
    if [[ $SETPLOTLOADFREQUENCY != '' && $OLDPLOTLOAD != $NEWPLOTLOAD ]]; then     
       echo "Setting plot load frequency..."
-      sed -i "s/$OLDPLOTLOAD/$NEWPLOTLOAD/" $CURRENTCONFIG
+      sed -i.bak "s/$OLDPLOTLOAD/$NEWPLOTLOAD/" $CURRENTCONFIG
    fi
    if [[ $SETBATCHSIZE != '' && $OLDBATCHSIZE != $NEWBATCHSIZE ]]; then  
       echo "Setting batch size..."
-      sed -i "s/$OLDBATCHSIZE/$NEWBATCHSIZE/" $CURRENTCONFIG
+      sed -i.bak "s/$OLDBATCHSIZE/$NEWBATCHSIZE/" $CURRENTCONFIG
    fi
    if [[ $SETBATCHSLEEP != '' && $OLDBATCHSLEEP != $NEWBATCHSLEEP ]]; then  
       echo "Setting batch sleep..."
-      sed -i "s/$OLDBATCHSLEEP/$NEWBATCHSLEEP/" $CURRENTCONFIG
+      sed -i.bak "s/$OLDBATCHSLEEP/$NEWBATCHSLEEP/" $CURRENTCONFIG
    fi
    if [[ $SETFNTARGETPEERCOUNT != '' && $OLDTGTPEERS != $NEWTGTPEERS ]]; then  
       echo "Setting target peer count..."
-      sed -i "${TARGETPEERLINENO}s/$OLDTGTPEERS/$NEWTGTPEERS/" $CURRENTCONFIG
+      sed -i.bak "${TARGETPEERLINENO}s/$OLDTGTPEERS/$NEWTGTPEERS/" $CURRENTCONFIG
    fi
    if [[ $SETFARMERPEER != '' && $OLDFARMPEER != $NEWFARMPEER ]]; then
       echo "Setting farmer peer in harvester section..."
       # Some versions of config have " *self_hostname " as the original value.  sed sees * as wildcard and fails.  This fixes it.
       OLDFARMPEER=$(echo "$OLDFARMPEER" | sed 's/\*/\\\*/' )
-      sed -i "${HARVHOSTLINENO}s/$OLDFARMPEER/$NEWFARMPEER/" $CURRENTCONFIG
+      sed -i.bak "${HARVHOSTLINENO}s/$OLDFARMPEER/$NEWFARMPEER/" $CURRENTCONFIG
    fi
    if [[ $SETMULTIPROC != '' && $SKIPMULTIPROC == 'No' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then  
       echo "Adding/replacing multiprocessing limit..."
       if [[ $EXISTINGMULTIPROC != '' ]]; then
-        sed -i '/multiprocessing_limit/d' $CURRENTCONFIG
+        sed -i.bak '/multiprocessing_limit/d' $CURRENTCONFIG
       fi
       echo >> $CURRENTCONFIG
       echo $NEWMULTIPROC >> $CURRENTCONFIG
