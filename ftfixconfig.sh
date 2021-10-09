@@ -194,27 +194,33 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
    cp $CURRENTCONFIG $CURRENTCONFIG.`date +%F`
    if [[ $SETLOGLEVEL != '' && $OLDLOGLEVEL != $NEWLOGLEVEL ]]; then
       echo "Setting log level..."
-      sed -i "s/$OLDLOGLEVEL/$NEWLOGLEVEL/" "$CURRENTCONFIG"
+      echo "log" $OLDLOGLEVEL "to" $NEWLOGLEVEL
+      sed -i 's/'"$OLDLOGLEVEL"'/'"$NEWLOGLEVEL"'/' "$CURRENTCONFIG"
    fi
    if [[ $SETMAXLOGROTATION != '' && $OLDROTATION != $NEWROTATION ]]; then
       echo "Setting log rotation..."
-      sed -i "s/$OLDROTATION/$NEWROTATION/" "$CURRENTCONFIG"
+      echo "rot" $OLDROTATION "to" $NEWROTATION
+      sed -i 's/'"$OLDROTATION"'/'"$NEWROTATION"'/' "$CURRENTCONFIG"
    fi
    if [[ $SETPLOTLOADFREQUENCY != '' && $OLDPLOTLOAD != $NEWPLOTLOAD ]]; then     
       echo "Setting plot load frequency..."
-      sed -i "s/$OLDPLOTLOAD/$NEWPLOTLOAD/" "$CURRENTCONFIG"
+      echo "freq" $OLDPLOTLOAD "to" $NEWPLOTLOAD
+      sed -i 's/'"$OLDPLOTLOAD"'/'"$NEWPLOTLOAD"'/' "$CURRENTCONFIG"
    fi
    if [[ $SETBATCHSIZE != '' && $OLDBATCHSIZE != $NEWBATCHSIZE ]]; then  
       echo "Setting batch size..."
-      sed -i "s/$OLDBATCHSIZE/$NEWBATCHSIZE/" "$CURRENTCONFIG"
+      echo "bat" $OLDBATCHSIZE "to" $NEWBATCHSIZE
+      sed -i 's/'"$OLDBATCHSIZE"'/'"$NEWBATCHSIZE"'/' "$CURRENTCONFIG"
    fi
    if [[ $SETBATCHSLEEP != '' && $OLDBATCHSLEEP != $NEWBATCHSLEEP ]]; then  
       echo "Setting batch sleep..."
-      sed -i "s/$OLDBATCHSLEEP/$NEWBATCHSLEEP/" "$CURRENTCONFIG"
+      echo "slp" $OLDBATCHSLEEP "to" $NEWBATCHSLEEP
+      sed -i 's/'"$OLDBATCHSLEEP"'/'"$NEWBATCHSLEEP"'/' "$CURRENTCONFIG"
    fi
    if [[ $SETFNTARGETPEERCOUNT != '' && $OLDTGTPEERS != $NEWTGTPEERS ]]; then  
       echo "Setting target peer count..."
-      sed -i "${TARGETPEERLINENO}s/$OLDTGTPEERS/$NEWTGTPEERS/" "$CURRENTCONFIG"
+      echo "slp" $OLDTGTPEERS "to" $NEWTGTPEERS
+      sed -i "${TARGETPEERLINENO}"'s/'"$OLDTGTPEERS"'/'"$NEWTGTPEERS"'/' "$CURRENTCONFIG"
    fi
    if [[ $SETFARMERPEER != '' && $OLDFARMPEER != $NEWFARMPEER ]]; then
       echo "Setting farmer peer in harvester section..."
