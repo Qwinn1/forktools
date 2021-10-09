@@ -194,62 +194,56 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
    cp $CURRENTCONFIG $CURRENTCONFIG.`date +%F`
    if [[ $SETLOGLEVEL != '' && $OLDLOGLEVEL != $NEWLOGLEVEL ]]; then
       echo "Setting log level..."
-      echo "log" $OLDLOGLEVEL "to" $NEWLOGLEVEL
-      sed -i 's/'"$OLDLOGLEVEL"'/'"$NEWLOGLEVEL"'/' "$CURRENTCONFIG"
+      sed -i "s/$OLDLOGLEVEL/$NEWLOGLEVEL/" $CURRENTCONFIG
    fi
    if [[ $SETMAXLOGROTATION != '' && $OLDROTATION != $NEWROTATION ]]; then
       echo "Setting log rotation..."
-      echo "rot" $OLDROTATION "to" $NEWROTATION
-      sed -i 's/'"$OLDROTATION"'/'"$NEWROTATION"'/' "$CURRENTCONFIG"
+      sed -i "s/$OLDROTATION/$NEWROTATION/" $CURRENTCONFIG
    fi
    if [[ $SETPLOTLOADFREQUENCY != '' && $OLDPLOTLOAD != $NEWPLOTLOAD ]]; then     
       echo "Setting plot load frequency..."
-      echo "freq" $OLDPLOTLOAD "to" $NEWPLOTLOAD
-      sed -i 's/'"$OLDPLOTLOAD"'/'"$NEWPLOTLOAD"'/' "$CURRENTCONFIG"
+      sed -i "s/$OLDPLOTLOAD/$NEWPLOTLOAD/" $CURRENTCONFIG
    fi
    if [[ $SETBATCHSIZE != '' && $OLDBATCHSIZE != $NEWBATCHSIZE ]]; then  
       echo "Setting batch size..."
-      echo "bat" $OLDBATCHSIZE "to" $NEWBATCHSIZE
-      sed -i 's/'"$OLDBATCHSIZE"'/'"$NEWBATCHSIZE"'/' "$CURRENTCONFIG"
+      sed -i "s/$OLDBATCHSIZE/$NEWBATCHSIZE/" $CURRENTCONFIG
    fi
    if [[ $SETBATCHSLEEP != '' && $OLDBATCHSLEEP != $NEWBATCHSLEEP ]]; then  
       echo "Setting batch sleep..."
-      echo "slp" $OLDBATCHSLEEP "to" $NEWBATCHSLEEP
-      sed -i 's/'"$OLDBATCHSLEEP"'/'"$NEWBATCHSLEEP"'/' "$CURRENTCONFIG"
+      sed -i "s/$OLDBATCHSLEEP/$NEWBATCHSLEEP/" $CURRENTCONFIG
    fi
    if [[ $SETFNTARGETPEERCOUNT != '' && $OLDTGTPEERS != $NEWTGTPEERS ]]; then  
       echo "Setting target peer count..."
-      echo "slp" $OLDTGTPEERS "to" $NEWTGTPEERS
-      sed -i "${TARGETPEERLINENO}"'s/'"$OLDTGTPEERS"'/'"$NEWTGTPEERS"'/' "$CURRENTCONFIG"
+      sed -i "${TARGETPEERLINENO}s/$OLDTGTPEERS/$NEWTGTPEERS/" $CURRENTCONFIG
    fi
    if [[ $SETFARMERPEER != '' && $OLDFARMPEER != $NEWFARMPEER ]]; then
       echo "Setting farmer peer in harvester section..."
       # Some versions of config have " *self_hostname " as the original value.  sed sees * as wildcard and fails.  This fixes it.
       OLDFARMPEER=$(echo "$OLDFARMPEER" | sed 's/\*/\\\*/' )
-      sed -i "${HARVHOSTLINENO}s/$OLDFARMPEER/$NEWFARMPEER/" "$CURRENTCONFIG"
+      sed -i "${HARVHOSTLINENO}s/$OLDFARMPEER/$NEWFARMPEER/" $CURRENTCONFIG
    fi
    if [[ $SETMULTIPROC != '' && $SKIPMULTIPROC == 'No' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then  
       echo "Adding/replacing multiprocessing limit..."
       if [[ $EXISTINGMULTIPROC != '' ]]; then
-        sed -i '/multiprocessing_limit/d' "$CURRENTCONFIG"
+        sed -i '/multiprocessing_limit/d' $CURRENTCONFIG
       fi
       echo >> $CURRENTCONFIG
-      echo $NEWMULTIPROC >> "$CURRENTCONFIG"
+      echo $NEWMULTIPROC >> $CURRENTCONFIG
    fi
    if [[ $APPEND1 != '' && $APPEND1EXISTS == 0 ]]; then
       echo "Appending $APPEND1..."
       echo >> $CURRENTCONFIG
-      echo $APPEND1 >> "$CURRENTCONFIG"
+      echo $APPEND1 >> $CURRENTCONFIG
    fi
    if [[ $APPEND2 != '' && $APPEND2EXISTS == 0 ]]; then
       echo "Appending $APPEND2..."
       echo >> $CURRENTCONFIG
-      echo $APPEND2 >> "$CURRENTCONFIG"
+      echo $APPEND2 >> $CURRENTCONFIG
    fi
    if [[ $APPEND3 != '' && $APPEND3EXISTS == 0 ]]; then
       echo "Appending $APPEND3..."   
       echo >> $CURRENTCONFIG
-      echo $APPEND3 >> "$CURRENTCONFIG"
+      echo $APPEND3 >> $CURRENTCONFIG
    fi
    
    echo 'Backed up original' $FORKNAME 'config.yaml to config.yaml.'`date +%F`'. ' $CURRENTCONFIG 'has had the proposed changes applied.'   
