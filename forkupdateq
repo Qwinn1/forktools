@@ -30,6 +30,12 @@ VALIDATEFORKNAME='Yes'
 
 FORKNAME=$1
 
+CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
+CONFIGFOUND=$(ls -lt $CURRENTCONFIG | wc -l )
+if [[ $CONFIGFOUND = 0 ]]; then
+   echo "Existing config.yaml file not found.  Aborting forkupdate."
+   exit
+fi
 
 # CD and activate venv
 cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain
@@ -126,12 +132,6 @@ else
 fi
 
 echo   
-CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
-CONFIGFOUND=$(ls -lt $CURRENTCONFIG | wc -l )
-if [[ $CONFIGFOUND = 0 ]]; then
-   echo "Existing config.yaml file not found.  Aborting forkupdate."
-   exit
-fi
 
 # Get farmer peer from harvester section.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
 OLDIFS=$IFS
