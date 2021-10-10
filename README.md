@@ -22,6 +22,11 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 - `forknodes`        \- Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
 - `forkbenchips`     \- Benchmarks your server's capacity for running a timelord
 
+# Changelog, Version 3.11:
+
+- Extensive improvements to forkupdate.  The version grab works identically to git clone now, a ton more validation, and if either the git clone command fails or the user does not actively confirm that the update went well at the end of the process, the original -blockchain directory and config.yaml are restored. 
+- No more hardcoded forks in the forkmon/forkexplore logic to grab the major-minor multiplier in the code. So if a fork wants to name their code directory 'chia' instead of their own forkname, this will be automatically detected now, and different versions of the same fork that handle it different ways can now both work simultaneously.
+
 # Changelog, Version 3.1:
 
 - `forkstart all` can now take a `-s #` switch, where # is the number of seconds to sleep in between starting each fork.  Good for if it's been a while since you ran your forks and they'll need to resync, or for weaker CPUs that have trouble starting that many processes consecutively without a pause.
@@ -265,7 +270,7 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 - `forknodes avocado`     \-  prints a list of currently connected nodes for sharing with others having difficulty connecting. Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
 - `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
 - `forkaddplotdirs taco`  \-  Requires configuration in config.forkaddplotdirs to use.  List your plot directories there, then you can add them to any fork quickly with a single command.  Gives warnings if a drive listed in the config is not mounted.  As of v2.3, can now also be run with "all" as the parameter instead of forkname to add directories to every fork with an active harvester. 
-- `forkupdate`            \-  Updates a fork to the most recent version with a single command.  Removes the existing blockchain directory and recreates it with git clone as a fresh installtion.  Can optionally take a -b "tag" switch (to be applied to the git clone commmand).  Note that forkupdate will backup and then remove the existing config.yaml so that 'fork init' during the update process will recreate a fresh config.yaml that includes any new parameters added by the development team.  Target addresses and farmer peer will be transferred to the new config.yaml, and other settings will be configured via forkfixconfig (so your settings in config.forkfixconfig will be applied).
+- `forkupdate`            \-  Updates a fork to the most recent version with a single command.  Removes the existing blockchain directory and recreates it with git clone as a fresh installation.  Can optionally take a -b "tag" switch (to be applied to the git clone commmand).  Note that forkupdate will backup and then remove the existing config.yaml so that 'fork init' during the update process will recreate a fresh config.yaml that includes any new parameters added by the development team.  Target addresses, farmer peer and multiprocessing_limit will be transferred to the new config.yaml, and other settings will be configured via forkfixconfig (so your settings in config.forkfixconfig will be applied).
 
 # COMMANDS WITH MULTIPLE PARAMETERS/SWITCHES
 
