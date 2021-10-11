@@ -22,8 +22,8 @@ function print_usage () {
 
 for fork in $HARVESTERLIST; do
   echo "Scanning: $fork"
-  for port in $(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml | grep "port: " | grep -v "default_full_node_port" | sed 's/\s*[a-z_]*port: //g' | sed 's/\s*[#].*//g' | awk '{$1=$1};1' | sort | uniq); do
-     forkss | grep :$port[^0-9] | grep -v '"'$fork_
+  for port in $(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml | grep "port: " | grep -v "default_full_node_port" | sed 's/[ ]*[a-z_]*port: //g' | sed 's/[ ]*[#].*//g' | awk '{$1=$1};1' | sort | uniq); do
+     forkss | grep :$port[^0-9] | grep -v '"'${fork}_
   done
 done
 echo
