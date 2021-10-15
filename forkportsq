@@ -20,9 +20,38 @@ function print_usage () {
 . ftinit.sh
 . ftbuildharvesterlist.sh
 
+
+# Get full_node, harvester and farmer rpc ports.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
+
 for fork in $HARVESTERLIST; do
+  CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml
+  OLDIFS=$IFS
+  IFS=''
+  MEMORYCONFIG=$(cat $CURRENTCONFIG | c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' -e 'port: ' -e '_peer:') 
+  PORTLIST=''
+  while read line; do
+     WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
+     TESTSECTION=$(c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
+    if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]]; then 
+      SECTION=$TESTSECTION 
+    fi
+    if [[ $LASTLINE == *_peer:* ]]; then
+       LASTLINE=$WORKLINE
+       continue
+    fi
+    if [[ $SECTION == *timelord* || $SECTION == *introducer* ]]; then
+       LASTLINE=$WORKLINE
+       continue
+    fi
+    LASTLINE=$WORKLINE   
+    PORTLISTADD=$(echo $WORKLINE | grep "port: " | grep -v "default_full_node_port" | grep -v "log_syslog_port" | sed 's/[ ]*[a-z_]*port: //g' | sed 's/[ ]*[#].*//g' | awk '{$1=$1};1' );
+    PORTLIST+=$( printf '\n%s' $PORTLISTADD )
+  done < <(printf '%s\n' "$MEMORYCONFIG")
+  PORTLIST=$( echo $PORTLIST | sort | uniq )
+  IFS=$OLDIFS
+  
   echo "Scanning: $fork"
-  for port in $(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml | grep "port: " | grep -v "default_full_node_port" | sed 's/[ ]*[a-z_]*port: //g' | sed 's/[ ]*[#].*//g' | awk '{$1=$1};1' | sort | uniq); do
+  for port in $PORTLIST; do
      forkss | grep :$port[^0-9] | grep -v '"'${fork}_
   done
 done
