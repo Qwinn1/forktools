@@ -55,7 +55,11 @@ for fork in $FORKLIST; do
   
   echo "Scanning: $fork"
   for port in $PORTLIST; do
-     forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_
+     if [[ $FORKNAME == 'littlelambocoin' ]]; then
+       forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}
+     else
+       forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_
+     fi
   done
 done
 echo
