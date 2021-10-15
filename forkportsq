@@ -18,12 +18,19 @@ function print_usage () {
 }
 
 . ftinit.sh
-. ftbuildharvesterlist.sh
+# . ftbuildharvesterlist.sh
+FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
+echo $FORKLIST
+
 
 
 # Get full_node, harvester and farmer rpc ports.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
 
-for fork in $HARVESTERLIST; do
+for fork in $FORKLIST; do
+  FORKNAME=$(echo $fork)
+  if [[ $FORKNAME == 'xcha' || $FORKNAME == 'rose' || $FORKNAME == 'fishery' || $FORKNAME == 'nchain' ]]; then
+     FORKNAME='chia'
+  fi
   CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml
   OLDIFS=$IFS
   IFS=''
@@ -52,9 +59,8 @@ for fork in $HARVESTERLIST; do
   
   echo "Scanning: $fork"
   for port in $PORTLIST; do
-     forkss | grep :$port[^0-9] | grep -v '"'${fork}_
+     forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_
   done
 done
 echo
-
 
