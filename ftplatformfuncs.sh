@@ -24,7 +24,7 @@ else
       date -d $2"${1} day" +"%Y-%m-%d"
     }
     function forkss () {
-      ss -atnp 2>/dev/null | grep -v TIME-WAIT | grep -v FIN-WAIT | grep -v SYN-SENT
+      ss -atnp 2>/dev/null | grep -v TIME-WAIT | grep -v FIN-WAIT
     }
     function forkmemory () {
       for pid in $(pgrep ^${fork}_); do 
