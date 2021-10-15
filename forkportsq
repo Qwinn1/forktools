@@ -19,12 +19,8 @@ function print_usage () {
 
 . ftinit.sh
 # . ftbuildharvesterlist.sh
+cd $FORKTOOLSBLOCKCHAINDIRS
 FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
-echo $FORKLIST
-
-
-
-# Get full_node, harvester and farmer rpc ports.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
 
 for fork in $FORKLIST; do
   FORKNAME=$(echo $fork)
