@@ -22,7 +22,7 @@ function print_usage () {
 cd $FORKTOOLSBLOCKCHAINDIRS
 FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
-ss -atnp | head 1
+ss -atnp | sed "s/      / /g" | head -1
 
 for fork in $FORKLIST; do
   FORKNAME=$(echo $fork)
