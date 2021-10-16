@@ -60,9 +60,9 @@ for fork in $FORKLIST; do
   echo "Scanning: $fork"
   for port in $PORTLIST; do
      if [[ $FORKNAME == 'littlelambocoin' ]]; then
-       forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}
+       forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed 's/[ ]*/[   ]/'
      else
-       forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_
+       forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed 's/[ ]*/[   ]/'
      fi
   done
 done
