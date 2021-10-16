@@ -57,6 +57,7 @@ for fork in $FORKLIST; do
   PORTLIST=$( echo $PORTLIST | sort | uniq )
   IFS=$OLDIFS
   
+  ss -atnp | head 1
   echo "Scanning: $fork"
   for port in $PORTLIST; do
      if [[ $FORKNAME == 'littlelambocoin' ]]; then
