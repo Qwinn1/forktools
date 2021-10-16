@@ -67,7 +67,7 @@ for fork in $FORKLIST; do
        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
      fi
      if [[ $CONFLICTS != '' ]]; then
-        echo "                              $fork port $port also used by:"
+        echo "                              $fork port $port in use by:"
         OLDIFS=$IFS
         IFS=''
         TITLES=$( awk '{ printf ("%-8.8s %-9.9s %-12.12s %-5.5s %-19.19s %-4.4s %-16.16s %-50s\n", $1, $2, $3, $4, $5, $6, $7, $8 ); }' <<< "$TITLES" )
