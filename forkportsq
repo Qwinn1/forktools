@@ -73,7 +73,7 @@ for fork in $FORKLIST; do
        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
        if [[ $CONFLICTS != '' ]]; then
           echo "                                    $fork port $port also used by:"
-          echo $TITLES | awk '{ printf "%10s %10s %10s %5s %12s %10s %10s %10s", $1 $2 $3 $4 $5 $6 $7 $8 }'
+          awk '{ printf "%10s %10s %10s %5s %12s %10s %10s %10s", $1 $2 $3 $4 $5 $6 $7 $8 }' <<< $TITLES
           echo "$CONFLICTS"
        fi
      fi
