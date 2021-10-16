@@ -24,7 +24,6 @@ FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
 TITLES=$( ss -atnp | sed "s/      / /g" | head -1 )
 
-FORKLIST='mint'
 for fork in $FORKLIST; do
   FORKNAME=$(echo $fork)
   if [[ $FORKNAME == 'xcha' || $FORKNAME == 'rose' || $FORKNAME == 'fishery' || $FORKNAME == 'nchain' ]]; then
