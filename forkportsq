@@ -64,12 +64,13 @@ for fork in $FORKLIST; do
      if [[ $FORKNAME == 'littlelambocoin' ]]; then
        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
        if [[ $CONFLICTS != '' ]]; then
-          echo $fork port $port locked by: $CONFLICTS
+          echo "$fork port $port locked by: $CONFLICTS"
        fi
      else
        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME_} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
+       echo $CONFLICTS
        if [[ $CONFLICTS != '' ]]; then
-          echo $fork port $port locked by: $CONFLICTS
+          echo "$fork port $port locked by: $CONFLICTS"
        fi
      fi
   done
