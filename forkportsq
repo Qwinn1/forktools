@@ -23,7 +23,7 @@ cd $FORKTOOLSBLOCKCHAINDIRS
 FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
 TITLES=$( ss -atnp | sed "s/      / /g" | head -1 )
-echo $TITLES
+echo "$TITLES"
 
 for fork in $FORKLIST; do
   FORKNAME=$(echo $fork)
