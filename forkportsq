@@ -28,6 +28,9 @@ for fork in $FORKLIST; do
      FORKNAME='chia'
   fi
   CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml
+  if [[ ! -d $CURRENTCONFIG ]]; then
+     continue
+  fi
   OLDIFS=$IFS
   IFS=''
   MEMORYCONFIG=$(cat $CURRENTCONFIG | c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' -e 'port: ' -e '_peer:') 
