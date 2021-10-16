@@ -60,7 +60,7 @@ for fork in $FORKLIST; do
   echo "Scanning: $fork"
   for port in $PORTLIST; do
      if [[ $FORKNAME == 'littlelambocoin' ]]; then
-       forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/      / /g" # | sed "s/(.*,).*/\1/"
+       forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]'
      else
        forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed "s/      / /g"  | sed 's/((//' | grep -Eo '.*users:"[^"]*["]'
      fi
