@@ -70,6 +70,7 @@ for fork in $FORKLIST; do
         echo "                              $fork port $port also used by:"
         OLDIFS=$IFS
         IFS=''
+        TITLES=$( awk '{ printf ("%-8.8s %-9.9s %-12.12s %-5.5s %-19.19s %-4.4s %-16.16s %-50s\n", $1, $2, $3, $4, $5, $6 $7 $8 ); }' <<< "$TITLES" )
         echo $TITLES
         CONFLICTS=$( awk '{ printf ("%-8.8s %-9.9s %-12.12s %-25.25s %-21.21s %-50s\n", $1, $2, $3, $4, $5, $6 ); }' <<< "$CONFLICTS" )
         echo $CONFLICTS
