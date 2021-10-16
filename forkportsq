@@ -24,6 +24,7 @@ FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
 TITLES=$( ss -atnp | sed "s/      / /g" | head -1 )
 
+$FORKLIST='mint'
 for fork in $FORKLIST; do
   FORKNAME=$(echo $fork)
   if [[ $FORKNAME == 'xcha' || $FORKNAME == 'rose' || $FORKNAME == 'fishery' || $FORKNAME == 'nchain' ]]; then
@@ -59,7 +60,6 @@ for fork in $FORKLIST; do
   PORTLIST=$( echo $PORTLIST | sort | uniq )
   IFS=$OLDIFS
   
-  PORTLIST='mint'
   echo "Scanning: $fork"
   for port in $PORTLIST; do
      if [[ $FORKNAME == 'littlelambocoin' ]]; then
