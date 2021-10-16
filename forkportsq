@@ -76,7 +76,7 @@ for fork in $FORKLIST; do
           echo "                                    $fork port $port also used by:"
 #          echo $TITLES
           TITLEBAR=$( awk '{ printf "%-10s      %-10s %-10s %-5s %-12s %-10s %-10s %-10s", $1, $2, $3, $4, $5, $6, $7, $8 }' <<< "$TITLES" )
-          echo $TITLEBAR
+          echo "here" $TITLEBAR
           echo "$CONFLICTS"
        fi
      fi
