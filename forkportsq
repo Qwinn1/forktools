@@ -79,7 +79,7 @@ for fork in $FORKLIST; do
           IFS=''
 #          TITLEBAR=$( awk '{ printf ("This is a test %10.10s   and      %10s %10s %10s %10s %10s %10s %10s\n", $1, $2, $3, $4, $5, $6, $7, $8 ); }' <<< "$TITLES" )
 echo $TITLES
-CONFLICTS=$( awk '{ printf ("%-7.7s %-8.8s %-7.7s     %-19.19s %-15.15s %-50s\n", $1, $2, $3, $4, $5, $6 ); }' <<< "$CONFLICTS" )
+CONFLICTS=$( awk '{ printf ("%-7.7s %-8.8s %-7.7s     %-26.26s %-26.26s %-50s\n", $1, $2, $3, $4, $5, $6 ); }' <<< "$CONFLICTS" )
      echo $CONFLICTS
           IFS=$OLDIFS
 #          PS1=$( awk '{ print $1 }' <<< "$CONFLICTS" )
