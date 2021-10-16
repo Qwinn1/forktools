@@ -62,7 +62,7 @@ for fork in $FORKLIST; do
      if [[ $FORKNAME == 'littlelambocoin' ]]; then
        forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/[ ]{3,}/   /g" # | sed s/ \(${FORKNAME}[A-Za-z_]*"\)/\1/g
      else
-       forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed "s/[ ]{3,}/   /g"  | sed "s/ \(${FORKNAME}.*)/\1)/"
+       forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed "s/[ ]{3,}/   /g"  | sed "s/ \(${FORKNAME}_.*)/\1)/"
      fi
   done
 done
