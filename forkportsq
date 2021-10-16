@@ -72,7 +72,7 @@ for fork in $FORKLIST; do
 #        forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]'
        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
        if [[ $CONFLICTS != '' ]]; then
-          echo "                                           $fork port $port also used by:"
+          echo "                                    $fork port $port also used by:"
           echo "$CONFLICTS"
        fi
      fi
