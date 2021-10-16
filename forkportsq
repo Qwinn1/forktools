@@ -68,7 +68,6 @@ for fork in $FORKLIST; do
        fi
      else
        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME_} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | awk '{$1=$1};1' )
-       echo $CONFLICTS
        if [[ $CONFLICTS != '' ]]; then
           echo "$fork port $port locked by: $CONFLICTS"
        fi
