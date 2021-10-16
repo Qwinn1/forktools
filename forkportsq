@@ -75,15 +75,17 @@ for fork in $FORKLIST; do
        if [[ $CONFLICTS != '' ]]; then
           echo "                                  $fork port $port also used by:"
 #          echo $TITLES
-          TITLEBAR=$( awk '{ print "$1   $2   $3   $4           $5 $6 $7 $8" }' <<< "$TITLES" )
-          PS1=$( awk '{ print $1 }' <<< "$CONFLICTS" )
-          PS2=$( awk '{ print $2 }' <<< "$CONFLICTS" )
-          PS3=$( awk '{ print $3 }' <<< "$CONFLICTS" )
-          PS4=$( awk '{ print $4 }' <<< "$CONFLICTS" )
-          PS5=$( awk '{ print $5 }' <<< "$CONFLICTS" )
-          PS6=$( awk '{ print $6 }' <<< "$CONFLICTS" )
-          PS7=$( awk '{ print $7 }' <<< "$CONFLICTS" )
-          PS8=$( awk '{ print $8 }' <<< "$CONFLICTS" )
+          TITLEBAR=$( awk '{ printf "%10s       %10s %10s %10s %10s %10s %10s %10s %10s" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" }' <<< "$TITLES" )
+echo $TITLEBAR
+#          PS1=$( awk '{ print $1 }' <<< "$CONFLICTS" )
+#          PS2=$( awk '{ print $2 }' <<< "$CONFLICTS" )
+#          PS3=$( awk '{ print $3 }' <<< "$CONFLICTS" )
+#          PS4=$( awk '{ print $4 }' <<< "$CONFLICTS" )
+#          PS5=$( awk '{ print $5 }' <<< "$CONFLICTS" )
+#          PS6=$( awk '{ print $6 }' <<< "$CONFLICTS" )
+#          PS7=$( awk '{ print $7 }' <<< "$CONFLICTS" )
+#          PS8=$( awk '{ print $8 }' <<< "$CONFLICTS" )
+#          printf '%10s %10s %10s %10s %10s %10s %10s %10s %10s %10s'
           echo "$CONFLICTS"
        fi
      fi
