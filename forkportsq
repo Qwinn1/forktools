@@ -66,14 +66,14 @@ for fork in $FORKLIST; do
        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
        if [[ $CONFLICTS != '' ]]; then
           echo "$fork port $port locked by:"
-          echo $CONFLICTS"
+          echo "$CONFLICTS"
        fi
      else
 #        forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]'
        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
        if [[ $CONFLICTS != '' ]]; then
           echo "$fork port $port locked by:"
-          echo $CONFLICTS"
+          echo "$CONFLICTS"
        fi
      fi
   done
