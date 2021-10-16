@@ -23,7 +23,6 @@ cd $FORKTOOLSBLOCKCHAINDIRS
 FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
 TITLES=$( ss -atnp | sed "s/      / /g" | head -1 )
-echo "$TITLES"
 
 for fork in $FORKLIST; do
   FORKNAME=$(echo $fork)
@@ -63,36 +62,18 @@ for fork in $FORKLIST; do
   echo "Scanning: $fork"
   for port in $PORTLIST; do
      if [[ $FORKNAME == 'littlelambocoin' ]]; then
-#        forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' 
        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
-       if [[ $CONFLICTS != '' ]]; then
-          echo "                           $fork port $port also used by:"
-          echo "$CONFLICTS"
-       fi
      else
-#        forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]'
        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
-       if [[ $CONFLICTS != '' ]]; then
-          echo "                           $fork port $port also used by:"
-#          echo $TITLES
-          OLDIFS=$IFS
-          IFS=''
-#          TITLEBAR=$( awk '{ printf ("This is a test %10.10s   and      %10s %10s %10s %10s %10s %10s %10s\n", $1, $2, $3, $4, $5, $6, $7, $8 ); }' <<< "$TITLES" )
-echo $TITLES
-CONFLICTS=$( awk '{ printf ("%-7.7s %-8.8s %-7.7s     %-25.25s %-24.24s %-50s\n", $1, $2, $3, $4, $5, $6 ); }' <<< "$CONFLICTS" )
-     echo $CONFLICTS
-          IFS=$OLDIFS
-#          PS1=$( awk '{ print $1 }' <<< "$CONFLICTS" )
-#          PS2=$( awk '{ print $2 }' <<< "$CONFLICTS" )
-#          PS3=$( awk '{ print $3 }' <<< "$CONFLICTS" )
-#          PS4=$( awk '{ print $4 }' <<< "$CONFLICTS" )
-#          PS5=$( awk '{ print $5 }' <<< "$CONFLICTS" )
-#          PS6=$( awk '{ print $6 }' <<< "$CONFLICTS" )
-#          PS7=$( awk '{ print $7 }' <<< "$CONFLICTS" )
-#          PS8=$( awk '{ print $8 }' <<< "$CONFLICTS" )
-#          printf '%10s      %10s %10s %10s %10s %10s %10s %10s' "$PS1" "$PS2" "$PS3" "$PS4" "$PS5" "$PS6" "$PS7" "$PS8"
-#          echo "$CONFLICTS"
-       fi
+     fi
+     if [[ $CONFLICTS != '' ]]; then
+        echo "                              $fork port $port also used by:"
+        OLDIFS=$IFS
+        IFS=''
+        echo $TITLES
+        CONFLICTS=$( awk '{ printf ("%-7.7s %-8.8s %-7.7s     %-25.25s %-24.24s %-50s\n", $1, $2, $3, $4, $5, $6 ); }' <<< "$CONFLICTS" )
+        echo $CONFLICTS
+        IFS=$OLDIFS
      fi
   done
 done
