@@ -75,8 +75,11 @@ for fork in $FORKLIST; do
        if [[ $CONFLICTS != '' ]]; then
           echo "                           $fork port $port also used by:"
 #          echo $TITLES
+          OLDIFS=$IFS
+          IFS=' '
           TITLEBAR=$( awk '{ printf ("This is a test %10.10s   and      %10s %10s %10s %10s %10s %10s %10s\n", $1, $2, $3, $4, $5, $6, $7, $8 ); }' <<< "$TITLES" )
 echo $TITLEBAR
+          IFS=$OLDIFS
 #          PS1=$( awk '{ print $1 }' <<< "$CONFLICTS" )
 #          PS2=$( awk '{ print $2 }' <<< "$CONFLICTS" )
 #          PS3=$( awk '{ print $3 }' <<< "$CONFLICTS" )
