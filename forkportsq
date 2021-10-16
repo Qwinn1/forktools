@@ -76,7 +76,7 @@ for fork in $FORKLIST; do
           echo "                           $fork port $port also used by:"
 #          echo $TITLES
           OLDIFS=$IFS
-          IFS=' '
+          IFS=''
           TITLEBAR=$( awk '{ printf ("This is a test %10.10s   and      %10s %10s %10s %10s %10s %10s %10s\n", $1, $2, $3, $4, $5, $6, $7, $8 ); }' <<< "$TITLES" )
 echo $TITLEBAR
           IFS=$OLDIFS
