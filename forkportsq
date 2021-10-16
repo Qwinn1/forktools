@@ -28,7 +28,8 @@ for fork in $FORKLIST; do
      FORKNAME='chia'
   fi
   CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml
-  if [[ ! -d $CURRENTCONFIG ]]; then
+  CONFIGFOUND=$(ls $CURRENTCONFIG | wc -l | awk '{$1=#1};1' )
+  if [[ $CONFIGFOUND == 0 ]]; then
      continue
   fi
   OLDIFS=$IFS
