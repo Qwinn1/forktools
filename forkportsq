@@ -27,8 +27,9 @@ for fork in $FORKLIST; do
   if [[ $FORKNAME == 'xcha' || $FORKNAME == 'rose' || $FORKNAME == 'fishery' || $FORKNAME == 'nchain' ]]; then
      FORKNAME='chia'
   fi
+  echo "debug test"
   CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml
-  CONFIGFOUND=$(ls $CURRENTCONFIG | wc -l | awk '{$1=#1};1' )
+  CONFIGFOUND=$(ls $CURRENTCONFIG | wc -l | awk '{$1=$1};1' )
   if [[ $CONFIGFOUND == 0 ]]; then
      continue
   fi
