@@ -71,7 +71,7 @@ for fork in $FORKLIST; do
         OLDIFS=$IFS
         IFS=''
         echo $TITLES
-        CONFLICTS=$( awk '{ printf ("%-7.7s %-8.8s %-7.7s     %-24.24s %-25.25s %-50s\n", $1, $2, $3, $4, $5, $6 ); }' <<< "$CONFLICTS" )
+        CONFLICTS=$( awk '{ printf ("%-7.7s %-8.8s %-7.7s     %-26.26s %-24.24s %-50s\n", $1, $2, $3, $4, $5, $6 ); }' <<< "$CONFLICTS" )
         echo $CONFLICTS
         IFS=$OLDIFS
      fi
