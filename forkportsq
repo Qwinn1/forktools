@@ -22,6 +22,8 @@ function print_usage () {
 cd $FORKTOOLSBLOCKCHAINDIRS
 FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
+ss -atnp | head 1
+
 for fork in $FORKLIST; do
   FORKNAME=$(echo $fork)
   if [[ $FORKNAME == 'xcha' || $FORKNAME == 'rose' || $FORKNAME == 'fishery' || $FORKNAME == 'nchain' ]]; then
@@ -57,7 +59,6 @@ for fork in $FORKLIST; do
   PORTLIST=$( echo $PORTLIST | sort | uniq )
   IFS=$OLDIFS
   
-  ss -atnp | head 1
   echo "Scanning: $fork"
   for port in $PORTLIST; do
      if [[ $FORKNAME == 'littlelambocoin' ]]; then
