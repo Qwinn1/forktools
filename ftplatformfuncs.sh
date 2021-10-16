@@ -12,7 +12,6 @@ if [[ $OSTYPE == 'darwin'* ]]; then
     }
     function forkssoutput () {
       CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ )
-      fi
       if [[ $CONFLICTS != '' ]]; then
          echo "                          $fork port $port in use by:"
 #        OLDIFS=$IFS
