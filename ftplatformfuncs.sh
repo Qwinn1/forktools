@@ -13,16 +13,7 @@ if [[ $OSTYPE == 'darwin'* ]]; then
     function forkssoutput () {
       CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ )
       if [[ $CONFLICTS != '' ]]; then
-         echo "                          $fork port $port in use by:"
-#        OLDIFS=$IFS
-#         IFS=''
-#         TITLES=$( ss -atnp | sed "s/      / /g" | head -1 )
-#         TITLES=$( awk '{ printf ("%-8.8s %-9.9s %-12.12s %-5.5s %-19.19s %-4.4s %-16.16s %-50s\n", $1, $2, $3, $4, $5, $6, $7, $8 ); }' <<< "$TITLES" )
-#         echo $TITLES
-#        CONFLICTS=$( awk '{ printf ("%-8.8s %-9.9s %-12.12s %-25.25s %-21.21s %-50s\n", $1, $2, $3, $4, $5, $6 ); }' <<< "$CONFLICTS" )
-#         CONFLICTS=$( echo $CONFLICTS | awk '{$1=$1};1' )      
-         echo $CONFLICTS         
-#         IFS=$OLDIFS         
+         echo "$fork port $port in use by:  $CONFLICTS"
       fi
     }
     function forkmemory () {
