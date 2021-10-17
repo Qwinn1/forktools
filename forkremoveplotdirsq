@@ -1,0 +1,61 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "forkremoveplotdirs help:"
+   echo
+   echo "SYNOPSIS:  Runs 'forkname plots remove -d directoryname' for each entry in ftconfigs/config.forkremoveplotdirs."
+   echo "           Restarting the fork(s) with forkstart after running this script is recommended to ensure the new"
+   echo "           directories are removed immediately."
+   echo
+   echo "PARAMETERS:"
+   echo "    forkname | all      Required.  Runs for the specified fork, or all forks with an active harvester process."
+   echo "    -help | --help      Show this information again."
+   echo
+   exit 0
+}   
+
+
+if [[ $1 != 'all' ]]; then
+  VALIDATEFORKNAME='Yes'
+fi
+. ftinit.sh
+
+if [[ $3 != '' ]]; then
+  echo "forkremoveplotdirs:  Too many specified parameters."
+  print_usage
+fi
+
+if [[ $1 == 'all' ]]; then
+   . ftbuildharvesterlist.sh
+else
+   HARVESTERLIST=$1
+fi
+
+OLDIFS=$IFS
+IFS=$'\n'
+for fork in $HARVESTERLIST; do
+   if [[ $1 != 'all' && $1 != $fork ]]; then
+      continue
+   fi
+   if [[ -f $FORKTOOLSDIR/ftconfigs/config.forkremoveplotdirs.$fork ]]; then
+     . $FORKTOOLSDIR/ftconfigs/config.forkremoveplotdirs.$fork
+   else
+     . $FORKTOOLSDIR/ftconfigs/config.forkremoveplotdirs
+   fi   
+   cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain 
+   . ./activate          
+   for plotdir in $FORKREMOVEPLOTDIRS; do
+      STRIPPEDCOMMENTS=$(sed 's/#.*//' <<< "$plotdir" | awk '{$1=$1};1' )
+      if [ -n "$STRIPPEDCOMMENTS" ]; then
+         BUILDEXPR=$(echo "$fork plots remove -d '$STRIPPEDCOMMENTS'")
+         echo 'forkremoveplotdirs running: ' $BUILDEXPR 
+#         if [[ ( ! -d "$STRIPPEDCOMMENTS" ) ]]; then
+#           echo -e "\e[1;31m   WARNING:  \e[0m $STRIPPEDCOMMENTS is not a mounted directory.  \e[1;31m  :WARNING \e[0m"
+#         fi
+         echo $(eval $BUILDEXPR)
+      fi
+   done  
+   deactivate
+done
+IFS=$OLDIFS
+echo

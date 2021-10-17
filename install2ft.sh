@@ -65,6 +65,11 @@ if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs" ) ]]; then
   echo "  WARNING:  forkaddplotdirs will not function until config.forkaddplotdirs is manually configured."
   cp $FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs.template $FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs
 fi 
+if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkremoveplotdirs" ) ]]; then
+  echo "No existing config.forkremoveplotdirs file found.  Copied from config.forkremoveplotdirs.template."
+  echo "  WARNING:  forkremoveplotdirs will not function until config.forkremoveplotdirs is manually configured."
+  cp $FORKTOOLSDIR/ftconfigs/config.forkremoveplotdirs.template $FORKTOOLSDIR/ftconfigs/config.forkremoveplotdirs
+fi 
 if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forklog" ) ]]; then
   echo "No existing config.forklog file found.  Copied from config.forklog.template."
   echo "  forklog will function correctly with forktools defaults, but user may change defaults as desired in config.forklog ."
