@@ -24,6 +24,7 @@ FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
 for fork in $FORKLIST; do
   FORKNAME=$(echo $fork)
+  SCANNEDMSG=0
   if [[ $FORKNAME == 'xcha' || $FORKNAME == 'rose' || $FORKNAME == 'fishery' || $FORKNAME == 'nchain' ]]; then
      FORKNAME='chia'
   fi
@@ -56,26 +57,12 @@ for fork in $FORKLIST; do
   PORTLIST=$( echo $PORTLIST | sort | uniq )
   IFS=$OLDIFS
   
-  echo "Scanning: $fork"
   for port in $PORTLIST; do
      forkssoutput
-#     IFS=$OLDIFS
-#     if [[ $FORKNAME == 'littlelambocoin' ]]; then
-#       CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
-#     else
-#       CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
-#     fi
-#     if [[ $CONFLICTS != '' ]]; then
-#        echo "                              $fork port $port also used by:"
-#        OLDIFS=$IFS
-#        IFS=''
-#        TITLES=$( awk '{ printf ("%-8.8s %-9.9s %-12.12s %-5.5s %-19.19s %-4.4s %-16.16s %-50s\n", $1, $2, $3, $4, $5, $6, $7, $8 ); }' <<< "$TITLES" )
-#        echo $TITLES
-#        CONFLICTS=$( awk '{ printf ("%-8.8s %-9.9s %-12.12s %-25.25s %-21.21s %-50s\n", $1, $2, $3, $4, $5, $6 ); }' <<< "$CONFLICTS" )
-#        echo $CONFLICTS
-#        IFS=$OLDIFS
-#     fi
   done
+  if [[ $SCANNEDMSG == 0 ]]; then
+    printf "Scanned %-15.15s - no conflicts found.\n" $fork
+  fi
 done
 echo
 
