@@ -174,8 +174,11 @@ if [[ $FARMERONLY != 1 ]]; then
      YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac ' below 5 seconds ')   
      if [[ $LASTHARVESTEPOCH = '' ]]; then
        LASTHARVESTEPOCH=0
+       LASTHARVESTAGO='Never'
+     else
+       let LASTHARVESTAGO=$CURRENTTIME-$LASTHARVESTEPOCH
+       LASTHARVESTAGO=$( printf "%ss ago" $LASTHARVESTAGO )
      fi
-     let LASTHARVESTAGO=$CURRENTTIME-$LASTHARVESTEPOCH
      LASTRESPONSETIME=$(sed 's/.*Time: //' <<< "$LASTHARVESTERLINE" | sed 's/ s\. Total.*//' | awk '{$1=$1};1')
      TODAYMAX=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
      YESTERDAYMAX=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
@@ -190,7 +193,7 @@ if [[ $FARMERONLY != 1 ]]; then
      for proof in $(echo $PROOFSYESTERDAYLIST); do
        let PROOFCOUNT=$PROOFCOUNT+$proof
      done
-     printf '%-17.17s %-15s %-8s %5ss ago %9.2fs %9.2fs %9.2fs %9.2fs %7s %6s %7s %5s\n' "$fork" "$FORKVERSION" "$PLOTCOUNT" "$LASTHARVESTAGO" "$TODAYAVG" "$YESTERDAYAVG" "$TODAYMAX" "$YESTERDAYMAX" "$TODAYFIVESECWARNS" "$YESTERDAYFIVESECWARNS" "$PROOFCOUNT" "$FORKNODES2"
+     printf '%-17.17s %-15s %-8s %10s %9.2fs %9.2fs %9.2fs %9.2fs %7s %6s %7s %5s\n' "$fork" "$FORKVERSION" "$PLOTCOUNT" "$LASTHARVESTAGO" "$TODAYAVG" "$YESTERDAYAVG" "$TODAYMAX" "$YESTERDAYMAX" "$TODAYFIVESECWARNS" "$YESTERDAYFIVESECWARNS" "$PROOFCOUNT" "$FORKNODES2"
   done
 fi
 echo
