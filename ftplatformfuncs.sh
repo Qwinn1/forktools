@@ -36,7 +36,7 @@ else
       if [[ $FORKNAME == 'littlelambocoin' ]]; then
         CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
       else
-        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' )
+        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed "s/      / /g"   | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' | sed 's/"//g' )
       fi
       if [[ $CONFLICTS != '' ]]; then
          echo "                          $fork port $port in use by:"
