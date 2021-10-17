@@ -1,66 +1,37 @@
 # Qwinn's forktools
 
-Fifteen 100% local, 100% bash scripts to make fork maintenance and monitoring infinitely easier.  Very useful even if you're only farming Chia.  Includes a 100% local blockchain explorer that can provide full history of any wallet address, deeply detailed monitoring stats, automated service starting and stopping, automated config.yaml editing, fully scripted updating of any fork to the latest released version, all forktool output can now be logged to files, and most commands can now be run for a single fork or all of them at once.  Requires extremely little configuration (really only have to supply your plot directories for 'forkaddplotdirs' to work, and which services for which forks 'forkstart all' should start), but there are lots of optional configuration options available to fine tune other forktools to your taste.
+Sixteen 100% local, 100% bash scripts to make fork maintenance and monitoring infinitely easier.  Very useful even if you're only farming Chia.  Includes a 100% local blockchain explorer that can provide full history of any wallet address, deeply detailed monitoring stats, automated service starting and stopping, automated config.yaml editing (including mass adding and/or deleting of plot directory lists), fully scripted updating of any fork to the latest released version, all forktool output can now be logged to files, and most commands can now be run for a single fork or all of them at once.  Requires extremely little configuration (really only have to supply your plot directories for 'forkaddplotdirs' to work, and which services for which forks 'forkstart all' should start), but there are lots of optional configuration options available to fine tune other forktools to your taste.
 
 Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations under Windows.
 
 # The Short List Of Commands And What They Do
 
-- `fork`             \- Allows you to run any command for any fork from any directory, with some abbreviations for frequently used commands
-- `forklist`         \- Displays count and quick list of all running farmers and harvesters
-- `forkmon`          \- Displays detailed statistics for all running farmers and harvesters
-- `forkstart`        \- Start or restart fork services.  Can start all of your fork services sequentially after some configuration.
-- `forkstop`         \- Stop all fork services for one fork or all forks running a harvester.
-- `forkexplore`      \- Provides transaction history for your target wallet address by default, but can explore any specified address
-- `forkaddplotdirs`  \- Uses a list you provide to add multiple plot directories to a fork, or all forks running a harvester at once
-- `forkupdate`       \- Updates your fork to a new version. Only parameters it needs are the forkname and optionally the version you want.
-- `forklog`          \- Powerful and versatile debug.log parser
-- `forkfixconfig`    \- Allows you to quickly set your preferred settings in one or all fork's config.yamls.
-- `forkedit`         \- Simply opens up a fork's config.yaml in your preferred text editor (gedit by default)
-- `forkports`        \- Checks to make sure the ports used by each fork are only being used by that fork
-- `forktargets`      \- Displays a list of the target receive addresses for every fork running a farmer
-- `forknodes`        \- Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
-- `forkbenchips`     \- Benchmarks your server's capacity for running a timelord
+- `fork`                \- Allows you to run any command for any fork from any directory, with some abbreviations for frequently used commands
+- `forklist`            \- Displays count and quick list of all running farmers and harvesters
+- `forkmon`             \- Displays detailed statistics for all running farmers and harvesters
+- `forkstart`           \- Start or restart fork services.  Can start all of your fork services sequentially after some configuration.
+- `forkstop`            \- Stop all fork services for one fork or all forks running a harvester.
+- `forkexplore`         \- Provides transaction history for your target wallet address by default, but can explore any specified address
+- `forkaddplotdirs`     \- Uses a list you provide to add multiple plot directories to a fork, or all forks with a -blockchain directory
+- `forkremoveplotdirs`  \- Uses a list you provide to remove multiple plot directories from a fork, or all forks with a -blockchain directory
+- `forkupdate`          \- Updates your fork to a new version. Only parameters it needs are the forkname and optionally the branch/version you want.
+- `forklog`             \- Powerful and versatile debug.log parser
+- `forkfixconfig`       \- Allows you to quickly set your preferred settings in one or all fork's config.yamls.
+- `forkedit`            \- Simply opens up a fork's config.yaml in your preferred text editor (gedit by default)
+- `forkports`           \- Checks to make sure the ports used by each fork are only being used by that fork
+- `forktargets`         \- Displays a list of the target receive addresses for every fork running a farmer
+- `forknodes`           \- Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
+- `forkbenchips`        \- Benchmarks your server's capacity for running a timelord
 
-# Changelog, Version 3.11:
 
-- Extensive improvements to forkupdate.  The version grab works identically to git clone now, a ton more validation, and if either the git clone command fails or the user does not actively confirm that the update went well at the end of the process, the original -blockchain directory and config.yaml are restored. 
-- No more hardcoded forks in the forkmon/forkexplore logic to grab the major-minor multiplier in the code. So if a fork wants to name their code directory 'chia' instead of their own forkname, this will be automatically detected now, and different versions of the same fork that handle it different ways can now both work simultaneously.
+# Changelog, Version 3.2:
 
-# Changelog, Version 3.1:
-
-- `forkstart all` can now take a `-s #` switch, where # is the number of seconds to sleep in between starting each fork.  Good for if it's been a while since you ran your forks and they'll need to resync, or for weaker CPUs that have trouble starting that many processes consecutively without a pause.
-- `forkmon` and `forkexplore` can now take a `-p` switch, which makes them report on hot wallet address instead of target address.  Intended for folks who use cold wallets and NFT plots to quickly see if any pool rewards have gone to their hot wallets so they can transfer them to their cold wallets.
-- Flora has renamed their code directory and major-to-minor multiplier code to 'chia'.  Added special handling to make forktools compatible to Flora 1.2.9+.
-- `forkupdate`:  if -b main or -b latest was explicitly specified, forkupdate would fail if those branches didn't exist.  They are now validated prior to attempting to run forkupdate.
-- Install script for main will now make install script for testing executable, and vice versa.
-
-# Changelog, Version 3.01:
-
-- Lucky has properly renamed their processes in their latest version.  This update just removes the special handling that was previously required.  Update to latest version of lucky for it to be compatible with latest forktools versions.
-
-# Changelog, Version 3.0:
-
-- full Mac OS X compatibility has been achieved.  Thanks, SolarHash, for all the help with this!
-- all tools now have far more detailed online -help
-- all tools now print the datetime it was initiated as the first line of output.
-- all configuration files are now moved to and searched for in new forktools/ftconfigs directory.
-- all tools can now have their output logged to files created in the new forktools/ftlogs directory.  Only forkmon output is logged by default.  Edit ftconfigs/config.logging to enable logging for any other forktool.
-- there are now two install scripts.  `bash installft.sh` will update you to the latest code in the main branch. `bash installfttest.sh` will update you to the latest code in the testing branch.
-- forkconfig has been renamed to forkedit, to prevent confusion with forkfixconfig
-- forkexplore can now handle 0 or just 1 transaction found without errors
-- forkmon now handles Last Block and Effort% calculations much better when a block hasn't been won yet.  Effort% will in that case be calculated from the date of the first successful harvest in the earliest log (so, assuming you haven't deleted logs, from when you started farming the fork).
-- forkmon has been optimized for faster performance
-- forkmon can now accept -f | --farmeronly or -h | --harvesteronly switches to skip the other section of forkmon's output.
-- forkaddplotdirs can now accept "all" instead of forkname as a parameter, which will add the drives specified in ftconfigs/config.forkaddplotdirs to every fork with an active harvester.  Great for adding a brand new drive to all forks.
-- forkfixconfig can now accept "all" instead of forkname as a parameter, which will apply the settings specified in ftconfigs/config.forkfixconfig to every fork with an active harvester.  Can also use "farmers" instead of forkname to only configure forks running a farmer, or "harvesters" instead to configure only forks running an active harvester but not an active farmer.
-- new tool forklist replaces the old forkcounth.  Instead of just giving a count of running harvesters and nothing else, forklist gives both farmer and harvester counts including a single line list of which forks are running for each.  I am finding this tool extremely handy and using it constantly.
-- new tool forkstop accepts switches, enabling it to replace forkstopa, forkstoph, forkstoptl and forkstopall. Run forkstop -help for details.
-- new tool forkstart accepts switches, enabling it to replace forkstartf, forkstartfnw, forkstarth, forkstartall and forkstarttl.  Run forkstart -help for details.
-- new tool fork allows you to issue any command from any directory as if you were cd'd into the fork's -blockchain directory and activated. It allows for 3 3-letter abbreviations that effectively replace forkver, forksum, and forkwalletshow.  Instead of those tools, you can now run 'fork chia ver', 'fork flax sum', and 'fork hddcoin wal', for example.  And you can submit any other command you wish that can be run from the activated -blockchain directory, such as 'fork hddcoin show -a 132.123.213.321:4131'
-- new tool forkupdate updates a fork to the most recent tagged release from the fork's online repository (from the "latest" branch if the fork maintains one, from "main" if not) with a single command.  Removes the existing blockchain directory and recreates it with git clone as a fresh installtion.  Can optionally take a -b "tag" switch (to be applied to the git clone commmand).  Note that forkupdate will backup and then remove the existing config.yaml so that 'fork init' during the update process will recreate a fresh config.yaml that includes any new parameters added by the development team.  Target addresses and farmer peer will be transferred to the new config.yaml, and other settings will be configured via forkfixconfig (so your settings in config.forkfixconfig will be applied).
-- changes to some scripts to allow compatibility with shells that run fork processes (and thus change the format of process lists), like SCREEN
-
+- Extensive improvements to `forkports`.  Now runs for every forkname-blockchain directory it can find, rather than only for running harvester processes.  Now ignores conflicts with timelord port and timelord launcher port (because the vast majority of people don't run them) and introducer port and remote peer port usage (because neither conflicts with local ports).  Forks with very long names (looking at you, LLC) will no longer show as conflicting with itself.  
+- New tool `forkremoveplotdirs`.  Identical to forkaddplotdirs except that it removes plot directories instead of adding them.  Has its own config file that needs to be edited in order to use.
+- `forkaddplotdirs` and `forkfixconfig` (and the new `forkremoveplotdirs`) now support fork-specific config files.  For example, if you have a different set of plot directories for chives, simply create `ftconfigs/config.forkaddplotdirs.chives`, and set the fork-specific plot directories in it.  These fork-specific configs will be respected even when running with 'all' parameter and when run from within `forkupdate`.
+- Many irrelevant bash error messages, particularly in forkmon and forkexplore, that were generated during normal, expected operation will no longer be logged or visible to users.
+- If a newly installed fork is still below height 500, accurate ETW calculations aren't possible. forkmon will now show "Ht<500" under ETW and "N/A" under Effort in this circumstance.
+- If a newly installed fork has never had a successful harvest, forkmon will now show 'Never' under LastHarvest rather than the number of seconds since 1970.
 
 
 # INSTALLATION INSTRUCTIONS:
@@ -164,7 +135,7 @@ cryptodoge        1.2.6           1636         1s ago      0.87s      0.71s     
 dogechia          1.0.9           1636         2s ago      0.87s      0.69s     83.03s     94.74s     132    150       3   
 ```
 
-- forkfixconfig ( Automated editing of fork config.yamls to preferred settings as set up in config.forkfixconfig. )
+- forkfixconfig ( Automated editing of fork config.yamls to preferred settings as set up in config.forkfixconfig )
 
 ```
 (venv) qwinn@Gungnir:~/silicoin-blockchain$ forkfixconfig silicoin 10.0.0.104
@@ -258,28 +229,29 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 
 # COMMANDS WITH NO PARAMETERS:
 
-- `forkmon`               \-  In my opinion the current heart of forktools.  This script gives you detailed information on every active fork process on your server, one section for farmers and another for harvesters.  Includes average and longest response times, fullnode worker count, memory usage, wallet balances for your target addresses, how long ago the last block was won, number of 5 second warnings in the logs, ETW (far more accurately than what chia or any other fork provides), effort percent, and much more!  Forkmon can take a single fork as a parameter, a -n / --nobalance switch can be specified to show all wallet balances as 0, useful if you want privacy when posting forkmon results online, and either -f  --farmeronly or -h | --harvesteronly to show only one of the two sections.
-- `forkports`             \-  Checks port locking contention on all forks with an active _harvester process.  Checks every port listed for mainnet in each fork's config.yaml, then runs `ss` scanning for every port used by that fork and lists any process which references those ports and does not contain that fork's binary name as the owner of the process.  If the listed processes don't have a *different* fork or app's name as the owner of the process, that output can probably be safely disregarded.  If no processes are listed under a given fork in the output, no ports were locked by a different fork - i.e., no conflict found.
-- `forktargets`           \-  lists the target wallet addresses as configured in every active fork farmer's config.yaml in a convenient and organized list for easy visual comparison to whatever list of wallet addresses you intend rewards to go to that you're currently maintaining.  Also compares the target setting in config.yaml to the RPC call for the same value, and gives a big warning if they don't match.
-- `forklist`              \-  Gives both farmer and harvester counts including a single line list of which forks are running for each.
+- `forkmon`                \-  In my opinion the current heart of forktools.  This script gives you detailed information on every active fork process on your server, one section for farmers and another for harvesters.  Includes average and longest response times, fullnode worker count, memory usage, wallet balances for your target addresses, how long ago the last block was won, number of 5 second warnings in the logs, ETW (far more accurately than what chia or any other fork provides), effort percent, and much more!  Forkmon can take a single fork as a parameter, a -n / --nobalance switch can be specified to show all wallet balances as 0, useful if you want privacy when posting forkmon results online, and either -f  --farmeronly or -h | --harvesteronly to show only one of the two sections.
+- `forkports`              \-  Checks potential port locking contention on all installed forks, whether running or not.  Tuns `ss` scanning for ports used by each fork (as set in each fork's config.yaml) and lists any process which references those ports and does not contain that fork's binary name as the owner of the process.  Ignores timelord port, timelord launcher port, introducer port and remote peer port usage, as conflicts with these do not create any problems for the vast majority of users.
+- `forktargets`            \-  lists the target wallet addresses as configured in every active fork farmer's config.yaml in a convenient and organized list for easy visual comparison to whatever list of wallet addresses you intend rewards to go to that you're currently maintaining.  Also compares the target setting in config.yaml to the RPC call for the same value, and gives a big warning if they don't match.
+- `forklist`               \-  Gives both farmer and harvester counts including a single line list of which forks are running for each.
 
 # COMMANDS WITH ONE PARAMETER: FORKNAME
 
-- `forkfixconfig chia`    \-  Provides automated editing of several entries in chia's config.yaml that require frequent editing - log level, plot loading frequency, farmer peer for harvesters, and several more.  Requires confirmation and creates backups.  Does not actually require editing of default options in config.forkfixconfig - the defaults I picked should work fine - but if you'd like to tweak them, you can do so there.  Please report if the defaults as I chose them cause you any issues so I can review.  As of v2.3, can now also accept "all", "farmers" or "harvesters" instead of forkname.
-- `forkedit hddcoin`      \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit. You can now set your preferred text editor in config.forkedit.
-- `forknodes avocado`     \-  prints a list of currently connected nodes for sharing with others having difficulty connecting. Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
-- `forkbenchips tad`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
-- `forkaddplotdirs taco`  \-  Requires configuration in config.forkaddplotdirs to use.  List your plot directories there, then you can add them to any fork quickly with a single command.  Gives warnings if a drive listed in the config is not mounted.  As of v2.3, can now also be run with "all" as the parameter instead of forkname to add directories to every fork with an active harvester. 
-- `forkupdate`            \-  Updates a fork to the most recent version with a single command.  Removes the existing blockchain directory and recreates it with git clone as a fresh installation.  Can optionally take a -b "tag" switch (to be applied to the git clone commmand).  Note that forkupdate will backup and then remove the existing config.yaml so that 'fork init' during the update process will recreate a fresh config.yaml that includes any new parameters added by the development team.  Target addresses, farmer peer and multiprocessing_limit will be transferred to the new config.yaml, and other settings will be configured via forkfixconfig (so your settings in config.forkfixconfig will be applied).
+- `forkfixconfig chia`     \-  Provides automated editing of several entries in chia's config.yaml that require frequent editing - log level, plot loading frequency, farmer peer for harvesters, and several more.  Requires confirmation and creates backups.  Does not actually require editing of default options in config.forkfixconfig - the defaults I picked should work fine - but if you'd like to tweak them, you can do so there.  Please report if the defaults as I chose them cause you any issues so I can review.  As of v2.3, can now also accept "all", "farmers" or "harvesters" instead of forkname.
+- `forkedit hddcoin`       \-  Opens the .hddcoin/mainnet/config/config.yaml file in gedit. You can now set your preferred text editor in config.forkedit.
+- `forknodes avocado`      \-  prints a list of currently connected nodes for sharing with others having difficulty connecting. Prepends each node and port with "avocado show -a " for easy CLI connection command via cut and paste.
+- `forkbenchips taco`      \-  runs benchmark of your system's capacity to run a timelord for tad, in ips.  Requires having previously run sh install-timelord.sh in the tad-blockchain directory
+- `forkaddplotdirs taco`   \-  Requires configuration in config.forkaddplotdirs to use.  List your plot directories there, then you can add them to any fork quickly with a single command.  Gives warnings if a drive listed in the config is not mounted.  Can be run with "all" as the parameter instead of forkname to add directories to every installed fork. 
+- `forkremoveplotdirs tad` \-  Requires configuration in config.forkremoveplotdirs to use.  Allows for systemic removal of plot directories from one or all installed forks.
+- `forkupdate`             \-  Updates a fork to the most recent version with a single command.  Removes the existing blockchain directory and recreates it with git clone as a fresh installation.  Can optionally take a -b "tag" switch (to be applied to the git clone commmand).  Note that forkupdate will backup and then remove the existing config.yaml so that 'fork init' during the update process will recreate a fresh config.yaml that includes any new parameters added by the development team.  Target addresses, farmer peer and multiprocessing_limit will be transferred to the new config.yaml, and other settings will be configured via forkfixconfig (so your settings in config.forkfixconfig will be applied).
 
 # COMMANDS WITH MULTIPLE PARAMETERS/SWITCHES
 
-- `fork`                  \-  Allows you to issue commands from any directory as if you were cd'd into the fork's -blockchain directory and activated. It allows for 3 3-letter abbreviations for the 2nd parameter - 'sum' for 'farm summary', 'wal' for 'wallet show' and 'ver' for 'version'.  This effectively replaces forksum, forkver and forkwalletshow from previous versions of forktools.
-- `forkstart`             \-  Use this to start up one, or all, of your farmers, harvesters, and timelords.  By editing config.forkstartall, you can run `forkstart all` to start every farmer and harvester you like sequentially (great for use following a reboot).  This single command has now replaced all previous forkstart* tools.  Instead of `forkstartall`, run `forkstart all`.  Instead of `forkstartf chia`, run `forkstart chia -f`.  Other switches are -fnw for farmer-no-wallet, -h for harvester and -t for timelord.  Run `forkstart -help` for usage details.
-- `forkstop`              \-  Use this to stop all services for one or all forks (great for prepping for a shutdown).  This single command has now replaced all previous forkstop* tools.  Instead of `forkstopall`, run `forkstop all`.  Instead of `forkstopa flax`, run `forkstop flax`.  Instead of `forkstoptl hddcoin`, run `forkstop hddcoin -t` to stop timelord.  Run `forkstop -help` for usage details.  (Note - there is no longer an equivalent way to reproduce the old `forkstoph`, as I decided there is no good reason to stop just the harvester service without also shutting down the daemon and all other services.)
-- `forklog`               \-  This single function has now replaced all previous log parsing forktools. Running it without switches
+- `fork`                   \-  Allows you to issue commands from any directory as if you were cd'd into the fork's -blockchain directory and activated. It allows for 3 3-letter abbreviations for the 2nd parameter - 'sum' for 'farm summary', 'wal' for 'wallet show' and 'ver' for 'version'.  This effectively replaces forksum, forkver and forkwalletshow from previous versions of forktools.
+- `forkstart`              \-  Use this to start up one, or all, of your farmers, harvesters, and timelords.  By editing config.forkstartall, you can run `forkstart all` to start every farmer and harvester you like sequentially (great for use following a reboot).  This single command has now replaced all previous forkstart* tools.  Instead of `forkstartall`, run `forkstart all`.  Instead of `forkstartf chia`, run `forkstart chia -f`.  Other switches are -fnw for farmer-no-wallet, -h for harvester and -t for timelord.  Run `forkstart -help` for usage details.
+- `forkstop`               \-  Use this to stop all services for one or all forks (great for prepping for a shutdown).  This single command has now replaced all previous forkstop* tools.  Instead of `forkstopall`, run `forkstop all`.  Instead of `forkstopa flax`, run `forkstop flax`.  Instead of `forkstoptl hddcoin`, run `forkstop hddcoin -t` to stop timelord.  Run `forkstop -help` for usage details.  (Note - there is no longer an equivalent way to reproduce the old `forkstoph`, as I decided there is no good reason to stop just the harvester service without also shutting down the daemon and all other services.)
+- `forklog`                \-  This single function has now replaced all previous log parsing forktools. Running it without switches
 will just get you a tail of the log.  You can manipulate log output now any way I could think of if you get creative with the switches, but you're still able to duplicate the quick and simple older versions with a single switch for each.  Just run forklog -help to get a full list of options. The first line of forklog output will be the actual bash command that is constructed after all the switches and parameters are interpreted that produces the output that follows.
-- `forkexplore`           \-  100% local address explorer.  Provides address balances for your target receive address for the selected fork, but has an additional -a switch which allows you to explore any receive address you wish, hot or cold, and all the same date range options that forklog has.  Does not require sync, just a running farmer and full node.  Run forkexplore -help for detailed usage instructions.
+- `forkexplore`            \-  100% local address explorer.  Provides address balances for your target receive address for the selected fork, but has an additional -a switch which allows you to explore any receive address you wish, hot or cold, and all the same date range options that forklog has.  Does not require sync, just a running farmer and full node.  Run forkexplore -help for detailed usage instructions.
 
 
 # DISCORD SERVER
@@ -289,6 +261,46 @@ Got a fun crowd here already.  Come join us!  And if you have any issues, I'll b
 https://discord.gg/XmTEZ4SHtj
 
 
+## OLDER CHANGELOGS
+
+# Changelog, Version 3.11:
+
+- Extensive improvements to forkupdate.  The version grab works identically to git clone now, a ton more validation, and if either the git clone command fails or the user does not actively confirm that the update went well at the end of the process, the original -blockchain directory and config.yaml are restored. 
+- No more hardcoded forks in the forkmon/forkexplore logic to grab the major-minor multiplier in the code. So if a fork wants to name their code directory 'chia' instead of their own forkname, this will be automatically detected now, and different versions of the same fork that handle it different ways can now both work simultaneously.
+
+# Changelog, Version 3.1:
+
+- `forkstart all` can now take a `-s #` switch, where # is the number of seconds to sleep in between starting each fork.  Good for if it's been a while since you ran your forks and they'll need to resync, or for weaker CPUs that have trouble starting that many processes consecutively without a pause.
+- `forkmon` and `forkexplore` can now take a `-p` switch, which makes them report on hot wallet address instead of target address.  Intended for folks who use cold wallets and NFT plots to quickly see if any pool rewards have gone to their hot wallets so they can transfer them to their cold wallets.
+- Flora has renamed their code directory and major-to-minor multiplier code to 'chia'.  Added special handling to make forktools compatible to Flora 1.2.9+.
+- `forkupdate`:  if -b main or -b latest was explicitly specified, forkupdate would fail if those branches didn't exist.  They are now validated prior to attempting to run forkupdate.
+- Install script for main will now make install script for testing executable, and vice versa.
+
+# Changelog, Version 3.01:
+
+- Lucky has properly renamed their processes in their latest version.  This update just removes the special handling that was previously required.  Update to latest version of lucky for it to be compatible with latest forktools versions.
+
+# Changelog, Version 3.0:
+
+- full Mac OS X compatibility has been achieved.  Thanks, SolarHash, for all the help with this!
+- all tools now have far more detailed online -help
+- all tools now print the datetime it was initiated as the first line of output.
+- all configuration files are now moved to and searched for in new forktools/ftconfigs directory.
+- all tools can now have their output logged to files created in the new forktools/ftlogs directory.  Only forkmon output is logged by default.  Edit ftconfigs/config.logging to enable logging for any other forktool.
+- there are now two install scripts.  `bash installft.sh` will update you to the latest code in the main branch. `bash installfttest.sh` will update you to the latest code in the testing branch.
+- forkconfig has been renamed to forkedit, to prevent confusion with forkfixconfig
+- forkexplore can now handle 0 or just 1 transaction found without errors
+- forkmon now handles Last Block and Effort% calculations much better when a block hasn't been won yet.  Effort% will in that case be calculated from the date of the first successful harvest in the earliest log (so, assuming you haven't deleted logs, from when you started farming the fork).
+- forkmon has been optimized for faster performance
+- forkmon can now accept -f | --farmeronly or -h | --harvesteronly switches to skip the other section of forkmon's output.
+- forkaddplotdirs can now accept "all" instead of forkname as a parameter, which will add the drives specified in ftconfigs/config.forkaddplotdirs to every fork with an active harvester.  Great for adding a brand new drive to all forks.
+- forkfixconfig can now accept "all" instead of forkname as a parameter, which will apply the settings specified in ftconfigs/config.forkfixconfig to every fork with an active harvester.  Can also use "farmers" instead of forkname to only configure forks running a farmer, or "harvesters" instead to configure only forks running an active harvester but not an active farmer.
+- new tool forklist replaces the old forkcounth.  Instead of just giving a count of running harvesters and nothing else, forklist gives both farmer and harvester counts including a single line list of which forks are running for each.  I am finding this tool extremely handy and using it constantly.
+- new tool forkstop accepts switches, enabling it to replace forkstopa, forkstoph, forkstoptl and forkstopall. Run forkstop -help for details.
+- new tool forkstart accepts switches, enabling it to replace forkstartf, forkstartfnw, forkstarth, forkstartall and forkstarttl.  Run forkstart -help for details.
+- new tool fork allows you to issue any command from any directory as if you were cd'd into the fork's -blockchain directory and activated. It allows for 3 3-letter abbreviations that effectively replace forkver, forksum, and forkwalletshow.  Instead of those tools, you can now run 'fork chia ver', 'fork flax sum', and 'fork hddcoin wal', for example.  And you can submit any other command you wish that can be run from the activated -blockchain directory, such as 'fork hddcoin show -a 132.123.213.321:4131'
+- new tool forkupdate updates a fork to the most recent tagged release from the fork's online repository (from the "latest" branch if the fork maintains one, from "main" if not) with a single command.  Removes the existing blockchain directory and recreates it with git clone as a fresh installtion.  Can optionally take a -b "tag" switch (to be applied to the git clone commmand).  Note that forkupdate will backup and then remove the existing config.yaml so that 'fork init' during the update process will recreate a fresh config.yaml that includes any new parameters added by the development team.  Target addresses and farmer peer will be transferred to the new config.yaml, and other settings will be configured via forkfixconfig (so your settings in config.forkfixconfig will be applied).
+- changes to some scripts to allow compatibility with shells that run fork processes (and thus change the format of process lists), like SCREEN
 
 # Changelog, Version 2.2:
 
