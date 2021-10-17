@@ -11,6 +11,7 @@ LOGFORKLOG="false"             # Set to true with caution, as the size of this o
 LOGFORKMON="true"
 LOGFORKNODES="false"
 LOGFORKPORTS="false"
+LOGFORKREMOVEPLOTDIRS="false"
 LOGFORKSTART="false"
 LOGFORKSTOP="false"
 LOGFORKSUM="false"
