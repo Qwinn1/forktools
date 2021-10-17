@@ -52,8 +52,16 @@ FTCURRENTTOOL=$( basename $0 | sed 's/q$//' )
 if [[ $FTCURRENTTOOL == 'forkstart' ]]; then
   FTCURRENTTOOL='forkstartall'
 fi
-if [[ -f $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL ]]; then
-  . $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL
+if [[ $FTCURRENTTOOL == 'forkaddplotdirs' || $FTCURRENTTOOL == 'forkfixconfig' ]]; then
+   if [[ -f $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL.$1 ]]; then
+     . $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL.$1
+   else
+     . $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL
+   fi
+else
+  if [[ -f $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL ]]; then
+    . $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL
+  fi
 fi
 
 

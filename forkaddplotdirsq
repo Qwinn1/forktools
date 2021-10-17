@@ -37,6 +37,11 @@ for fork in $HARVESTERLIST; do
    if [[ $1 != 'all' && $1 != $fork ]]; then
       continue
    fi
+   if [[ -f $FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs.$fork ]]; then
+     . $FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs.$fork
+   else
+     . $FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs
+   fi   
    cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain 
    . ./activate          
    for plotdir in $FORKADDPLOTDIRS; do

@@ -1,4 +1,10 @@
 
+if [[ -f $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.$FORKNAME ]]; then
+  . $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.$FORKNAME
+else
+  . $FORKTOOLSDIR/ftconfigs/config.forkfixconfig
+fi
+
 SECTION='START'
 OLDIFS=$IFS
 IFS=$'\n'
