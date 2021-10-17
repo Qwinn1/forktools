@@ -3,12 +3,16 @@
 function print_usage () {
    echo "forkremoveplotdirs help:"
    echo
-   echo "SYNOPSIS:  Runs 'forkname plots remove -d directoryname' for each entry in ftconfigs/config.forkremoveplotdirs."
-   echo "           Restarting the fork(s) with forkstart after running this script is recommended to ensure the new"
-   echo "           directories are removed immediately."
+   echo "SYNOPSIS:  Runs 'forkname plots remove -d directoryname' for each entry in 'ftconfigs/config.forkremoveplotdirs'"
+   echo "           forkremoveplotdirs supports fork specific configurations.  For example, if you have a different"
+   echo "      list of plot directories for chives, copy your 'config.forkremoveplotdirs' to 'config.forkremoveplotdirs.chives'"
+   echo "      in the ftconfigs folder, then edit the chives version to list only your chives plot directories."
+   echo "           Restarting the fork(s) with forkstart after running this script is recommended to ensure the directories"
+   echo "      are removed immediately."   
    echo
    echo "PARAMETERS:"
-   echo "    forkname | all      Required.  Runs for the specified fork, or all forks with an active harvester process."
+   echo "    forkname | all      Required.  Runs for the specified fork, or all forks with a -blockchain directory"
+   echo "                           and a config.yaml in the fork's hidden directory."   
    echo "    -help | --help      Show this information again."
    echo
    exit 0
@@ -26,14 +30,15 @@ if [[ $3 != '' ]]; then
 fi
 
 if [[ $1 == 'all' ]]; then
-   . ftbuildharvesterlist.sh
+   cd $FORKTOOLSBLOCKCHAINDIRS
+   FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 else
-   HARVESTERLIST=$1
+   FORKLIST=$1
 fi
 
 OLDIFS=$IFS
 IFS=$'\n'
-for fork in $HARVESTERLIST; do
+for fork in $FORKLIST; do
    if [[ $1 != 'all' && $1 != $fork ]]; then
       continue
    fi
@@ -41,7 +46,12 @@ for fork in $HARVESTERLIST; do
      . $FORKTOOLSDIR/ftconfigs/config.forkremoveplotdirs.$fork
    else
      . $FORKTOOLSDIR/ftconfigs/config.forkremoveplotdirs
-   fi   
+   fi
+   CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml
+   if [[ ! -f $CURRENTCONFIG ]]; then
+      echo "Configuration file for $fork not found.  Skipping..."
+      continue
+   fi
    cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain 
    . ./activate          
    for plotdir in $FORKREMOVEPLOTDIRS; do
