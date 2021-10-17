@@ -5,8 +5,8 @@
 cd $FORKTOOLSBLOCKCHAINDIRS
 FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
-printf "                HARVESTER  HARVESTER  FARMER     FARMER     WALLET     WALLET     TIMELORD   TIMELORD   FULLNODE   FULLNODE   DAEMON     UI         UI\n"
-printf "                RPC                   RPC                   RPC        LAUNCHER                         RPC                              RPC\n"
+printf "FORK            VERSION         HARVESTER  HARVESTER  FARMER     FARMER     WALLET     WALLET     TIMELORD   TIMELORD   FULLNODE   FULLNODE   DAEMON     UI\n"
+printf "                                           RPC                   RPC                   RPC        LAUNCHER                         RPC\n"
 
 
 for FORKNAME in $FORKLIST; do
@@ -91,7 +91,8 @@ while read line; do
 done < <(printf '%s\n' "$MEMORYCONFIG")
 IFS=$OLDIFS
 
-printf "%-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n" $FORKNAME $HARVESTPORT $HARVESTRPCPORT $FARMERPORT $FARMERRPCPORT $WALLETPORT $WALLETRPCPORT $TIMELORDLAUNCHERPORT $TIMELORDPORT $FULLNODEPORT $FULLNODERPCPORT $DAEMONPORT $UIPORT $UIRPCPORT
+FORKVER=$( fork $FORKNAME ver )
+printf "%-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n" $FORKNAME $FORKVER $HARVESTPORT $HARVESTRPCPORT $FARMERPORT $FARMERRPCPORT $WALLETPORT $WALLETRPCPORT $TIMELORDLAUNCHERPORT $TIMELORDPORT $FULLNODEPORT $FULLNODERPCPORT $DAEMONPORT $UIPORT
 done
 
 
