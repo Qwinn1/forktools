@@ -80,8 +80,14 @@ if [[ $HARVESTERONLY != 1 ]]; then
      FORKNAME=$fork     
      cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log 
      YESTERDAYLOGLIST='debug.log'
-     TESTDEBUG1=$(tail -1 debug.log.1)
-     TESTDEBUG2=$(tail -1 debug.log.2)
+     TESTDEBUG1=''
+     TESTDEBUG2=''
+     if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 ]; then
+        TESTDEBUG1=$(tail -1 debug.log.1)
+     fi
+     if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 ]; then
+        TESTDEBUG2=$(tail -1 debug.log.2)
+     fi
      if [[ $TESTDEBUG1 > $YESTERDAYSTAMP ]]; then
         YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.1')
      fi
@@ -93,7 +99,7 @@ if [[ $HARVESTERONLY != 1 ]]; then
      FORKVERSION=$($FORKTOOLSDIR/fork $fork ver)
      FULLNODEPROCESS='\s'$FORKNAME'_full'   
      FNWORKERS=$(ps -ef | grep -v grep | grep -c "$FULLNODEPROCESS" )
-     . $FORKTOOLSDIR/ftrpcinclude.sh   
+     . $FORKTOOLSDIR/ftrpcinclude.sh
      EFFORT=${EFFORT%.*}
      ADDRESSBALANCE=${ADDRESSBALANCE%.*}
      if [[ $HIDEBALANCE > 0 ]]; then
@@ -107,6 +113,10 @@ if [[ $HARVESTERONLY != 1 ]]; then
      PRINTEFFORT=$(printf '%5d%%' "$EFFORT")
      if [[ $EFFORT == 99999 ]]; then
         PRINTEFFORT='N/A'
+     fi
+     if [[ "$CURHEIGHT" -lt 501 ]]; then
+        ETWTEXT='Ht<500'
+        PRINTEFFORT='N/A'        
      fi     
      printf '%-17.17s %-15.15s %-10.10s%5.5s%9.9s %7d%10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%11.11s %5s\n' "$fork" "$FORKVERSION" "$FARMSTATUS" "$PEERCOUNT" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$PRINTEFFORT"
   done
@@ -133,8 +143,14 @@ if [[ $FARMERONLY != 1 ]]; then
      # For speed purposes, let's check how far we have to go back in logs to get everything since TODAYSTAMP and YESTERDAYSTAMP
      TODAYLOGLIST='debug.log'
      YESTERDAYLOGLIST='debug.log'
-     TESTDEBUG1=$(tail -1 debug.log.1)
-     TESTDEBUG2=$(tail -1 debug.log.2)
+     TESTDEBUG1=''
+     TESTDEBUG2=''
+     if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 ]; then
+        TESTDEBUG1=$(tail -1 debug.log.1)
+     fi
+     if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 ]; then
+        TESTDEBUG2=$(tail -1 debug.log.2)
+     fi
      if [[ $TESTDEBUG1 > $TODAYSTAMP ]]; then     
         TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.1')
      fi

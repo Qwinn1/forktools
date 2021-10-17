@@ -179,37 +179,41 @@ fi
 
 CURHEIGHT=$(grep '"height":'  <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
 PEAKHEIGHT=$CURHEIGHT
-CURPREVHASH=$(grep '"prev_hash":'  <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
-CURBLOCK=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"header_hash\":$CURPREVHASH}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_block_record | python -m json.tool")
-CURBLOCK=$(eval $CURBLOCK)
-CURTIMESTAMP=$(grep '"timestamp":' <<< "$CURBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
-while [ "$CURTIMESTAMP" == 'null' ]; do
-  CURPREVHASH=$(grep '"prev_hash":' <<< "$CURBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
-  CURBLOCK=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"header_hash\":$CURPREVHASH}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_block_record | python -m json.tool")
-  CURBLOCK=$(eval $CURBLOCK)  
-  CURTIMESTAMP=$(grep '"timestamp":'  <<< "$CURBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
-done
-CURHEIGHT=$(grep '"height":'  <<< "$CURBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
 
-let PREVHEIGHT=$CURHEIGHT-500
-PREVBLOCK=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"height\":$PREVHEIGHT}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_block_record_by_height | python -m json.tool")
-PREVBLOCK=$(eval $PREVBLOCK)
-PREVTIMESTAMP=$(grep '"timestamp":' <<< "$PREVBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
-while [ "$PREVTIMESTAMP" == 'null' ]; do
-  PREVPREVHASH=$(grep '"prev_hash":' <<< "$PREVBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
-  PREVBLOCK=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"header_hash\":$PREVPREVHASH}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_block_record | python -m json.tool")
-  PREVBLOCK=$(eval $PREVBLOCK)  
-  PREVTIMESTAMP=$(grep '"timestamp":'  <<< "$PREVBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
-done
-PREVHEIGHT=$(grep '"height":'  <<< "$PREVBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
+if [[ "$CURHEIGHT" -gt 500 ]]; then
+   CURPREVHASH=$(grep '"prev_hash":'  <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
+   CURBLOCK=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"header_hash\":$CURPREVHASH}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_block_record | python -m json.tool")
+   CURBLOCK=$(eval $CURBLOCK)
+   CURTIMESTAMP=$(grep '"timestamp":' <<< "$CURBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
+   while [ "$CURTIMESTAMP" == 'null' ]; do
+     CURPREVHASH=$(grep '"prev_hash":' <<< "$CURBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
+     CURBLOCK=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"header_hash\":$CURPREVHASH}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_block_record | python -m json.tool")
+     CURBLOCK=$(eval $CURBLOCK)  
+     CURTIMESTAMP=$(grep '"timestamp":'  <<< "$CURBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
+   done
+   CURHEIGHT=$(grep '"height":'  <<< "$CURBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
 
-let DIFFHEIGHT=$CURHEIGHT-$PREVHEIGHT
-let DIFFTIME=$CURTIMESTAMP-$PREVTIMESTAMP
-AVGBLOCKTIME=$(echo "($DIFFTIME / $DIFFHEIGHT)" | bc -l)
-# echo $DIFFTIME " " $DIFFHEIGHT " " "Avg" $AVGBLOCKTIME
+   let PREVHEIGHT=$CURHEIGHT-500
+   PREVBLOCK=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"height\":$PREVHEIGHT}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_block_record_by_height | python -m json.tool")
+   PREVBLOCK=$(eval $PREVBLOCK)
+   PREVTIMESTAMP=$(grep '"timestamp":' <<< "$PREVBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
+   while [ "$PREVTIMESTAMP" == 'null' ]; do
+     PREVPREVHASH=$(grep '"prev_hash":' <<< "$PREVBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
+     PREVBLOCK=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"header_hash\":$PREVPREVHASH}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_block_record | python -m json.tool")
+     PREVBLOCK=$(eval $PREVBLOCK)  
+     PREVTIMESTAMP=$(grep '"timestamp":'  <<< "$PREVBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
+   done
+   PREVHEIGHT=$(grep '"height":'  <<< "$PREVBLOCK" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
+
+  
+   let DIFFHEIGHT=$CURHEIGHT-$PREVHEIGHT
+   let DIFFTIME=$CURTIMESTAMP-$PREVTIMESTAMP
+   AVGBLOCKTIME=$(echo "($DIFFTIME / $DIFFHEIGHT)" | bc -l)
+fi
 
 RPCSPACEBYTES=$(grep '"space":' <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
 NETSPACE=$( assemble_bytestring "$RPCSPACEBYTES" )
+
 
 # This works only on Avocado, normally get_plots is a harvester rpc call, not a farmer.  But it works like get_harvesters.  Will keep this here as reminder,
 # but will otherwise get the plot info from farm summary, which is correct for avocado, unlike the other bunch of un-maintained forks I have to make an 
@@ -220,10 +224,11 @@ NETSPACE=$( assemble_bytestring "$RPCSPACEBYTES" )
 # RPC calls works on most forks and is much faster than farm summary.  If it doesn't work, we'll use farm summary.
 # Avocado is weird in that they renamed "get_harvesters" to "get_plots", so we call it differently
 IFS=''
+
 if [[ $FORKNAME = "avocado" ]]; then
    HARVESTERLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_plots | python -m json.tool )
 else
-   HARVESTERLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_harvesters | python -m json.tool )
+   HARVESTERLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_harvesters | python -m json.tool 2>/dev/null)
 fi
 
 IFS=$'\n'
@@ -259,21 +264,28 @@ else
 fi
 IFS=$OLDIFS
 
-PROPORTION=$(echo "scale = 20; ($PLOTSPACEBYTES / $RPCSPACEBYTES)" | bc -l)
-ETWMIN=$(echo "scale = 20; ($AVGBLOCKTIME / 60)" | bc -l )
-ETWMIN=$(echo "scale = 20; ($ETWMIN / $PROPORTION)" | bc -l )
-ETWSEC=$(echo "($ETWMIN * 60)" | bc)
-ETWTEXT=$( assemble_timestring ${ETWSEC/.*} 's' 2 4 2 )
+if [[ $RPCSPACEBYTES != '' && $PLOTSPACEBYTES != '' && $AVGBLOCKTIME != '' ]]; then
+  PROPORTION=$(echo "scale = 20; ($PLOTSPACEBYTES / $RPCSPACEBYTES)" | bc -l)
+  ETWMIN=$(echo "scale = 20; ($AVGBLOCKTIME / 60)" | bc -l )
+  ETWMIN=$(echo "scale = 20; ($ETWMIN / $PROPORTION)" | bc -l )
+  ETWSEC=$(echo "($ETWMIN * 60)" | bc)
+  ETWTEXT=$( assemble_timestring ${ETWSEC/.*} 's' 2 4 2 )
+fi
 
 IFS=''
 CURRENTDATEEPOCH=$(date +%s)
 LASTBLOCKDATE=$(c1grep 'true' <<< "$MERGEDCOINLIST" | tail -1 | awk '{print $1}' )
+
 if [[ $LASTBLOCKDATE == '' ]]; then
   BLOCKWON='false'
   # Calculate effort from date of first harvest in logs if possible
   # For speed purposes, find the highest log available instead of grabbing them all
-  FIRSTLOG=$( find $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log.* | sed 's/.*debug\.log\.//' | sort -n | tail -1 )
-  FIRSTLOG=$( echo "debug.log.$FIRSTLOG" )
+  if [ ! -f $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log.1 ]; then
+     FIRSTLOG='debug.log'
+  else
+     FIRSTLOG=$( find $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log.* | sed 's/.*debug\.log\.//' | sort -n | tail -1 )
+     FIRSTLOG=$( echo "debug.log.$FIRSTLOG" )
+  fi   
   FIRSTHARVESTLINE=$(cat $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/$FIRSTLOG | grep "eligible for farming" | sort | head -1)  
   if [[ $FIRSTHARVESTLINE != '' ]]; then
     FIRSTHARVESTTIME=$(sed 's/\..*//' <<< "$FIRSTHARVESTLINE" | awk '{$1=$1};1')
@@ -289,7 +301,9 @@ else
   SECONDSSINCEHIT=$(echo "($CURRENTDATEEPOCH - $LASTBLOCKEPOCH)")  
   MINUTESSINCEHIT=$(echo "($SECONDSSINCEHIT / 60)" | bc )  
   LASTBLOCKAGOTEXT=$( assemble_timestring ${SECONDSSINCEHIT/.*} 's' 2 4 2 )
-  EFFORT=$(echo "($SECONDSSINCEHIT / $ETWSEC * 100)" | bc -l)
+  if [[ $ETWSEC != '' ]]; then 
+     EFFORT=$(echo "($SECONDSSINCEHIT / $ETWSEC * 100)" | bc -l)
+  fi
 fi
 IFS=$OLDIFS
 
