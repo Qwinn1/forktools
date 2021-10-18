@@ -3,6 +3,7 @@
 
 LOGFORKADDPLOTDIRS="false"
 LOGFORKBENCHIPS="false"
+LOGFORKCHECK="false"
 LOGFORKEDIT="false"
 LOGFORKEXPLORE="false"
 LOGFORKFIXCONFIG="false"
@@ -10,6 +11,7 @@ LOGFORKLIST="false"
 LOGFORKLOG="false"             # Set to true with caution, as the size of this output can be substantial.
 LOGFORKMON="true"
 LOGFORKNODES="false"
+LOGFORKPATCH="false"
 LOGFORKPORTS="false"
 LOGFORKREMOVEPLOTDIRS="false"
 LOGFORKSTART="false"
