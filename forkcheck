@@ -1,12 +1,30 @@
 #! /usr/bin/env bash
 
+function print_usage () {
+   echo "forkcheck help:"
+   echo
+   echo "SYNOPSIS:   Displays important port settings per the config.yaml of all forks with a -blockchain"
+   echo "    directory, then also checks the initial-config.yaml that generates the config during a fresh"
+   echo "    installation.  If they are the same, that fork will display only one line and the last column"
+   echo "    will display 'matched'.  If they are not the same, that fork will display two lines, one for the"
+   echo "    operating config.yaml in the hidden directory and the other the settings from initial-config.yaml."
+   echo "    Review those carefully, as at least one of the ports does not match."
+   echo "            If you have a mismatch, and the discrepancy was not intended, running forkupdate for the"
+   echo "    fork is a quick solution, as it always generates a new config from the initial-config.yaml."
+   echo
+   echo "PARAMETERS:"
+   echo "     -help | --help      Show this information again."
+   echo
+   exit 0
+}
+
 . ftinit.sh
 
 cd $FORKTOOLSBLOCKCHAINDIRS
 FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
-printf "I/C FORK            VERSION         HARVESTER  HARVESTER  FARMER     FARMER     WALLET     WALLET     TIMELORD   TIMELORD   FULLNODE   FULLNODE   DAEMON     UI\n"
-printf "                                           RPC                   RPC                   RPC        LAUNCHER                         RPC\n"
+printf "FORK            VERSION         HARVESTER  HARVESTER  FARMER     FARMER     WALLET     WALLET     TIMELORD   TIMELORD   FULLNODE   FULLNODE   DAEMON     UI         Match\n"
+printf "                                           RPC                   RPC                   RPC        LAUNCHER                         RPC                              Init?\n"
 
 
 for FORKNAME in $FORKLIST; do
@@ -92,10 +110,6 @@ for FORKNAME in $FORKLIST; do
      fi
    done < <(printf '%s\n' "$MEMORYCONFIG")
    
-   FORKVER=$( fork $FORKNAME ver )
-   printf "C   %-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n" $FORKNAME $FORKVER $HARVESTPORT $HARVESTRPCPORT $FARMERPORT $FARMERRPCPORT $WALLETPORT $WALLETRPCPORT $TIMELORDLAUNCHERPORT $TIMELORDPORT $FULLNODEPORT $FULLNODERPCPORT $DAEMONPORT $UIPORT
-   
-
    INITIALCONFIG=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/util/initial-config.yaml
 #   echo $INITIALCONFIG
    if [[ ! -f $INITIALCONFIG ]]; then
@@ -175,44 +189,13 @@ for FORKNAME in $FORKLIST; do
 
 
    FORKVER=$( fork $FORKNAME ver )
-   printf "I   %-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n" $FORKNAME $FORKVER $IHARVESTPORT $IHARVESTRPCPORT $IFARMERPORT $IFARMERRPCPORT $IWALLETPORT $IWALLETRPCPORT $ITIMELORDLAUNCHERPORT $ITIMELORDPORT $IFULLNODEPORT $IFULLNODERPCPORT $IDAEMONPORT $IUIPORT
    
-   if [[ $HARVESTPORT != $IHARVESTPORT ]]; then
-      echo "WARNING - Harvester Port Mismatch!  config.yaml - $HARVESTPORT.  initial-config.yaml - $IHARVESTPORT"
-   fi
-   if [[ $HARVESTRPCPORT != $IHARVESTRPCPORT ]]; then
-      echo "WARNING - Harvester RPC Port Mismatch!  config.yaml - $HARVESTRPCPORT.  initial-config.yaml - $IHARVESTRPCPORT"
-   fi
-   if [[ $FARMERPORT != $IFARMERPORT ]]; then
-      echo "WARNING - Farmer Port Mismatch!  config.yaml - $FARMERPORT.  initial-config.yaml - $IFARMERPORT"
-   fi
-   if [[ $FARMERRPCPORT != $IFARMERRPCPORT ]]; then
-      echo "WARNING - Farmer RPC Port Mismatch!  config.yaml - $FARMERRPCPORT.  initial-config.yaml - $IFARMERRPCPORT"
-   fi
-   if [[ $WALLETPORT != $IWALLETPORT ]]; then
-      echo "WARNING - Wallet Port Mismatch!  config.yaml - $WALLETPORT.  initial-config.yaml - $IWALLETPORT"
-   fi
-   if [[ $WALLETRPCPORT != $IWALLETRPCPORT ]]; then
-      echo "WARNING - Wallet RPC Port Mismatch!  config.yaml - $WALLETRPCPORT.  initial-config.yaml - $IWALLETRPCPORT"
-   fi
-   if [[ $TIMELORDLAUNCHERPORT != $ITIMELORDLAUNCHERPORT ]]; then
-      echo "WARNING - Timelord Launcher Port Mismatch!  config.yaml - $TIMELORDLAUNCHERPORT.  initial-config.yaml - $ITIMELORDLAUNCHERPORT"
-   fi
-   if [[ $TIMELORDPORT != $ITIMELORDPORT ]]; then
-      echo "WARNING - Timelord Port Mismatch!  config.yaml - $TIMELORDPORT.  initial-config.yaml - $ITIMELORDPORT"
-   fi
-   if [[ $FULLNODEPORT != $IFULLNODEPORT ]]; then
-      echo "WARNING - Full Node Port Mismatch!  config.yaml - $FULLNODEPORT.  initial-config.yaml - $IFULLNODEPORT"
-   fi
-   if [[ $FULLNODERPCPORT != $IFULLNODERPCPORT ]]; then
-      echo "WARNING - Full Node RPC Port Mismatch!  config.yaml - $FULLNODERPCPORT.  initial-config.yaml - $IFULLNODERPCPORT"
-   fi
-   if [[ $DAEMONPORT != $IDAEMONPORT ]]; then
-      echo "WARNING - Daemon Port Mismatch!  config.yaml - $DAEMONPORT.  initial-config.yaml - $IDAEMONPORT"
-   fi
-   if [[ $UIPORT != $IUIPORT ]]; then
-      echo "WARNING - UI Port Mismatch!  config.yaml - $UIPORT.  initial-config.yaml - $IUIPORT"
-   fi
+   if [[ $HARVESTPORT != $IHARVESTPORT || $HARVESTRPCPORT != $IHARVESTRPCPORT || $FARMERPORT != $IFARMERPORT || $FARMERRPCPORT != $IFARMERRPCPORT ||  $WALLETPORT != $IWALLETPORT || $WALLETRPCPORT != $IWALLETRPCPORT || $TIMELORDLAUNCHERPORT != $ITIMELORDLAUNCHERPORT || $TIMELORDPORT != $ITIMELORDPORT || $FULLNODEPORT != $IFULLNODEPORT || $FULLNODERPCPORT != $IFULLNODERPCPORT || $DAEMONPORT != $IDAEMONPORT || $UIPORT != $IUIPORT ]]; then
+      printf "%-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s config.yaml\n" $FORKNAME $FORKVER $HARVESTPORT $HARVESTRPCPORT $FARMERPORT $FARMERRPCPORT $WALLETPORT $WALLETRPCPORT $TIMELORDLAUNCHERPORT $TIMELORDPORT $FULLNODEPORT $FULLNODERPCPORT $DAEMONPORT $UIPORT
+      printf "%-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s initial-config.yaml\n" $FORKNAME $FORKVER $IHARVESTPORT $IHARVESTRPCPORT $IFARMERPORT $IFARMERRPCPORT $IWALLETPORT $IWALLETRPCPORT $ITIMELORDLAUNCHERPORT $ITIMELORDPORT $IFULLNODEPORT $IFULLNODERPCPORT $IDAEMONPORT $IUIPORT
+   else
+      printf "%-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s matched\n" $FORKNAME $FORKVER $HARVESTPORT $HARVESTRPCPORT $FARMERPORT $FARMERRPCPORT $WALLETPORT $WALLETRPCPORT $TIMELORDLAUNCHERPORT $TIMELORDPORT $FULLNODEPORT $FULLNODERPCPORT $DAEMONPORT $UIPORT
+   fi   
 done
 
 
