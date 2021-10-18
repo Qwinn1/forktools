@@ -81,7 +81,7 @@ SETFARMERPEER=$2
 for FORKNAME in $FORKLIST; do
    CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
    if [[ ! -f $CURRENTCONFIG ]]; then
-      echo "Configuration file for $FORKNAME not found.  Skipping..."
+      # echo "Configuration file for $FORKNAME not found.  Skipping..."
       continue
    fi
    echo "forkfixconfig $FORKNAME:  Analyzing $CURRENTCONFIG."
