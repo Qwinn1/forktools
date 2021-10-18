@@ -18,7 +18,10 @@ function print_usage () {
    echo "   is still highly recommended to confirm that farming continues well following running forkpatch."
    echo "   forkmon in particular will almost instantly show the results of adding the multiproc patch,"
    echo "   under the FULLNODE WORKERS column, as soon as plots are reloaded (since forkpatch does need"
-   echo "   to restart fork services for the patch to be applied."
+   echo "   to restart fork services for the patch to be applied.)  If full node worker count does not"
+   echo "   decrease, make sure the multiprocessing_limit parameter is in the config.  This can be set"
+   echo "   for all forks very quickly with 'forkfixconfig all'."
+   echo
    echo "            -multiproc patches $FORKNAME/consensus/blockchain.py"
    echo
    echo "PARAMETERS:"
@@ -29,16 +32,16 @@ function print_usage () {
    exit 0
 }
 
+if [[ $1 != 'all' ]]; then
+  VALIDATEFORKNAME='Yes'
+fi
+. ftinit.sh
+
 if [[ $2 != '-multiproc' ]]; then
   echo "forkpatch:  Patch name must be specified as second parameter.  The only patch currently supported is: -multiproc"
   echo "Aborting forkpatch."
   exit
 fi
-
-if [[ $1 != 'all' ]]; then
-  VALIDATEFORKNAME='Yes'
-fi
-. ftinit.sh
 
 . ftbuildfarmerlist.sh
 if [[ $1 != 'all' ]]; then
