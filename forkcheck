@@ -5,97 +5,214 @@
 cd $FORKTOOLSBLOCKCHAINDIRS
 FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
-printf "FORK            VERSION         HARVESTER  HARVESTER  FARMER     FARMER     WALLET     WALLET     TIMELORD   TIMELORD   FULLNODE   FULLNODE   DAEMON     UI\n"
+printf "I/C FORK            VERSION         HARVESTER  HARVESTER  FARMER     FARMER     WALLET     WALLET     TIMELORD   TIMELORD   FULLNODE   FULLNODE   DAEMON     UI\n"
 printf "                                           RPC                   RPC                   RPC        LAUNCHER                         RPC\n"
 
 
 for FORKNAME in $FORKLIST; do
-
-CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
-if [[ ! -f $CURRENTCONFIG ]]; then
-   continue
-fi
-
-cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain
-. ./activate
-
-# Get all ports.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
-OLDIFS=$IFS
-IFS=''
-MEMORYCONFIG=$(cat $CURRENTCONFIG | c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' -e 'port: ' -e '_peer:' -e 'vdf_server:' ) 
-# echo $MEMORYCONFIG
-while read line; do
-   WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
-   if [[ $WORKLINE == *default_full_node_port* || $WORKLINE == *log_syslog_port* ]]; then
+   CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
+   if [[ ! -f $CURRENTCONFIG ]]; then
       continue
-   fi
-   TESTSECTION=$(c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
-  if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]]; then 
-    SECTION=$TESTSECTION 
-  fi
-  if [[ $LASTLINE == *_peer:* || $LASTLINE == *vdf_server:* ]]; then
-     LASTLINE=$WORKLINE
-     continue
-  fi
-  LASTLINE=$WORKLINE  
-  if [[ $WORKLINE == daemon_port:* ]]; then 
-    DAEMONPORT=$(sed 's/daemon_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-    continue
-  fi
-  if [[ $SECTION == *full_node:* && $WORKLINE == *rpc_port:* ]]; then 
-    FULLNODERPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-    continue
-  fi
-  if [[ $SECTION == *full_node:* && $WORKLINE == *port:* ]]; then 
-    FULLNODEPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-    continue
-  fi
-  if [[ $SECTION == *farmer:* && $WORKLINE == *rpc_port:* ]]; then 
-    FARMERRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1')
-    continue 
-  fi
-  if [[ $SECTION == *farmer:* && $WORKLINE == *port:* ]]; then 
-    FARMERPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1')
-    continue 
-  fi
-  if [[ $SECTION == *harvester:* && $WORKLINE == *rpc_port:* ]]; then 
-    HARVESTRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-    continue
-  fi  
-  if [[ $SECTION == *harvester:* && $WORKLINE == *port:* ]]; then 
-    HARVESTPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-    continue
-  fi
-  if [[ $SECTION == *wallet:* && $WORKLINE == *rpc_port:* ]]; then 
-    WALLETRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-    continue
-  fi  
-  if [[ $SECTION == *wallet:* && $WORKLINE == *port:* ]]; then 
-    WALLETPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-    continue
-  fi
-  if [[ $SECTION == *ui:* && $WORKLINE == *rpc_port:* ]]; then 
-    UIRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-    continue
-  fi  
-  if [[ $SECTION == *ui:* && $WORKLINE == *port:* && $WORKLINE != *daemon_port:* ]]; then 
-    UIPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-    continue
-  fi
-  if [[ $SECTION == *timelord_launcher:* && $WORKLINE == *port:* ]]; then 
-    TIMELORDLAUNCHERPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-    continue
-  fi
-  if [[ $SECTION == *timelord:* && $WORKLINE == *port:* ]]; then 
-    TIMELORDPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-    continue
-  fi  
-  
-done < <(printf '%s\n' "$MEMORYCONFIG")
-IFS=$OLDIFS
+   fi  
 
-FORKVER=$( fork $FORKNAME ver )
-printf "%-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n" $FORKNAME $FORKVER $HARVESTPORT $HARVESTRPCPORT $FARMERPORT $FARMERRPCPORT $WALLETPORT $WALLETRPCPORT $TIMELORDLAUNCHERPORT $TIMELORDPORT $FULLNODEPORT $FULLNODERPCPORT $DAEMONPORT $UIPORT
+   cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain
+   . ./activate
+
+
+   # Get all ports.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
+   OLDIFS=$IFS
+   IFS=''
+   MEMORYCONFIG=$(cat $CURRENTCONFIG | c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' -e 'port: ' -e '_peer:' -e 'vdf_server:' ) 
+
+   while read line; do
+     WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
+     if [[ $WORKLINE == *default_full_node_port* || $WORKLINE == *log_syslog_port* ]]; then
+        continue
+     fi
+   TESTSECTION=$(c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
+     if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]]; then 
+       SECTION=$TESTSECTION 
+     fi
+     if [[ $LASTLINE == *_peer:* || $LASTLINE == *vdf_server:* ]]; then
+        LASTLINE=$WORKLINE
+        continue
+     fi
+     LASTLINE=$WORKLINE  
+     if [[ $SECTION == *full_node:* && $WORKLINE == *rpc_port:* ]]; then 
+       FULLNODERPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *full_node:* && $WORKLINE == *port:* ]]; then 
+       FULLNODEPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *farmer:* && $WORKLINE == *rpc_port:* ]]; then 
+       FARMERRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+       continue 
+     fi
+     if [[ $SECTION == *farmer:* && $WORKLINE == *port:* ]]; then 
+       FARMERPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+       continue 
+     fi
+     if [[ $SECTION == *harvester:* && $WORKLINE == *rpc_port:* ]]; then 
+       HARVESTRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi  
+     if [[ $SECTION == *harvester:* && $WORKLINE == *port:* ]]; then 
+       HARVESTPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *wallet:* && $WORKLINE == *rpc_port:* ]]; then 
+       WALLETRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi  
+     if [[ $SECTION == *wallet:* && $WORKLINE == *port:* ]]; then 
+       WALLETPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *ui:* && $WORKLINE == *rpc_port:* ]]; then 
+       UIRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi  
+     if [[ $SECTION == *ui:* && $WORKLINE == *port:* && $WORKLINE != *daemon_port:* ]]; then 
+       UIPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *timelord_launcher:* && $WORKLINE == *port:* ]]; then 
+       TIMELORDLAUNCHERPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *timelord:* && $WORKLINE == *port:* ]]; then 
+       TIMELORDPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi  
+     if [[ $WORKLINE == *daemon_port:* ]]; then 
+       DAEMONPORT=$(sed 's/daemon_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+   done < <(printf '%s\n' "$MEMORYCONFIG")
+   
+   FORKVER=$( fork $FORKNAME ver )
+   printf "C   %-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n" $FORKNAME $FORKVER $HARVESTPORT $HARVESTRPCPORT $FARMERPORT $FARMERRPCPORT $WALLETPORT $WALLETRPCPORT $TIMELORDLAUNCHERPORT $TIMELORDPORT $FULLNODEPORT $FULLNODERPCPORT $DAEMONPORT $UIPORT
+   
+
+   INITIALCONFIG=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/util/initial-config.yaml
+#   echo $INITIALCONFIG
+   if [[ ! -f $INITIALCONFIG ]]; then
+      echo "$INITIALCONFIG not found, skipping."
+      continue
+   fi  
+   MEMORYCONFIG=$(cat $INITIALCONFIG | c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' -e 'port: ' -e '_peer:' -e 'vdf_server:' ) 
+
+   while read line; do
+     WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
+     if [[ $WORKLINE == *default_full_node_port* || $WORKLINE == *log_syslog_port* ]]; then
+        continue
+     fi
+     TESTSECTION=$(c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
+     if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]]; then 
+       SECTION=$TESTSECTION 
+     fi
+     if [[ $LASTLINE == *_peer:* || $LASTLINE == *vdf_server:* ]]; then
+        LASTLINE=$WORKLINE
+        continue
+     fi
+     LASTLINE=$WORKLINE  
+     if [[ $SECTION == *full_node:* && $WORKLINE == *rpc_port:* ]]; then 
+       IFULLNODERPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *full_node:* && $WORKLINE == *port:* ]]; then 
+       IFULLNODEPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *farmer:* && $WORKLINE == *rpc_port:* ]]; then 
+       IFARMERRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+       continue 
+     fi
+     if [[ $SECTION == *farmer:* && $WORKLINE == *port:* ]]; then 
+       IFARMERPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+       continue 
+     fi
+     if [[ $SECTION == *harvester:* && $WORKLINE == *rpc_port:* ]]; then 
+       IHARVESTRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi  
+     if [[ $SECTION == *harvester:* && $WORKLINE == *port:* ]]; then 
+       IHARVESTPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *wallet:* && $WORKLINE == *rpc_port:* ]]; then 
+       IWALLETRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi  
+     if [[ $SECTION == *wallet:* && $WORKLINE == *port:* ]]; then 
+       IWALLETPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *ui:* && $WORKLINE == *rpc_port:* ]]; then 
+       IUIRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi  
+     if [[ $SECTION == *ui:* && $WORKLINE == *port:* && $WORKLINE != *daemon_port:* ]]; then 
+       IUIPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *timelord_launcher:* && $WORKLINE == *port:* ]]; then 
+       ITIMELORDLAUNCHERPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+     if [[ $SECTION == *timelord:* && $WORKLINE == *port:* ]]; then 
+       ITIMELORDPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi  
+     if [[ $WORKLINE == *daemon_port:* ]]; then 
+       IDAEMONPORT=$(sed 's/daemon_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
+       continue
+     fi
+   done < <(printf '%s\n' "$MEMORYCONFIG")
+   IFS=$OLDIFS
+
+
+   FORKVER=$( fork $FORKNAME ver )
+   printf "I   %-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n" $FORKNAME $FORKVER $IHARVESTPORT $IHARVESTRPCPORT $IFARMERPORT $IFARMERRPCPORT $IWALLETPORT $IWALLETRPCPORT $ITIMELORDLAUNCHERPORT $ITIMELORDPORT $IFULLNODEPORT $IFULLNODERPCPORT $IDAEMONPORT $IUIPORT
+   
+   if [[ $HARVESTPORT != $IHARVESTPORT ]]; then
+      echo "WARNING - Harvester Port Mismatch!  config.yaml - $HARVESTPORT.  initial-config.yaml - $IHARVESTPORT"
+   fi
+   if [[ $HARVESTRPCPORT != $IHARVESTRPCPORT ]]; then
+      echo "WARNING - Harvester RPC Port Mismatch!  config.yaml - $HARVESTRPCPORT.  initial-config.yaml - $IHARVESTRPCPORT"
+   fi
+   if [[ $FARMERPORT != $IFARMERPORT ]]; then
+      echo "WARNING - Farmer Port Mismatch!  config.yaml - $FARMERPORT.  initial-config.yaml - $IFARMERPORT"
+   fi
+   if [[ $FARMERRPCPORT != $IFARMERRPCPORT ]]; then
+      echo "WARNING - Farmer RPC Port Mismatch!  config.yaml - $FARMERRPCPORT.  initial-config.yaml - $IFARMERRPCPORT"
+   fi
+   if [[ $WALLETPORT != $IWALLETPORT ]]; then
+      echo "WARNING - Wallet Port Mismatch!  config.yaml - $WALLETPORT.  initial-config.yaml - $IWALLETPORT"
+   fi
+   if [[ $WALLETRPCPORT != $IWALLETRPCPORT ]]; then
+      echo "WARNING - Wallet RPC Port Mismatch!  config.yaml - $WALLETRPCPORT.  initial-config.yaml - $IWALLETRPCPORT"
+   fi
+   if [[ $TIMELORDLAUNCHERPORT != $ITIMELORDLAUNCHERPORT ]]; then
+      echo "WARNING - Timelord Launcher Port Mismatch!  config.yaml - $TIMELORDLAUNCHERPORT.  initial-config.yaml - $ITIMELORDLAUNCHERPORT"
+   fi
+   if [[ $TIMELORDPORT != $ITIMELORDPORT ]]; then
+      echo "WARNING - Timelord Port Mismatch!  config.yaml - $TIMELORDPORT.  initial-config.yaml - $ITIMELORDPORT"
+   fi
+   if [[ $FULLNODEPORT != $IFULLNODEPORT ]]; then
+      echo "WARNING - Full Node Port Mismatch!  config.yaml - $FULLNODEPORT.  initial-config.yaml - $IFULLNODEPORT"
+   fi
+   if [[ $FULLNODERPCPORT != $IFULLNODERPCPORT ]]; then
+      echo "WARNING - Full Node RPC Port Mismatch!  config.yaml - $FULLNODERPCPORT.  initial-config.yaml - $IFULLNODERPCPORT"
+   fi
+   if [[ $DAEMONPORT != $IDAEMONPORT ]]; then
+      echo "WARNING - Daemon Port Mismatch!  config.yaml - $DAEMONPORT.  initial-config.yaml - $IDAEMONPORT"
+   fi
+   if [[ $UIPORT != $IUIPORT ]]; then
+      echo "WARNING - UI Port Mismatch!  config.yaml - $UIPORT.  initial-config.yaml - $IUIPORT"
+   fi
 done
 
 
