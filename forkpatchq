@@ -1,0 +1,129 @@
+#! /usr/bin/env bash
+
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "forkpatch help:"
+   echo
+   echo "SYNOPSIS:  This tool edits the python fork source code to apply popular and time-tested patches"
+   echo "    to chia or forks that for whatever reason the fork developer has not yet applied."
+   echo "           In this debut of forkpatch, the only supported patch is the excellent grayfallstown"
+   echo "   'multiprocessing_limit' patch which, depending on the number of cores of your CPU, greatly"
+   echo "   reduces CPU and memory usage by starting fewer full node worker processes.  The default number"
+   echo "   of workers started by chia code is roughly equivalent to the number of threads of your CPU."
+   echo "   For me, this results in 20 workers.  This is huge overkill for a fork that is already synced,"
+   echo "   as even setting a multiprocessing_limit of 2 is enough to keep a chain synced without issue."
+   echo "           forkpatch does extensive validation to make sure the code it is modifying hasn't been"
+   echo "   altered in any way that might interfere with the automated application of the patch, but it"
+   echo "   is still highly recommended to confirm that farming continues well following running forkpatch."
+   echo "   forkmon in particular will almost instantly show the results of adding the multiproc patch,"
+   echo "   under the FULLNODE WORKERS column, as soon as plots are reloaded (since forkpatch does need"
+   echo "   to restart fork services for the patch to be applied."
+   echo "            -multiproc patches $FORKNAME/consensus/blockchain.py"
+   echo
+   echo "PARAMETERS:"
+   echo "     forkname | all      Required.  Apply patch to a single fork or all forks running a farmer process."
+   echo "     -patchname          Required.  Currently only -multiproc as described above is supported."
+   echo "     -help | --help      Show this information again."
+   echo
+   exit 0
+}
+
+if [[ $2 != '-multiproc' ]]; then
+  echo "forkpatch:  Patch name must be specified as second parameter.  The only patch currently supported is: -multiproc"
+  echo "Aborting forkpatch."
+  exit
+fi
+
+if [[ $1 != 'all' ]]; then
+  VALIDATEFORKNAME='Yes'
+fi
+. ftinit.sh
+
+. ftbuildfarmerlist.sh
+if [[ $1 != 'all' ]]; then
+   OLDIFS=$IFS
+   IFS=''
+   FORKNAMERUNNING=$( echo $FARMERLIST | grep "^$1$" )
+   if [[ $FORKNAMERUNNING == '' ]]; then
+      echo "forkpatch:  Specified fork is not currently running a farmer process.  The process should be started and forkpatch run again."
+      echo "Aborting forkpatch."
+      exit
+   fi
+   IFS=$OLDIFS
+fi
+
+if [[ $2 == '-multiproc' ]]; then
+   for FORKNAME in $FARMERLIST; do
+      if [[ $1 != 'all' && $1 != $FORKNAME ]]; then
+         continue
+      fi
+      echo
+      echo "forkpatch:  Analyzing suitability of $FORKNAME for automated -multiproc patching."
+      
+      PROGRAMTOMOD=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/blockchain.py
+      #PROGRAMTOMOD=$FORKTOOLSDIR/blockchain.test
+
+      if [[ -f $PROGRAMTOMOD ]]; then
+         FORKNAMEINCODE=$FORKNAME
+         CODESTILLCHIA=$( grep -c '^from chia.util' $PROGRAMTOMOD )
+         if [[ $CODESTILLCHIA > 0 ]]; then
+            FORKNAMEINCODE='chia'
+         fi         
+         FINDMULTIPROC=$( grep -c 'multiprocessing_limit' $PROGRAMTOMOD )
+         if [[ $FINDMULTIPROC > 0 ]]; then
+            echo "forkpatch:  $FORKNAME failed code validation - already patched.  Skipping $FORKNAME."
+            continue
+         fi
+         FINDCONFIGLOAD=$( grep -c 'import load_config' $PROGRAMTOMOD )         
+         if [[ $FINDCONFIGLOAD > 0 ]]; then
+            echo "forkpatch:  $FORKNAME failed code validation - loads config without loading multiprocessing_limit.  Skipping $FORKNAME."
+            continue
+         fi
+         FINDDEFAULTPATH=$( grep -c 'DEFAULT_ROOT_PATH' $PROGRAMTOMOD )
+         if [[ $FINDDEFAULTPATH > 0 ]]; then
+            echo "forkpatch:  $FORKNAME failed code validation - loads DEFAULT_ROOT_PATH without loading multiprocessing_limit.  Skipping $FORKNAME."
+            continue
+         fi
+         FINDNUMWORKERSKEY=$( grep -c '^        num_workers = max(cpu_count - 2, 1)$' $PROGRAMTOMOD )
+         if [[ $FINDNUMWORKERSKEY == 0 ]]; then
+            echo "forkpatch:  $FORKNAME failed code validation - num_workers code missing or has non-standard indendation.  Skipping $FORKNAME."
+            continue
+         fi
+         FINDIMPORTKEY=$( grep -c "^from ${FORKNAMEINCODE}.util.streamable import recurse_jsonify$" $PROGRAMTOMOD )
+         if [[ $FINDIMPORTKEY == 0 ]]; then
+            echo "forkpatch:  $FORKNAME failed code validation - exact key needed for proper placement of from-import lines missing.  Skipping $FORKNAME."
+            continue
+         fi
+
+         FORKNAMEINPROCESSES=$( ps -ef | grep -v grep | grep -c ${FORKNAME}_farmer )
+         WALLETRUNNING=$( ps -ef | grep -v grep | grep -c ${FORKNAME}_wallet )
+         echo "forkpatch:  $FORKNAME deemed suitable for automated -multiproc patching. Attempting to mod $FORKNAME/consensus/blockchain.py."
+         echo "            blockchain.py will be backed up to $FORKNAME/consensus/blockchain.py.ftbackup"
+      
+         sed -i.ftbackup "/^from ${FORKNAMEINCODE}.util.streamable import recurse_jsonify/a # Next two lines added by forkpatch -multiproc\nfrom ${FORKNAMEINCODE}.util.default_root import DEFAULT_ROOT_PATH\nfrom ${FORKNAMEINCODE}.util.config import load_config" $PROGRAMTOMOD
+         sed -i.ftbak "/^        num_workers = max(cpu_count - 2, 1)/a\        # Next three lines added by forkpatch -multiproc\n        config = load_config(DEFAULT_ROOT_PATH, \"config.yaml\")\n        if 'multiprocessing_limit' in config.keys():\n            num_workers = min(num_workers, int(config[\"multiprocessing_limit\"]));" $PROGRAMTOMOD
+         rm ${PROGRAMTOMOD}.ftbak
+         if [[ $WALLETRUNNING == 0 && $FORKNAMEINPROCESSES > 0 ]]; then      
+            echo "forkpatch:  $FORKNAME patched.  Restarting farmer-no-wallet process."
+            $FORKTOOLSDIR/forkstart $FORKNAME -fnw
+            if [[ $1 = 'all' ]]; then            
+               echo "forkpatch:  Sleeping for 10 seconds to allow $FORKNAME restart a moment to process before proceeding."            
+               sleep 10
+            fi
+         else
+            echo "forkpatch:  $FORKNAME patched.  Restarting farmer process (including wallet)."
+            $FORKTOOLSDIR/forkstart $FORKNAME -f
+            if [[ $1 = 'all' ]]; then
+               echo "forkpatch:  Sleeping for 10 seconds to allow $FORKNAME restart a moment to process before proceeding."            
+               sleep 10
+            fi
+         fi
+      else
+         echo "forkpatch: $FORKNAME code $PROGRAMTOMOD not found.  Skipping $FORKNAME."
+         continue
+      fi
+   done
+   echo "forkpatch complete:  Verify patched forks have lowered fullnode worker counts in forkmon. If not, try running forkfixconfig to add the parameter."
+fi
+
