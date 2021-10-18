@@ -111,15 +111,15 @@ if [[ $2 == '-multiproc' ]]; then
             echo "forkpatch:  $FORKNAME patched.  Restarting farmer-no-wallet process."
             $FORKTOOLSDIR/forkstart $FORKNAME -fnw
             if [[ $1 = 'all' ]]; then            
-               echo "forkpatch:  Sleeping for 10 seconds to allow $FORKNAME restart a moment to process before proceeding."            
-               sleep 10
+               echo "forkpatch:  Sleeping for 30 seconds to allow $FORKNAME restart a moment to process before proceeding."            
+               sleep 30
             fi
          else
             echo "forkpatch:  $FORKNAME patched.  Restarting farmer process (including wallet)."
             $FORKTOOLSDIR/forkstart $FORKNAME -f
             if [[ $1 = 'all' ]]; then
-               echo "forkpatch:  Sleeping for 10 seconds to allow $FORKNAME restart a moment to process before proceeding."            
-               sleep 10
+               echo "forkpatch:  Sleeping for 30 seconds to allow $FORKNAME restart a moment to process before proceeding."            
+               sleep 30
             fi
          fi
       else
