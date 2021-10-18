@@ -51,8 +51,10 @@ echo "Scanning for and setting up required symlinks for forks with non-standard 
 
 . $FORKTOOLSDIR/ftsymlinks.sh
 
-echo "Moving any config files in forktools folder to forktools/ftconfigs folder."
-mv $FORKTOOLSDIR/config.* $FORKTOOLSDIR/ftconfigs
+if [[ -f $FORKTOOLSDIR/config.* ]]; then
+   echo "Moving config files in forktools folder to forktools/ftconfigs folder."
+   mv -n $FORKTOOLSDIR/config.* $FORKTOOLSDIR/ftconfigs
+fi
 
 echo "Copying config.FORKTOOL.template files to config.FORKTOOL if necessary..."
 if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkstartall" ) ]]; then
@@ -94,14 +96,29 @@ if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.logging" ) ]]; then
   echo "No existing config.logging file found.  Copied from config.logging.template."
   echo "  Only forkmon logging is enabled by default.  Update config.logging to enable logs for any or every forktool (except forkconfig)."
   cp $FORKTOOLSDIR/ftconfigs/config.logging.template $FORKTOOLSDIR/ftconfigs/config.logging
-fi 
-
+else
+  echo "Updating config.logging with settings for new tools."
+  cp $FORKTOOLSDIR/ftconfigs/config.logging.template $FORKTOOLSDIR/ftconfigs/config.logging.working 
+  OLDIFS=$IFS
+  IFS=''
+  while read line; do
+     HASEQUAL=$( echo $line | grep -c '=' )
+     if [[ $HASEQUAL == 0 ]]; then
+       continue
+     fi
+     CURVAR=$( echo $line | sed 's/=.*/=/' )
+     CURVALUE=$( echo $line | sed 's/.*=//' )
+     TEMPLATEVALUE=$(grep "^$CURVAR" "$FORKTOOLSDIR/ftconfigs/config.logging.working" | sed 's/.*=//' )
+     sed -i.bak "s/${CURVAR}${TEMPLATEVALUE}/${CURVAR}${CURVALUE}/" $FORKTOOLSDIR/ftconfigs/config.logging.working
+  done < "$FORKTOOLSDIR/ftconfigs/config.logging"
+  mv $FORKTOOLSDIR/ftconfigs/config.logging.working $FORKTOOLSDIR/ftconfigs/config.logging
+  rm $FORKTOOLSDIR/ftconfigs/config.logging.working.bak  
+  IFS=$OLDIFS
+fi
 
 echo "Making forktool scripts executable..."
 cd $FORKTOOLSDIR
 chmod +x fork*
 
-
-echo "forktools installation completed!  I hope you'll enjoy.  - Qwinn"
-
+echo "forktools installation completed!  Happy farming!  - Qwinn"
 
