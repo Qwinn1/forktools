@@ -39,9 +39,9 @@ else
     }
     function forkssoutput () {
       if [[ $FORKNAME == 'littlelambocoin' ]]; then
-        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' | sed 's/"//g' )
+        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME} | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
       else
-        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' | sed 's/"//g' )
+        CONFLICTS=$( forkss | grep :$port[^0-9] | grep -v '"'${FORKNAME}_ | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
       fi
       if [[ $CONFLICTS != '' ]]; then
          if [[ $SCANNEDMSG == 0 ]]; then
