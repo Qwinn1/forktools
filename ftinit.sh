@@ -1,6 +1,6 @@
 # To be included in all forktools.  Calls all configuration includes and defines forktools functions.
 
-HELPREQUEST=$( printf '%s' $* | grep '-help' ) 
+HELPREQUEST=$( printf '%s' $* | grep '\-help' ) 
 if [[ $HELPREQUEST != '' ]]; then
   print_usage
   exit
