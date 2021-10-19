@@ -1,6 +1,6 @@
 # Qwinn's forktools
 
-Sixteen 100% local, 100% bash scripts to make fork maintenance and monitoring infinitely easier.  Very useful even if you're only farming Chia.  Includes a 100% local blockchain explorer that can provide full history of any wallet address, deeply detailed monitoring stats, automated service starting and stopping, automated config.yaml editing (including mass adding and/or deleting of plot directory lists), fully scripted updating of any fork to the latest released version, all forktool output can now be logged to files, and most commands can now be run for a single fork or all of them at once.  Requires extremely little configuration (really only have to supply your plot directories for 'forkaddplotdirs' to work, and which services for which forks 'forkstart all' should start), but there are lots of optional configuration options available to fine tune other forktools to your taste.
+Eighteen 100% local, 100% bash scripts to make fork maintenance and monitoring infinitely easier.  Very useful even if you're only farming Chia.  Includes a 100% local blockchain explorer that can provide full history of any wallet address, deeply detailed monitoring stats, service starting and stopping, code patching, automated config.yaml editing (including mass adding and/or deleting of plot directory lists), fully scripted updating of any fork to the latest released version, all forktool output can now be logged to files, and most commands can now be run for a single fork or all of them at once.  Requires extremely little configuration (really only have to supply your plot directories for 'forkaddplotdirs' to work, and which services for which forks 'forkstart all' should start), but there are lots of optional configuration options available to fine tune other forktools to your taste.
 
 Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations under Windows.
 
@@ -15,19 +15,23 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 - `forkaddplotdirs`     \- Uses a list you provide to add multiple plot directories to a fork, or all forks with a -blockchain directory
 - `forkremoveplotdirs`  \- Uses a list you provide to remove multiple plot directories from a fork, or all forks with a -blockchain directory
 - `forkupdate`          \- Updates your fork to a new version. Only parameters it needs are the forkname and optionally the branch/version you want.
+- `forkpatch`           \- Applies useful code patches to every fork.  For now, only adds grayfallstown's multiprocessing_limit patch
 - `forklog`             \- Powerful and versatile debug.log parser
 - `forkfixconfig`       \- Allows you to quickly set your preferred settings in one or all fork's config.yamls.
 - `forkedit`            \- Simply opens up a fork's config.yaml in your preferred text editor (gedit by default)
-- `forkports`           \- Checks to make sure the ports used by each fork are only being used by that fork
+- `forkcheck`           \- Displays all configured ports for all forks in a chart, and reports discrepancies with the fork's initial-config.yaml
+- `forkports`           \- Checks to make sure the ports used by each fork are actually only being used by that fork
 - `forktargets`         \- Displays a list of the target receive addresses for every fork running a farmer
 - `forknodes`           \- Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
 - `forkbenchips`        \- Benchmarks your server's capacity for running a timelord
 
 
-# Changelog, Version 3.2:
+# Changelog, Version 4.0.2:
 
-- Extensive improvements to `forkports`.  Now runs for every forkname-blockchain directory it can find, rather than only for running harvester processes.  Now ignores conflicts with timelord port and timelord launcher port (because the vast majority of people don't run them) and introducer port and remote peer port usage (because neither conflicts with local ports).  Forks with very long names (looking at you, LLC) will no longer show as conflicting with itself.  
 - New tool `forkremoveplotdirs`.  Identical to forkaddplotdirs except that it removes plot directories instead of adding them.  Has its own config file that needs to be edited in order to use.
+- New tool `forkcheck`.  Whereas forkports checks actual port usage, forkcheck lists all of your configured forks in a nicely formatted chart (very similar in layout to the Chia Forks Trader "Unofficial List of Chia Forks" ports tab) and, as a bonus, compares the ports in the operating config.yaml to the fork's initial-config.yaml, to track any intentional changes made to resolve conflicts, and also perhaps to catch unintended discrepancies due to updating the fork's code without recreating your config.
+- New tool `forkpatch`.  Applies popular code patches to all forks, with plenty of validation to ensure the patch can be applied safely.  For now, only supports grayfallstown's excellent multiprocessing_limit patch to reduce CPU and memory usage.  So far, works on every known fork.  But there will be more global code patches to come!
+- Extensive improvements to `forkports`.  Now runs for every forkname-blockchain directory it can find, rather than only for running harvester processes.  Now ignores conflicts with timelord port and timelord launcher port (because the vast majority of people don't run them) and introducer port and remote peer port usage (because neither conflicts with local ports).  Forks with very long names (looking at you, LLC) will no longer show as conflicting with itself.  
 - `forkaddplotdirs` and `forkfixconfig` (and the new `forkremoveplotdirs`) now support fork-specific config files.  For example, if you have a different set of plot directories for chives, simply create `ftconfigs/config.forkaddplotdirs.chives`, and set the fork-specific plot directories in it.  These fork-specific configs will be respected even when running with 'all' parameter and when run from within `forkupdate`.
 - Many irrelevant bash error messages, particularly in forkmon and forkexplore, that were generated during normal, expected operation will no longer be logged or visible to users.
 - If a newly installed fork is still below height 500, accurate ETW calculations aren't possible. forkmon will now show "Ht<500" under ETW and "N/A" under Effort in this circumstance.
