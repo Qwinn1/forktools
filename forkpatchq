@@ -65,7 +65,9 @@ if [[ $2 == '-multiproc' ]]; then
       echo "forkpatch:  Analyzing suitability of $FORKNAME for automated -multiproc patching."
       
       PROGRAMTOMOD=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/blockchain.py
-      #PROGRAMTOMOD=$FORKTOOLSDIR/blockchain.test
+      
+      . $FORKTOOLSDIR/ftparseports.sh
+      . $FORKTOOLSDIR/ftcheckprocs.sh
 
       if [[ -f $PROGRAMTOMOD ]]; then
          FORKNAMEINCODE=$FORKNAME
@@ -100,27 +102,33 @@ if [[ $2 == '-multiproc' ]]; then
          fi
 
          FORKNAMEINPROCESSES=$( ps -ef | grep -v grep | grep -c ${FORKNAME}_farmer )
-         WALLETRUNNING=$( ps -ef | grep -v grep | grep -c ${FORKNAME}_wallet )
          echo "forkpatch:  $FORKNAME deemed suitable for automated -multiproc patching. Attempting to mod $FORKNAME/consensus/blockchain.py."
          echo "            blockchain.py will be backed up to $FORKNAME/consensus/blockchain.py.ftbackup"
       
          sed -i.ftbackup "/^from ${FORKNAMEINCODE}.util.streamable import recurse_jsonify/a # Next two lines added by forkpatch -multiproc\nfrom ${FORKNAMEINCODE}.util.default_root import DEFAULT_ROOT_PATH\nfrom ${FORKNAMEINCODE}.util.config import load_config" $PROGRAMTOMOD
          sed -i.ftbak "/^        num_workers = max(cpu_count - 2, 1)/a\        # Next three lines added by forkpatch -multiproc\n        config = load_config(DEFAULT_ROOT_PATH, \"config.yaml\")\n        if 'multiprocessing_limit' in config.keys():\n            num_workers = min(num_workers, int(config[\"multiprocessing_limit\"]));" $PROGRAMTOMOD
          rm ${PROGRAMTOMOD}.ftbak
-         if [[ $WALLETRUNNING == 0 && $FORKNAMEINPROCESSES > 0 ]]; then      
-            echo "forkpatch:  $FORKNAME patched.  Restarting farmer-no-wallet process."
-            $FORKTOOLSDIR/forkstart $FORKNAME -fnw
-            if [[ $1 = 'all' ]]; then            
-               echo "forkpatch:  Sleeping for 30 seconds to allow $FORKNAME restart a moment to process before proceeding."            
-               sleep 30
-            fi
-         else
-            echo "forkpatch:  $FORKNAME patched.  Restarting farmer process (including wallet)."
-            $FORKTOOLSDIR/forkstart $FORKNAME -f
-            if [[ $1 = 'all' ]]; then
-               echo "forkpatch:  Sleeping for 30 seconds to allow $FORKNAME restart a moment to process before proceeding."            
-               sleep 30
-            fi
+
+         echo "forkpatch:  Attempting to restart fork with same services."
+         if [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 1 && $FULLNODERUNNING == 1 ]]; then
+            FORKSTARTPARAM='-f'
+         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 1 ]]; then
+            FORKSTARTPARAM='-fnw'
+         elif [[ $FARMERRUNNING == 0 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
+            FORKSTARTPARAM='-h'
+         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 0 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
+            FORKSTARTPARAM='-fo'         
+         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
+            FORKSTARTPARAM='-fh'
+         else 
+            echo "forkpatch:  You should now run forkstart -f, -fnw or -h to resume whichever service you prefer for this fork."
+            exit
+         fi
+            
+         $FORKTOOLSDIR/forkstart $FORKNAME $FORKSTARTPARAM
+         if [[ $1 = 'all' ]]; then            
+            echo "forkpatch:  Sleeping for 30 seconds to allow $FORKNAME restart a moment to process before proceeding."            
+            sleep 30
          fi
       else
          echo "forkpatch: $FORKNAME code $PROGRAMTOMOD not found.  Skipping $FORKNAME."
