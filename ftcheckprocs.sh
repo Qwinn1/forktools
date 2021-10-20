@@ -15,10 +15,10 @@
       PROCESSNAME=$( echo "${FORKNAME}_${process}" )
       CHECKRUNNING=$( echo $PROCESSEF | c1grep -c -e $PROCESSNAME )
       if [[ $CHECKRUNNING > 0 && $FORKNAME != 'chia' ]]; then
-         PROPERPROCESSNAMES=1
+         PROPERPROCESSNAMES=1  # It found a process - probabaly daemon - named correctly and running
       fi
       if [[ $CHECKRUNNING == 0 || $FORKNAME == 'chia' ]]; then
-         if [[ $PROPERPROCESSNAMES == 1 && $CHECKRUNNING == 0 ]]; then
+         if [[ $PROPERPROCESSNAMES == 1 && $CHECKRUNNING == 0 ]]; then # So any we don't find really aren't running
             PROCESSRUNNING=0
          else
             if [[ $PORTPARSINGDONE != 1 ]]; then
@@ -27,11 +27,14 @@
             case "$process" in
                "daemon"     ) PORTTOSEARCH=$DAEMONPORT;;
                "full_node"  ) PORTTOSEARCH=$FULLNODEPORT;;
-               "farmer"     ) PORTTOSEARCH=$FARMERPORT;;
-               "harvester"  ) PORTTOSEARCH=$HARVESTERPORT;;
-               "wallet"     ) PORTTOSEARCH=$WALLETPORT;;
+               "farmer"     ) PORTTOSEARCH=$FARMERRPCPORT;;
+               "harvester"  ) PORTTOSEARCH=$HARVESTERRPCPORT;;
+               "wallet"     ) PORTTOSEARCH=$WALLETRPCPORT;;
             esac
+            OLDIFS=$IFS
+            IFS=''
             FORKPORTINUSE=$(echo $CHIAPROCS | grep "\"chia_$process" | grep -c ":${PORTTOSEARCH} " )
+            IFS=$OLDIFS
             if [[ $FORKPORTINUSE == 0 ]]; then
                PROCESSRUNNING=0
             else
