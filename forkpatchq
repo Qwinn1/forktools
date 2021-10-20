@@ -43,7 +43,7 @@ if [[ $2 != '-multiproc' ]]; then
   exit
 fi
 
-. ftbuildfarmerlist.sh
+. ftbuildrunlists.sh
 if [[ $1 != 'all' ]]; then
    OLDIFS=$IFS
    IFS=''

@@ -16,7 +16,7 @@ function print_usage () {
 }
 
 . ftinit.sh
-. ftbuildfarmerlist.sh
+. ftbuildrunlists.sh
 
 OLDIFS=$IFS
 for fork in $FARMERLIST; do
