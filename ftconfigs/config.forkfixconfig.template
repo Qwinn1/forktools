@@ -1,5 +1,7 @@
 #### FORKFIXCONFIG SETTINGS
 # Set desired values to set in your config.yaml files.  Set to '' to not modify the existing value in the config.yaml.
+# Fork level overrides are supported.  If you want any of these settings to be overridden for a specific fork, create config.forkfixconfig.forkname and
+#   set only the values you want to override.  
 
 SETLOGLEVEL='INFO'            # Default chia value: 'WARNING'. Strongly recommend setting to 'INFO' for all forks. Some forktools will not work well without this.
 SETMAXLOGROTATION='99'        # Default chia value: 7. The number of logs to retain. I strongly recommend setting to 99 or even higher, to preserve full history.
@@ -8,6 +10,22 @@ SETFNTARGETPEERCOUNT='80'     # Default chia value: 80. I don't have a recommend
 SETBATCHSIZE='1500'           # Default chia value: Initially 30, now 300. I don't have problems loading all my plots in one batch.  If you do, please report it.
 SETBATCHSLEEP='1'             # Default chia value: Initially 10, now 1. 
 SETMULTIPROC='4'              # IMPORTANT:  "multiprocessing_limit: X" was designed by grayfallstown and has been implemented in several forks. Meant to reduce the number of full_node processes (which is monitored by forkmon) and thus reduce RAM usage. My understanding is the unmodified value is roughly the number of your CPU cores, which is great for initial syncing, but severe overkill once synced.  Therefore, even if you leave this variable set to 4, it will not be added to your config until a full node RPC call confirms full sync.  Otherwise you'd have to edit this setting every time you wanted to forkfixconfig a new fork.
+
+
+SETHARVESTERPORT=''           # NEVER CHANGE THIS IN GLOBAL CONFIG!!!!!  Only listed here so you know what variables to set in fork specific override configs
+SETHARVESTERRPCPORT=''        # NEVER CHANGE THIS IN GLOBAL CONFIG!!!!!  Only listed here so you know what variables to set in fork specific override configs
+SETFARMERPORT=''              # NEVER CHANGE THIS IN GLOBAL CONFIG!!!!!  Only listed here so you know what variables to set in fork specific override configs
+SETFARMERRPCPORT=''           # NEVER CHANGE THIS IN GLOBAL CONFIG!!!!!  Only listed here so you know what variables to set in fork specific override configs
+SETWALLETPORT=''              # NEVER CHANGE THIS IN GLOBAL CONFIG!!!!!  Only listed here so you know what variables to set in fork specific override configs
+SETWALLETRPCPORT=''           # NEVER CHANGE THIS IN GLOBAL CONFIG!!!!!  Only listed here so you know what variables to set in fork specific override configs
+# Note - changing timelord launcher port will also change vdf_server port in timelord section, as these should always be the same
+SETTIMELORDLAUNCHERPORT=''    # NEVER CHANGE THIS IN GLOBAL CONFIG!!!!!  Only listed here so you know what variables to set in fork specific override configs
+SETTIMELORDPORT=''            # NEVER CHANGE THIS IN GLOBAL CONFIG!!!!!  Only listed here so you know what variables to set in fork specific override configs
+# Note - overriding full node non-rpc port should never ever ever be done, manually or otherwise.  Ever.  Not an option.
+SETFULLNODERPCPORT=''         # NEVER CHANGE THIS IN GLOBAL CONFIG!!!!!  Only listed here so you know what variables to set in fork specific override configs
+SETDAEMONPORT=''              # NEVER CHANGE THIS IN GLOBAL CONFIG!!!!!  Only listed here so you know what variables to set in fork specific override configs
+SETUIPORT=''                  # NEVER CHANGE THIS IN GLOBAL CONFIG!!!!!  Only listed here so you know what variables to set in fork specific override configs
+
 
 # The first of the following 3 settings was designed to simply append "multi_processing limit: ", but now that we have SETMULTIPROC, these are all currently useless. That's no reason to strip the functionality.  Was tough to get it right.  And hopefully there will be new settings to come.
 APPEND1=''  # For future use
