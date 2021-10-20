@@ -41,6 +41,10 @@ if [[ $1 != '' && $1 != '-n' && $1 != '--nowallet' && $1 != '-f' && $1 != '--far
 fi
 . ftinit.sh
 
+. $FORKTOOLSDIR/ftbuildrunlists.sh
+ORIGIFS=$IFS
+OLDIFS=$IFS
+
 FIRSTLOOP=1
 while [[ $# -gt 0 ]]; do
    if [[ $FIRSTLOOP = 1 && $VALIDATEFORKNAME = 'Yes' ]]; then
@@ -60,11 +64,6 @@ while [[ $# -gt 0 ]]; do
                                exit 1;;
    esac
 done
-
-
-. $FORKTOOLSDIR/ftbuildrunlists.sh
-ORIGIFS=$IFS
-OLDIFS=$IFS
 
 if [[ $HARVESTERONLY != 1 ]]; then
   printf '\n'
