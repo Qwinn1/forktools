@@ -64,4 +64,4 @@ for fork in $FARMERLIST; do
 done
 echo
 IFS=$OLDIFS
-date
+
