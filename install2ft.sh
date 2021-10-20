@@ -86,7 +86,25 @@ if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkfixconfig" ) ]]; then
   echo "No existing config.forkfixconfig file found.  Copied from config.forkfixconfig.template."
   echo "  forkfixconfig will function correctly with forktools defaults, but user may change defaults as desired in config.forkfixconfig ."
   cp $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.template $FORKTOOLSDIR/ftconfigs/config.forkfixconfig
-fi 
+else
+  echo "Updating config.forkfixconfig with any new settings."
+  cp $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.template $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.working 
+  OLDIFS=$IFS
+  IFS=''
+  while read line; do
+     HASEQUAL=$( echo $line | grep -c '=' )
+     if [[ $HASEQUAL == 0 ]]; then
+       continue
+     fi
+     CURVAR=$( echo $line | sed 's/=.*/=/' )
+     CURVALUE=$( echo $line | sed 's/.*=//' )
+     TEMPLATEVALUE=$(grep "^$CURVAR" "$FORKTOOLSDIR/ftconfigs/config.forkfixconfig.working" | sed 's/.*=//' )
+     sed -i.bak "s/${CURVAR}${TEMPLATEVALUE}/${CURVAR}${CURVALUE}/" $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.working
+  done < "$FORKTOOLSDIR/ftconfigs/config.forkfixconfig"
+  mv $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.working $FORKTOOLSDIR/ftconfigs/config.forkfixconfig
+  rm $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.working.bak  
+  IFS=$OLDIFS
+fi
 if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkedit" ) ]]; then
   echo "No existing config.forkedit file found.  Copied from config.forkedit.template."
   echo "  forkedit will use gedit as the text editor by default, but this can be changed to your preferred editor in config.forkedit."
