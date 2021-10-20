@@ -1,80 +1,26 @@
 
 # All RPC calls and most data assembly for forkmon and forkexplorer occurs in this include.
 
-if [[ $FORKNAME != 'chia' && $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' ]]; then
-  FARMERPROCESS='\s'$FORKNAME'_farmer'
-  FARMERRUNNING=$(ps -ef | grep -e $FARMERPROCESS | grep -v grep)
-  if [ -z "$FARMERRUNNING" ]; then
-     echo "Farmer for $FORKNAME is not running, skipping."
-     continue
-  fi
-else
-  FARMERRUNNING=1  # if it isn't, we'll be skipping the fork completely
-  case "$FORKNAME" in
-    "chia"            ) PORTTOSEARCH=":8559 ";;
-    "xcha"            ) PORTTOSEARCH=":5159 ";;
-    "nchain"          ) PORTTOSEARCH=":38559 ";;
-    "fishery"         ) PORTTOSEARCH=":4799 ";;
-    "rose"            ) PORTTOSEARCH=":8459 ";;
-  esac
-  CHIAPORTINUSE=$(forkss | grep '"chia_farm' | grep -c $PORTTOSEARCH )
-  if [[ $CHIAPORTINUSE == 0 ]]; then
-     echo "Farmer for $FORKNAME is not running, skipping."
-     continue
-  fi
-fi
-
-if [[ $FORKNAME != 'chia' && $FORKNAME != 'xcha' && $FORKNAME != 'fishery' && $FORKNAME != 'rose' && $FORKNAME != 'nchain' ]]; then
-  FULLNODEPROCESS='\s'$FORKNAME'_full_n'
-  FULLNODERUNNING=$(ps -ef | grep -e $FULLNODEPROCESS | grep -v grep)
-  if [ -z "$FULLNODERUNNING" ]; then
-     echo "Full Node for $FORKNAME is not running, skipping."
-     continue
-  fi
-else
-  case "$FORKNAME" in
-    "chia"            ) PORTTOSEARCH=":8555 ";;
-    "xcha"            ) PORTTOSEARCH=":5155 ";;
-    "nchain"          ) PORTTOSEARCH=":38555 ";;
-    "fishery"         ) PORTTOSEARCH=":4795 ";;
-    "rose"            ) PORTTOSEARCH=":8025 ";;
-  esac
-  CHIAPORTINUSE=$(forkss | grep '"chia_full' | grep -c $PORTTOSEARCH )
-  if [[ $CHIAPORTINUSE == 0 ]]; then
-     echo "Full node for $FORKNAME is not running, skipping."
-     continue
-  fi
-fi
-
-
+# Parse config for all ports
 CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
 
-# CD and activate venv
+. $FORKTOOLSDIR/ftparseports.sh
+. $FORKTOOLSDIR/ftcheckprocs.sh
+
+if [[ $FARMERRUNNING != 1 ]]; then
+  echo "Farmer for $FORKNAME is not running, skipping."
+  continue
+fi
+
+if [[ $FULLNODERUNNING != 1 ]]; then
+  echo "Full Node for $FORKNAME is not running, skipping."
+  continue
+fi
+
 cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain
 . ./activate
 
-# Get full_node, harvester and farmer rpc ports.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
 OLDIFS=$IFS
-IFS=''
-MEMORYCONFIG=$(cat $CURRENTCONFIG | c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' -e 'rpc_port: ') 
-while read line; do
-   WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
-   TESTSECTION=$(c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
-  if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]]; then 
-    SECTION=$TESTSECTION 
-  fi
-  if [[ $SECTION == *full_node:* && $WORKLINE == *rpc_port:* ]]; then 
-    FULLNODERPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-  fi
-  if [[ $SECTION == *farmer:* && $WORKLINE == *rpc_port:* ]]; then 
-    FARMERRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-  fi
-  if [[ $SECTION == *harvester:* && $WORKLINE == *rpc_port:* ]]; then 
-    HARVESTRPCPORT=$(sed 's/rpc_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
-  fi  
-done < <(printf '%s\n' "$MEMORYCONFIG")
-IFS=$OLDIFS
-
 PEERCOUNT=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_connections | python -m json.tool)
 IFS=''
 PEERCOUNT=$(echo $PEERCOUNT | grep -c '"type": 1' )
@@ -88,9 +34,6 @@ COINNAME=$(echo $COINNAME | sed 's/.*"network_prefix": "//' | sed 's/",.*//' | t
 # Get major-minor multiplier
 # Hard coding to account for crappy lack of proper fork renaming. 
 MMMULTIPLIERNAME=$FORKNAME
-#if [[ $FORKNAME == 'silicoin' || $FORKNAME == 'nchain' || $FORKNAME == 'fishery' || $FORKNAME == 'xcha' || $FORKNAME == 'lucky' || $FORKNAME == 'rose' || $FORKNAME == 'flora' ]]; then
-#  MMMULTIPLIERNAME='chia'
-# fi
 MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME =" | sed 's/.*=//' | sed 's/_//g' | awk '{$1=$1};1')
 if [[ $MMMULTIPLIER == '' ]]; then
    MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_chia =" | sed 's/.*=//' | sed 's/_//g' | awk '{$1=$1};1')
@@ -164,7 +107,7 @@ BLOCKCHAINSTATE=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/main
 FARMSYNCMODE=$(grep '"sync_mode":'  <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
 FARMSYNCED=$(grep '"synced":'  <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
 FARMSTATUS='RPC Failed'
-if [ -z "$FARMERRUNNING" ]; then
+if [[ $FARMERRUNNING != 1 ]]; then
     FARMSTATUS='Not Running'
   elif [[ $FARMSYNCMODE != 'false' ]]; then
     FARMSTATUS='Syncing'
@@ -226,13 +169,13 @@ NETSPACE=$( assemble_bytestring "$RPCSPACEBYTES" )
 IFS=''
 
 if [[ $FORKNAME = "avocado" ]]; then
-   HARVESTERLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_plots | python -m json.tool )
+   PLOTLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_plots | python -m json.tool )
 else
-   HARVESTERLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_harvesters | python -m json.tool 2>/dev/null)
+   PLOTLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_harvesters | python -m json.tool 2>/dev/null)
 fi
 
 IFS=$'\n'
-if [[ $HARVESTERLIST == '' ]]; then
+if [[ $PLOTLIST == '' ]]; then
   BADFORKSUM=$(fork $FORKNAME sum);
   SIZEOFPLOTS=$(grep "Total size of plots:"  <<< "$BADFORKSUM" | sed 's/Total size of plots://' | awk '{$1=$1};1' )
   CANSEEHARVESTERS=$(grep -c "Plot count for all harvesters:" <<< "$BADFORKSUM" )
@@ -258,7 +201,7 @@ if [[ $HARVESTERLIST == '' ]]; then
   PLOTSPACEBYTES=$(echo "($PLOTSPACEBYTES * 1073741824)" | bc) # Number of bytes in a GiB.  1024 cubed.
   PLOTSPACEUNIT="bytes"  
 else
-  PLOTSIZELIST=$(grep "file_size" <<< "$HARVESTERLIST" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' ) 
+  PLOTSIZELIST=$(grep "file_size" <<< "$PLOTLIST" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' ) 
   PLOTCOUNT=$(echo "$PLOTSIZELIST" | wc -l )
   PLOTSPACEBYTES=$(awk 'END { print s } { s += $1 }' OFMT='%.20g' <<< "$PLOTSIZELIST" )
 fi

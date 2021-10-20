@@ -31,7 +31,8 @@ function print_usage () {
    echo "                        Required.  Only choose one. Must be first parameter."
    echo "                          'forkname' runs for that single fork."
    echo "                          'farmers' runs only for forks with an active farmer process."
-   echo "                          'harvesters' runs only for forks with an active harvester process."
+   echo "                          'harvesters' runs only for forks with an active harvester process"
+   echo "                               but not an active farmer process.  Only pure harvesters."
    echo "                          'all' runs for every fork with a -blockchain directory and a config."
    echo "    Farmer IP           OPTIONAL second parameter.  Use only for pure harvester configs."
    echo "                           Sets 'host:' under 'farmer_peer' in the harvester section of"
@@ -55,35 +56,36 @@ fi
 
 . ftinit.sh
 
-
 if [[ $1 == 'all' ]]; then
   cd $FORKTOOLSBLOCKCHAINDIRS
   FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
-elif [[ $1 == 'farmers' ]]; then
-  . ftbuildfarmerlist.sh  
-  FORKLIST=$FARMERLIST
-elif [[ $1 == 'harvesters' ]]; then
-  . ftbuildharvesterlist.sh  
-  . ftbuildfarmerlist.sh  
-  FORKLIST=$HARVESTERLIST
-  for fork in $FARMERLIST; do
-     OLDIFS=$IFS
-     IFS=''
-     FORKLIST=$(echo $FORKLIST | sed "/^$fork$/d" )
-     IFS=$OLDIFS          
-  done
-else
-  FORKLIST=$1
+else 
+  . $FORKTOOLSDIR/ftbuildrunlists.sh
+  if [[ $1 == 'farmers' ]]; then
+     FORKLIST=$FARMERLIST
+  elif [[ $1 == 'harvesters' ]]; then
+     FORKLIST=$HARVESTERLIST
+     for fork in $FARMERLIST; do
+        OLDIFS=$IFS
+        IFS=''
+        FORKLIST=$(echo $FORKLIST | sed "/^$fork$/d" )
+        IFS=$OLDIFS          
+     done
+  else
+     FORKLIST=$1
+  fi
 fi
 
 SETFARMERPEER=$2
+
+
      
 for FORKNAME in $FORKLIST; do
    CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
    if [[ ! -f $CURRENTCONFIG ]]; then
-      # echo "Configuration file for $FORKNAME not found.  Skipping..."
       continue
    fi
+   echo
    echo "forkfixconfig $FORKNAME:  Analyzing $CURRENTCONFIG."
    . ftfixconfig.sh
 done   

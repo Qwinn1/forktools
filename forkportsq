@@ -18,51 +18,35 @@ function print_usage () {
 }
 
 . ftinit.sh
-# . ftbuildharvesterlist.sh
+
 cd $FORKTOOLSBLOCKCHAINDIRS
 FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
+PROCESSEF=$(ps -ef | grep -e 'full_node' -e 'farmer' -e 'harvester' -e 'wallet' -e '_daemon' | grep -v grep | awk '{ print $8 } ' | sort | uniq )
+CHIAPROCS=$(forkss | grep "\"chia" )
+FORKSS=$(forkss)
+
 for fork in $FORKLIST; do
-  FORKNAME=$(echo $fork)
-  SCANNEDMSG=0
-  if [[ $FORKNAME == 'xcha' || $FORKNAME == 'rose' || $FORKNAME == 'fishery' || $FORKNAME == 'nchain' ]]; then
-     FORKNAME='chia'
-  fi
   CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml
   if [[ ! -f $CURRENTCONFIG ]]; then
      continue
   fi
-  OLDIFS=$IFS
-  IFS=''
-  MEMORYCONFIG=$(cat $CURRENTCONFIG | c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' -e 'port: ' -e '_peer:') 
-  PORTLIST=''
-  while read line; do
-     WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
-     TESTSECTION=$(c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
-    if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]]; then 
-      SECTION=$TESTSECTION 
-    fi
-    if [[ $LASTLINE == *_peer:* ]]; then
-       LASTLINE=$WORKLINE
-       continue
-    fi
-    if [[ $SECTION == *timelord* || $SECTION == *introducer* ]]; then
-       LASTLINE=$WORKLINE
-       continue
-    fi
-    LASTLINE=$WORKLINE   
-    PORTLISTADD=$(echo $WORKLINE | grep "port: " | grep -v "default_full_node_port" | grep -v "log_syslog_port" | sed 's/[ ]*[a-z_]*port: //g' | sed 's/[ ]*[#].*//g' | awk '{$1=$1};1' );
-    PORTLIST+=$( printf '\n%s' $PORTLISTADD )
-  done < <(printf '%s\n' "$MEMORYCONFIG")
-  PORTLIST=$( echo $PORTLIST | sort | uniq )
-  IFS=$OLDIFS
-  
+  SCANNEDMSG=0
+  . $FORKTOOLSDIR/ftparseports.sh
+  PORTLIST=$( echo $FULLNODEPORT $FULLNODERPCPORT $FARMERPORT $FARMERRPCPORT $HARVESTERPORT $HARVESTERRPCPORT $WALLETPORT $WALLETRPCPORT $DAEMONPORT )
+  . $FORKTOOLSDIR/ftcheckprocs.sh    
+  PROCESSNAME=$(echo $fork)  
+  if [[ $USINGCHIAPROCESSNAMES == 1 ]]; then
+     PROCESSNAME='chia'
+  fi
+
   for port in $PORTLIST; do
+    # echo $fork $port
      forkssoutput
   done
   if [[ $SCANNEDMSG == 0 ]]; then
     printf "Scanned %-15.15s - no conflicts found.\n" $fork
   fi
 done
-echo
+
 
