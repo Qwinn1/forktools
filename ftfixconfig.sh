@@ -79,6 +79,14 @@ while read line; do
      HARVHOSTLINENO=$LINENUMBER
      continue     
   fi
+  if [[ $SETPARALLELREAD != '' && $SECTION == *harvester:* && $WORKLINE == *parallel_read:* ]];
+  then
+     OLDPARALLELREAD=$(sed 's/parallel_read: //' <<< "$WORKLINE" | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
+     NEWPARALLELREAD=$(sed "s/$OLDPARALLELREAD/$SETPARALLELREAD/" <<< "$WORKLINE")$PRESERVECOMMENT
+     OLDPARALLELREAD=$line
+     continue     
+  fi
+  
 done < $CURRENTCONFIG
 
 
@@ -148,11 +156,19 @@ if [[ $SETFARMERPEER != '' && $OLDFARMPEER != $NEWFARMPEER ]]; then
   echo "  New Harvester Farmer_Peer IP: " $NEWFARMPEER
   ANYCHANGES='Yes'
 fi
+if [[ $SETPARALLELREAD != '' && $OLDPARALLELREAD != $NEWPARALLELREAD ]]; then  
+  echo "  Old Harvester Parallel Read: " $OLDFARMPEER
+  echo "  New Harvester Parallel Read: " $NEWFARMPEER
+  ANYCHANGES='Yes'
+fi
 if [[ $SETMULTIPROC != '' && $SKIPMULTIPROC == 'No' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then
   echo "  Old Multiprocessing Limit: " $OLDMULTIPROC
   echo "  New Multiprocessing Limit: " $NEWMULTIPROC
   ANYCHANGES='Yes'
 fi
+
+# Port section - should only come from fork specific configs (config.forkfixconfig.forkname)
+
 if [[ $SETHARVESTERPORT != '' && $SETHARVESTERPORT != $HARVESTERPORT ]]; then
   echo "  Old Harvester Port: " $HARVESTERPORT
   echo "  New Harvester Port: " $SETHARVESTERPORT
@@ -203,6 +219,8 @@ if [[ $SETUIPORT != '' && $SETUIPORT != $UIPORT ]]; then
   echo "  New UI Port      : " $SETUIPORT
   ANYCHANGES='Yes'
 fi
+
+# END Port Section
 
 if [[ $APPEND1 != '' ]]; then
   APPEND1EXISTS=$(grep "$APPEND1" "$CURRENTCONFIG" | wc -l | awk '{$1=$1};1')
@@ -271,6 +289,10 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
       # Some versions of config have " *self_hostname " as the original value.  sed sees * as wildcard and fails.  This fixes it.
       OLDFARMPEER=$(echo "$OLDFARMPEER" | sed 's/\*/\\\*/' )
       sed -i.bak "${HARVHOSTLINENO}s/$OLDFARMPEER/$NEWFARMPEER/" $CURRENTCONFIG
+   fi
+   if [[ $SETPARALLELREAD != '' && $OLDPARALLELREAD != $NEWPARALLELREAD ]]; then  
+      echo "Setting harvester parallel read..."
+      sed -i.bak "s/$OLDPARALLELREAD/$NEWPARALLELREAD/" $CURRENTCONFIG
    fi
    if [[ $SETMULTIPROC != '' && $SKIPMULTIPROC == 'No' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then  
       echo "Adding/replacing multiprocessing limit..."
