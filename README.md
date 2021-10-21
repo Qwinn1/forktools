@@ -101,41 +101,37 @@ DateTime               Confirmed   Spent      Block?        Amount
 - forkmon ( Detailed overview of all running farmers and harvesters ) :
 
 ```
-'forkmon -n' initiated on Thu 21 Oct 2021 06:31:30 PM EDT...
+------------------------------------------------------------------- FARMERS: 15 -----------------------------------------------------------------
 
-
----------------------------------------------------------------------- FARMERS: 19 --------------------------------------------------------------------
-
-                                  Srvcs                                              FulNode   Memory   NoHarv       Address              Last
-Farmer            Version         DNFHW  Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort
---------------------------------------------------------------------------------------------------------------------------------------------------------
-apple             1.2.90          YYYYN  Farming      20     5415  447701   421 PiB      6    1202 MB       0          0 APPLE 4h11m    8h45m ago   208%
-avocado           1.1.7.dev124    YYYYN  Farming      13     5415  498496   384 PiB      6    1218 MB       0          0 AVO   3h45m     6h1m ago   160%
-beet              2.1.3b0         YYYYN  Farming      19     5415  290981    60 PiB      6    1001 MB       1          0 XBT   33m      1h17m ago   233%
-btcgreen          2.2.4           YYYYN  Farming      20     5415  347878   235 PiB      6    1070 MB       0          0 XBTC  2h20m    6h13m ago   265%
-cannabis          1.2.301         YYYYN  Farming      16     5415  449282   257 PiB      6    1169 MB       0          0 CANS  2h44m      34m ago    21%
-covid             1.2.9           YYYYN  Farming      19     5415  406132   280 PiB      6    1321 MB       0          0 COV   2h55m    5h29m ago   187%
-flax              0.1.3           YYYYN  Farming      20     5415  626453   2.4 EiB      6    1337 MB       0          0 XFX   1d2h     3h32m ago    13%
-flora             0.2.10          YYYYN  Farming      12     5415  527050   824 PiB      6    1323 MB       0          0 XFL   7h48m      49m ago    10%
-goji              0.2.3           YYYYN  Farming       8     5415  558912   424 PiB      6    1181 MB       0          0 XGJ   3h22m     5h3m ago   149%
-
+                                                                              FulNode   Memory   NoHarv       Address              Last
+Farmer            Version         Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort
+-------------------------------------------------------------------------------------------------------------------------------------------------
+apple             1.2.30          Farming      26     4970  343297   372 PiB     20    2307 MB       0          0 APPLE 3h44m       4m ago     2%
+avocado           1.1.7.dev124    Farming      10     4970  400048   384 PiB     20    2278 MB       0          0 AVO   4h2m        6m ago     2%
+beet              2.1.3b0         Farming      26     4970  191771    57 PiB     20    1668 MB       0          0 XBT   34m      1h49m ago   313%
+btcgreen          2.1.0           Farming      47     4969  244892   227 PiB     20    2318 MB       2          0 XBTC  2h37m    9h28m ago   361%
+cannabis          1.2.301         Farming      12     4970  353211   243 PiB     20    1991 MB       0          0 CANS  2h33m     6h1m ago   235%
+covid             1.2.3           Farming      22     4971  307010   245 PiB     20    2111 MB       0          0 COV   2h33m      37m ago    24%
+flax              0.1.2           Farming      42     4970  525263   2.5 EiB     20    2838 MB       0          0 XFX   1d7h      2d2h ago   159%
+flora             0.2.5           Farming      12     4970  425441   738 PiB     20    2657 MB       0          0 XFL   7h56m   14h11m ago   178%
 
 ...
 
------------------------------------------------------ HARVESTERS: 19 ---------------------------------------------------------
-                                                               Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs
-                                  Srvcs                Last   Response   Response   Response   Response   Warns  Warns   Since
-Harvester         Version         DNFHW   #Plots    Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day
-------------------------------------------------------------------------------------------------------------------------------
-apple             1.2.90          YYYYN     5415     2s ago      0.71s      0.73s     36.94s     85.37s      32     83      10      
-avocado           1.1.7.dev124    YYYYN     5415     3s ago      0.72s      0.73s     10.24s     10.38s      10     34      16      
-beet              2.1.3b0         YYYYN     5415     2s ago      0.72s      0.74s     10.39s     10.36s      11     25      59      
-btcgreen          2.2.4           YYYYN     5415     7s ago      0.70s      0.71s     10.41s     43.49s      18     68      21      
-cannabis          1.2.301         YYYYN     5415     8s ago      0.72s      0.73s     10.44s     10.83s      21     37      16      
-covid             1.2.9           YYYYN     5415     6s ago      0.70s      0.70s     10.36s     15.61s      26     44      10      
-flax              0.1.3           YYYYN     5415    11s ago      0.69s      0.70s     10.32s     18.02s      16     30       4      
-flora             0.2.10          YYYYN     5415     8s ago      0.71s      0.70s     10.35s     15.56s      18     36       4      
-goji              0.2.3           YYYYN     5415     1s ago      0.73s      0.73s     10.32s     10.38s      24     43      13  
+-------------------------------------------------- HARVESTERS: 32 ------------------------------------------------------
+                                                         Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs
+                                                 Last   Response   Response   Response   Response   Warns  Warns   Since
+Harvester         Version      # Plots        Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day
+------------------------------------------------------------------------------------------------------------------------
+apple             1.2.30          1636         0s ago      0.85s      0.71s     64.49s     58.33s     131    156       2      
+avocado           1.1.7.dev124    1636         1s ago      0.85s      0.70s     88.74s     67.60s     144    147       3      
+beet              2.1.3b0         1636         0s ago      0.84s      0.72s     92.75s     75.68s     137    166      19      
+btcgreen          2.1.0           1636         0s ago      0.84s      0.75s     58.53s    143.27s     154    161       3      
+cactus            1.2.2.dev7      1636         7s ago      0.83s      0.70s     66.14s     62.16s     131    147       8      
+cannabis          1.2.301         1636         3s ago      0.82s      0.71s     58.44s     66.78s     116    150       7      
+chia              1.2.7           1636         4s ago      0.83s      0.62s     88.28s     73.64s     129    132       0      
+covid             1.2.3           1636         2s ago      0.88s      0.72s     72.08s     53.36s     137    165       9      
+cryptodoge        1.2.6           1636         1s ago      0.87s      0.71s     67.90s     89.14s     143    169       3      
+dogechia          1.0.9           1636         2s ago      0.87s      0.69s     83.03s     94.74s     132    150       3   
 ```
 
 - forkfixconfig ( Automated editing of fork config.yamls to preferred settings as set up in config.forkfixconfig )
@@ -338,19 +334,10 @@ Thank you for your support.  And if you can't donate, but you are getting good u
 
 ```
 Chia:        xch1gsqc9t20fs22eltff3c9eghnw80sq609zsgcj8sz5378jupzd5xqqrv0sl
-BTCGreen:    xbtc15d4yfuyx4zx9yl7r3y8mmw4ey6q8p4khvh27jw692rav84x8002qng2s69
-Cactus:      cac1x73mqd9g4md2vgcjc0yemvz5j2xlzuk4d78kkdgse59f5mgxvj4qudr3yz
-Covid:       cov19h8apm8cnggn2mag8qr8enxmyutngxh5te3fj3fmmy98ywkaa49qzpymq3
-Dogechia:    xdg1tmk09uhu74na3pk0zsh9h30a8k3wy9u4a4gpexjskknfqqwlh42qe2spxt
 Flax:        xfx179de2g9d33rd2h8yanhx82h2yx7hvqt4c8j6kjylw2q2zdl2fvgqmze5pe
 Flora:       xfl1wwtptljkz288swswmazjc74ck6thfg6hy7hd0dr5suggvdjlzscs3x08qw
 GreenDoge:   gdog10jx7mdylp935k2vrhkfpt6qcq3ttwzedl0nl62vtvkkgd8mkj2pse7afdn
 HDDcoin:     hdd1w5hw0qsv0se7kysdl9un8325g0kyl668w0953ha5phxh47jtu3ss8fvkg2
-Olive:       xol1xff06jnuger5s6ewa47xqrmxm6z09rn8m2wg9qsdyf4cfd8uwrdsnhwkkt
-Scam:        scm1flju3xzwt2vpqjn5sttwwgxe7xcy825lagca0xc2ycum5eghvcaqayqk9d
-Silicoin:    tsit1s8akjytuygq5kfwk85ag6jqvc93k6vw5hz2vwx3ekjsjy55h2lkq93xphd
-Socks:       sock1lwvch9vss70k2s3x0mdqkxdrpr56z2dyc69cpw32apuhexr6rnxq8ullpj
-Taco:        xtx18d6spw69ghwhdc928ysex3el0ny83l0rzvj2es0m8ram5jaqckjqgcpzad
-Tad:         tad15ygc3yqnp5gvdq30svx4thtkdxz9qzfwmev2nvw4s36nkrzgce3scqj2l7
+Staicoin     stai1v0mad89kd3xax9qrqda9kw73muxfpemfuhkfxylcc8uhmretk9vq95c9lm
 ```
 
