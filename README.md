@@ -58,18 +58,6 @@ source ~/.bashrc
 
 For existing users:
 ```
-# back up your forktools/config.* files
-# cd to parent directory of your current forktools directory
-sudo rm -r forktools
-git clone https://github.com/Qwinn1/forktools
-# copy your configs to the forktools/ftconfigs folder
-cd forktools
-bash installft.sh
-```
-
-FOREVER AFTER, you can update forktools at any time by simply running the following:
-
-```
 cd forktools
 bash installft.sh   # or 'bash installfttest.sh' for testing branch
 ```
