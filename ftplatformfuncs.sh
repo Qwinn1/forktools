@@ -43,7 +43,8 @@ else
     function forkssoutput () {
       OLDIFS=$IFS
       IFS=''
-      if [[ $FORKNAME == 'littlelambocoin' ]]; then
+      FORKLENGTH=$( expr length $FORKNAME )
+      if [[ $FORKLENGTH == 15 ]]; then
         CONFLICTS=$( echo $FORKSS | grep :$port[^0-9] | grep -v '"'${PROCESSNAME} | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
       else
         CONFLICTS=$( echo $FORKSS | grep :$port[^0-9] | grep -v '"'${PROCESSNAME}_ | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
