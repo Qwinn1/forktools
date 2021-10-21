@@ -34,18 +34,11 @@ COINNAME=$(echo $COINNAME | sed 's/.*"network_prefix": "//' | sed 's/",.*//' | t
 # Get major-minor multiplier
 # Hard coding to account for crappy lack of proper fork renaming. 
 MMMULTIPLIERNAME=$FORKNAME
-MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME =" | sed 's/.*=//' | sed 's/_//g' | awk '{$1=$1};1')
+MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME =" | sed 's/.*=//' | sed 's/_//g' | sed 's/\*.*//' | awk '{$1=$1};1')
 if [[ $MMMULTIPLIER == '' ]]; then
-   MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_chia =" | sed 's/.*=//' | sed 's/_//g' | awk '{$1=$1};1')
+   MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_chia =" | sed 's/.*=//' | sed 's/_//g' | sed 's/\*.*//' | awk '{$1=$1};1')
 fi
 MMMULTIPLIER=$(echo "(( $MMMULTIPLIER ))" | bc )
-if [[ $FORKNAME == 'fishery' ]]; then
-  # this is what they set "_mojo_per_chia" to in their block_rewards.py
-  # 1000000000 * 0.001 * 3
-  # this is exactly the first thing they teach you to always do in scripting school.  Declare all constants as calculations.
-  # shouldn't have changed your name
-  MMMULTIPLIER=1000000000   # For some reason, actually doing the full calculation breaks things.
-fi
 
 # Get wallet target address (can be different from what is set in config.yaml, if config was directly edited after last time farmer was started)
 if [[ $HOTSWITCH == '' ]]; then

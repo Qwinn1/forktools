@@ -10,7 +10,7 @@
    CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
    USINGCHIAPROCESSNAMES=0
    SERVICESRUNNING=''
-   for process in daemon harvester farmer full_node wallet; do
+   for process in daemon full_node farmer harvester wallet; do
    
       PROCESSRUNNING=1 # Assume it's running, then set it to 0 if we can't find supporting evidence
       PROCESSNAME=$( echo "${FORKNAME}_${process}" )
