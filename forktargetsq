@@ -21,6 +21,9 @@ function print_usage () {
 OLDIFS=$IFS
 for fork in $FARMERLIST; do
    CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$fork/mainnet/config/config.yaml
+   if [[ ! -f $CURRENTCONFIG ]]; then
+      continue
+   fi   
    # CD and activate venv
    cd $FORKTOOLSBLOCKCHAINDIRS/$fork-blockchain
    . ./activate

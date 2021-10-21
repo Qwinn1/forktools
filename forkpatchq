@@ -61,11 +61,14 @@ if [[ $2 == '-multiproc' ]]; then
       if [[ $1 != 'all' && $1 != $FORKNAME ]]; then
          continue
       fi
+      CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml      
+      if [[ ! -f $CURRENTCONFIG ]]; then
+         continue
+      fi      
       echo
       echo "forkpatch:  Analyzing suitability of $FORKNAME for automated -multiproc patching."
-      
+
       PROGRAMTOMOD=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/blockchain.py
-      
       . $FORKTOOLSDIR/ftparseports.sh
       . $FORKTOOLSDIR/ftcheckprocs.sh
 

@@ -2,6 +2,7 @@
    OLDIFS=$IFS
    IFS=''
    # Get all ports.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
+   CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
    MEMORYCONFIG=$(cat $CURRENTCONFIG | c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' -e 'port: ' -e '_peer:' -e 'vdf_server:' ) 
    while read line; do
      WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
