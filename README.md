@@ -101,7 +101,7 @@ DateTime               Confirmed   Spent      Block?        Amount
 - forkmon ( Detailed overview of all running farmers and harvesters ) :
 
 ```
-'forkmon' initiated on Thu 21 Oct 2021 06:31:30 PM EDT...
+'forkmon -n' initiated on Thu 21 Oct 2021 06:31:30 PM EDT...
 
 
 ---------------------------------------------------------------------- FARMERS: 19 --------------------------------------------------------------------
@@ -109,15 +109,15 @@ DateTime               Confirmed   Spent      Block?        Amount
                                   Srvcs                                              FulNode   Memory   NoHarv       Address              Last
 Farmer            Version         DNFHW  Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-apple             1.2.90          YYYYN  Farming      20     5415  447701   421 PiB      6    1202 MB       0        870 APPLE 4h11m    8h45m ago   208%
-avocado           1.1.7.dev124    YYYYN  Farming      13     5415  498496   384 PiB      6    1218 MB       0        668 AVO   3h45m     6h1m ago   160%
-beet              2.1.3b0         YYYYN  Farming      19     5415  290981    60 PiB      6    1001 MB       1       3718 XBT   33m      1h17m ago   233%
-btcgreen          2.2.4           YYYYN  Farming      20     5415  347878   235 PiB      6    1070 MB       0        823 XBTC  2h20m    6h13m ago   265%
-cannabis          1.2.301         YYYYN  Farming      16     5415  449282   257 PiB      6    1169 MB       0       9472 CANS  2h44m      34m ago    21%
-covid             1.2.9           YYYYN  Farming      19     5415  406132   280 PiB      6    1321 MB       0       7080 COV   2h55m    5h29m ago   187%
-flax              0.1.3           YYYYN  Farming      20     5415  626453   2.4 EiB      6    1337 MB       0        206 XFX   1d2h     3h32m ago    13%
-flora             0.2.10          YYYYN  Farming      12     5415  527050   824 PiB      6    1323 MB       0        888 XFL   7h48m      49m ago    10%
-goji              0.2.3           YYYYN  Farming       8     5415  558912   424 PiB      6    1181 MB       0        528 XGJ   3h22m     5h3m ago   149%
+apple             1.2.90          YYYYN  Farming      20     5415  447701   421 PiB      6    1202 MB       0          0 APPLE 4h11m    8h45m ago   208%
+avocado           1.1.7.dev124    YYYYN  Farming      13     5415  498496   384 PiB      6    1218 MB       0          0 AVO   3h45m     6h1m ago   160%
+beet              2.1.3b0         YYYYN  Farming      19     5415  290981    60 PiB      6    1001 MB       1          0 XBT   33m      1h17m ago   233%
+btcgreen          2.2.4           YYYYN  Farming      20     5415  347878   235 PiB      6    1070 MB       0          0 XBTC  2h20m    6h13m ago   265%
+cannabis          1.2.301         YYYYN  Farming      16     5415  449282   257 PiB      6    1169 MB       0          0 CANS  2h44m      34m ago    21%
+covid             1.2.9           YYYYN  Farming      19     5415  406132   280 PiB      6    1321 MB       0          0 COV   2h55m    5h29m ago   187%
+flax              0.1.3           YYYYN  Farming      20     5415  626453   2.4 EiB      6    1337 MB       0          0 XFX   1d2h     3h32m ago    13%
+flora             0.2.10          YYYYN  Farming      12     5415  527050   824 PiB      6    1323 MB       0          0 XFL   7h48m      49m ago    10%
+goji              0.2.3           YYYYN  Farming       8     5415  558912   424 PiB      6    1181 MB       0          0 XGJ   3h22m     5h3m ago   149%
 
 
 ...
