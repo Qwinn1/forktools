@@ -41,9 +41,9 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 - `forkfixconfig` can now be used to edit `parallel_read` in the harvester section, which is mainly only useful to Mac OS X users using exfat-formatted drives.
 - `forkmon` now has a "Srvcs DNFHW" column in both sections. This identifies which services are running.  The DNFHW refers to Daemon Node Farmer Harvester Wallet, and it will show Y  under that service's letter if it's running, and N if it isn't.
 - Many irrelevant bash error messages, particularly in `forkmon` and `forkexplore`, that were generated during normal, expected operation will no longer be logged or visible to users.
-- If a newly installed fork is still below height 500, accurate ETW calculations aren't possible. forkmon will now show "Ht<500" under ETW and "N/A" under Effort in this circumstance.
-- If a newly installed fork has never had a successful harvest, forkmon will now show 'Never' under LastHarvest rather than the number of seconds since 1970.
-- Symlink creation for venidium removed now that it has moved to mainnet
+- If a newly installed fork is still below height 500, accurate ETW calculations aren't possible. `forkmon` will now show "Ht<500" under ETW and "N/A" under Effort in this circumstance.
+- If a newly installed fork has never had a successful harvest, `forkmon` will now show 'Never' under LastHarvest rather than the number of seconds since 1970.
+- Symlink creation for venidium removed now that it has moved to mainnet.
 
 # INSTALLATION INSTRUCTIONS:
 
