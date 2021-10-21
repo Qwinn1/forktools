@@ -38,7 +38,7 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 - The install scripts have been improved so that, when new parameters are added to a forktool's config template file, the new parameters will be automatically added to your own custom config files and all of your personal preferred settings will be preserved.
 - A bug that could very very rarely cause some forktools to just display the -help information and nothing else has been fixed.
 - All hardcoded references to specific forks in forktools code have been removed. The code that deals with forks that use "chia" process names and otherwise do things in a non-standard fashion is entirely dynamic now, and if a fork changes the way it handles those things from one version to another, forktools will support both versions.
-- `forkfixconfig can now be used to edit `parallel_read` in the harvester section, which is mainly only useful to Mac OS X users using exfat-formatted drives.
+- `forkfixconfig` can now be used to edit `parallel_read` in the harvester section, which is mainly only useful to Mac OS X users using exfat-formatted drives.
 - `forkmon` now has a "Srvcs DNFHW" column in both sections. This identifies which services are running.  The DNFHW refers to Daemon Node Farmer Harvester Wallet, and it will show Y  under that service's letter if it's running, and N if it isn't.
 - Many irrelevant bash error messages, particularly in forkmon and forkexplore, that were generated during normal, expected operation will no longer be logged or visible to users.
 - If a newly installed fork is still below height 500, accurate ETW calculations aren't possible. forkmon will now show "Ht<500" under ETW and "N/A" under Effort in this circumstance.
