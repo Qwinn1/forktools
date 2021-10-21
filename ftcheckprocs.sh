@@ -9,6 +9,7 @@
    PROPERPROCESSNAMES=0
    CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
    USINGCHIAPROCESSNAMES=0
+   SERVICESRUNNING=''
    for process in daemon harvester farmer full_node wallet; do
    
       PROCESSRUNNING=1 # Assume it's running, then set it to 0 if we can't find supporting evidence
@@ -42,12 +43,16 @@
             fi
          fi
       fi
+      SINGLESERVICE='N'
+      if [[ $PROCESSRUNNING = 1 ]]; then
+         SINGLESERVICE='Y'
+      fi
       case "$process" in
-         "daemon"     ) DAEMONRUNNING=$PROCESSRUNNING;;      
-         "full_node"  ) FULLNODERUNNING=$PROCESSRUNNING;;
-         "farmer"     ) FARMERRUNNING=$PROCESSRUNNING;;
-         "harvester"  ) HARVESTERRUNNING=$PROCESSRUNNING;;
-         "wallet"     ) WALLETRUNNING=$PROCESSRUNNING;;
+         "daemon"     ) DAEMONRUNNING=$PROCESSRUNNING; SERVICESRUNNING+=$SINGLESERVICE;;
+         "full_node"  ) FULLNODERUNNING=$PROCESSRUNNING; SERVICESRUNNING+=$SINGLESERVICE;;
+         "farmer"     ) FARMERRUNNING=$PROCESSRUNNING; SERVICESRUNNING+=$SINGLESERVICE;;
+         "harvester"  ) HARVESTERRUNNING=$PROCESSRUNNING; SERVICESRUNNING+=$SINGLESERVICE;;
+         "wallet"     ) WALLETRUNNING=$PROCESSRUNNING; SERVICESRUNNING+=$SINGLESERVICE;;
       esac                        
    done
    # echo $DAEMONRUNNING $FULLNODERUNNING $FARMERRUNNING $HARVESTERRUNNING $WALLETRUNNING

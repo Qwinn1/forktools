@@ -68,13 +68,13 @@ done
 if [[ $HARVESTERONLY != 1 ]]; then
   printf '\n'
   if [[ $VALIDATEFORKNAME == 'No' ]]; then
-    echo -e "------------------------------------------------------------------- FARMERS: $FARMERCOUNT -----------------------------------------------------------------"
+    echo -e "---------------------------------------------------------------------- FARMERS: $FARMERCOUNT --------------------------------------------------------------------"
     printf '\n'
   fi
   if [[ $FARMERCOUNT > 0 ]]; then
-     printf '                                                                              FulNode   Memory   NoHarv       Address              Last\n'
-     printf 'Farmer            Version         Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort\n'
-     echo -e "-------------------------------------------------------------------------------------------------------------------------------------------------"
+     printf '                                  Srvcs                                              FulNode   Memory   NoHarv       Address              Last\n'
+     printf 'Farmer            Version         DNFHW  Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort\n'
+     echo -e "--------------------------------------------------------------------------------------------------------------------------------------------------------"
   fi
   for fork in $FARMERLIST; do
      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
@@ -121,7 +121,7 @@ if [[ $HARVESTERONLY != 1 ]]; then
         ETWTEXT='Ht<500'
         PRINTEFFORT='N/A'        
      fi     
-     printf '%-17.17s %-15.15s %-10.10s%5.5s%9.9s %7d%10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%11.11s %5s\n' "$fork" "$FORKVERSION" "$FARMSTATUS" "$PEERCOUNT" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$PRINTEFFORT"
+     printf '%-17.17s %-15.15s %-5.5s  %-10.10s%5.5s%9.9s %7d%10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%11.11s %5s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$FARMSTATUS" "$PEERCOUNT" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$PRINTEFFORT"
   done
 fi
 
@@ -130,12 +130,12 @@ IFS=$ORIGIFS
 if [[ $FARMERONLY != 1 ]]; then
   printf '\n'
   if [[ $VALIDATEFORKNAME == 'No' ]]; then
-    echo -e "-------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ------------------------------------------------------"
+    echo -e "----------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ---------------------------------------------------------"
   fi
-  printf '                                                         Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
-  printf '                                                 Last   Response   Response   Response   Response   Warns  Warns   Since\n'
-  printf 'Harvester         Version      # Plots        Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
-  echo -e "------------------------------------------------------------------------------------------------------------------------"
+  printf  '                                                               Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
+  printf  '                                  Srvcs                Last   Response   Response   Response   Response   Warns  Warns   Since\n'
+  printf  'Harvester         Version         DNFHW   #Plots    Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
+  echo -e "------------------------------------------------------------------------------------------------------------------------------"
   for fork in $HARVESTERLIST; do
      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
@@ -165,6 +165,8 @@ if [[ $FARMERONLY != 1 ]]; then
      if [[ $TESTDEBUG2 > $YESTERDAYSTAMP ]]; then
         YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.2')
      fi
+     
+     . $FORKTOOLSDIR/ftcheckprocs.sh
 
      FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
      LASTHARVESTERLINE=$(cat debug.log | grep -a "plots were eligible" | tail -1)
@@ -195,7 +197,7 @@ if [[ $FARMERONLY != 1 ]]; then
      for proof in $(echo $PROOFSYESTERDAYLIST); do
        let PROOFCOUNT=$PROOFCOUNT+$proof
      done
-     printf '%-17.17s %-15s %-8s %10s %9.2fs %9.2fs %9.2fs %9.2fs %7s %6s %7s %5s\n' "$fork" "$FORKVERSION" "$PLOTCOUNT" "$LASTHARVESTAGO" "$TODAYAVG" "$YESTERDAYAVG" "$TODAYMAX" "$YESTERDAYMAX" "$TODAYFIVESECWARNS" "$YESTERDAYFIVESECWARNS" "$PROOFCOUNT" "$FORKNODES2"
+     printf '%-17.17s %-15.15s %-6.6s%8.8s %10s %9.2fs %9.2fs %9.2fs %9.2fs %7s %6s %7s %5s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$PLOTCOUNT" "$LASTHARVESTAGO" "$TODAYAVG" "$YESTERDAYAVG" "$TODAYMAX" "$YESTERDAYMAX" "$TODAYFIVESECWARNS" "$YESTERDAYFIVESECWARNS" "$PROOFCOUNT" "$FORKNODES2"
   done
 fi
 echo
