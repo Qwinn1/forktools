@@ -30,6 +30,8 @@ function print_usage () {
    echo "    -p | --plotkey                            If set, the first 'First Wallet Address' returned by"
    echo "                                                 'forkname keys show' (presumably your hot wallet"
    echo "                                                 address) will be used instead of target address."
+   echo "    -d                                        Summarize by day."
+   echo "    -m                                        Summarize by month."
    echo "    -help | --help                            Show this information again."
    echo
    exit 0
@@ -76,6 +78,8 @@ while [[ $# -gt 0 ]]; do
      "-s"|"--startdate"      ) shift; STARTDATE="$1";SETSTARTDATE="$1"; shift;;
      "-u"|"--enddate"        ) shift; ENDDATE="$1"; ENDDATE=$(DateOffset +1 $ENDDATE); shift;;
      "-p"|"--plotkey"        ) HOTSWITCH='on'; shift;;
+     "-d"|"--daily"          ) SUMMARIZEBYDAY='Yes'; shift;;
+     "-m"|"--monthly"        ) SUMMARIZEBYMONTH='Yes'; shift;;
      "-help"|"--help"        ) print_usage; exit;;
      *                       ) echo 'ERROR: Invalid option: '$opt >&2
                                exit 1;;
@@ -92,6 +96,16 @@ if [[ $STARTDATE != '' && ($SETLASTXDAYS = '' || $SETSTARTDATE != '') ]]; then
 fi
 
 . $FORKTOOLSDIR/ftrpcinclude.sh
+if [[ $SUMMARIZEBYDAY == 'Yes' || $SUMMARIZEBYMONTH == 'Yes' ]]; then
+   OLDIFS=$IFS
+   IFS=''
+   if [[ $SUMMARIZEBYDAY == 'Yes' ]]; then
+      MERGEDCOINLIST=$( echo $MERGEDCOINLIST | awk '{print substr($1,1,10) " " $2 " N/A N/A N/A"}' )
+   else
+      MERGEDCOINLIST=$( echo $MERGEDCOINLIST | awk '{print substr($1,1,7) " " $2 " N/A N/A N/A"}' )
+   fi      
+   IFS=$OLDIFS
+fi   
 
 BUILDEXPR=$(echo 'awk -v start='"$STARTFROM"' -v end='"$ENDDATE")
 BUILDEXPR=$(echo $BUILDEXPR "'"'$0 >= start && $0 <= end'"'")
@@ -138,12 +152,14 @@ while read line; do
      PRINTAMOUNT=$(eval $BUILDEXPR)
      TOTALFORRANGE=$(echo "(($TOTALFORRANGE + $PRINTAMOUNT))" | bc -l)
      COUNTFORRANGE=$(echo "(($COUNTFORRANGE + 1))" | bc -l)
-     if [[ $PREVCOINBASE = true ]]; then
+     if [[ $SUMMARIZEBYDAY == 'Yes' || $SUMMARIZEBYMONTH == 'Yes' ]]; then
+       FARMEDBLOCK='N/A'
+     elif [[ $PREVCOINBASE = true ]]; then
        FARMEDBLOCK='Yes'
      else
        FARMEDBLOCK='No'
      fi
-     printf '%19s    %-10s  %-10s %-3s %12.12s %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
+     printf '%-19s    %-10s  %-10s %-3s %12.12s %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
   fi
   FIRSTLOOP=0
   PREVDATETRANS=$DATETRANS
@@ -156,19 +172,27 @@ done <<< "$TRANSACTIONLIST"
 # Add the last line.
 BUILDEXPR=$(echo "echo 'scale = 2; (($PREVBLOCKAMOUNT / $MMMULTIPLIER))' | bc -l")
 PRINTAMOUNT=$(eval $BUILDEXPR)
-if [[ $PREVCOINBASE = true ]]; then
+if [[ $SUMMARIZEBYDAY == 'Yes' || $SUMMARIZEBYMONTH == 'Yes' ]]; then
+  FARMEDBLOCK='N/A'
+elif [[ $PREVCOINBASE = true ]]; then
   FARMEDBLOCK='Yes'
 else
   FARMEDBLOCK='No'
 fi
-printf '%19s    %-10s  %-10s %-3s %12.12s %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
+printf '%-19s    %-10s  %-10s %-3s %12.12s %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
 TOTALFORRANGE=$(echo "(($TOTALFORRANGE + $PRINTAMOUNT))" | bc -l)
 COUNTFORRANGE=$(echo "(($COUNTFORRANGE + 1))" | bc)
 
 echo -e '---------------------------------------------------------------------'
 # Set ENDDATE one day back for display purposes
 ENDDATE=$(DateOffset -1 $ENDDATE)
-printf '%6.6s transactions from %10s to %10s:%12s %-5s\n' "$COUNTFORRANGE" "$STARTFROM" "$ENDDATE" "$TOTALFORRANGE" "$COINNAME"
+if [[ $SUMMARIZEBYDAY = 'Yes' ]]; then
+   printf 'Daily summary from %10s to %10s:      %12s %-5s\n' "$STARTFROM" "$ENDDATE" "$TOTALFORRANGE" "$COINNAME"
+elif [[ $SUMMARIZEBYMONTH = 'Yes' ]]; then
+   printf 'Monthly summary from %10s to %10s:    %12s %-5s\n' "$STARTFROM" "$ENDDATE" "$TOTALFORRANGE" "$COINNAME"
+else
+   printf '%6.6s transactions from %10s to %10s:%12s %-5s\n' "$COUNTFORRANGE" "$STARTFROM" "$ENDDATE" "$TOTALFORRANGE" "$COINNAME"
+fi
 echo
 IFS=DEFAULT_IFS
 . ftexit.sh
