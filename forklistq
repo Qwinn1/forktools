@@ -14,13 +14,10 @@ function print_usage () {
 
 . ftinit.sh
 
-. ftbuildfarmerlist.sh
+. ftbuildrunlists.sh
 echo "Farmer count:" $FARMERCOUNT
 echo $FARMERLIST
-
 echo
-
-. ftbuildharvesterlist.sh
 echo "Harvester count:" $HARVESTERCOUNT
 echo $HARVESTERLIST
 echo

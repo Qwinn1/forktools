@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+. $FORKTOOLSDIR/ftconfigs/config.logging
+
+if [[ $LOGFORKPATCH == 'true' ]]; then
+  forkpatchq $* | tee -a $FORKTOOLSDIR/ftlogs/forkpatch.log
+else
+  forkpatchq $*
+fi

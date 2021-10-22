@@ -51,8 +51,10 @@ echo "Scanning for and setting up required symlinks for forks with non-standard 
 
 . $FORKTOOLSDIR/ftsymlinks.sh
 
-echo "Moving any config files in forktools folder to forktools/ftconfigs folder."
-mv $FORKTOOLSDIR/config.* $FORKTOOLSDIR/ftconfigs
+if [[ -f $FORKTOOLSDIR/config.* ]]; then
+   echo "Moving config files in forktools folder to forktools/ftconfigs folder."
+   mv -n $FORKTOOLSDIR/config.* $FORKTOOLSDIR/ftconfigs
+fi
 
 echo "Copying config.FORKTOOL.template files to config.FORKTOOL if necessary..."
 if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkstartall" ) ]]; then
@@ -64,6 +66,11 @@ if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs" ) ]]; then
   echo "No existing config.forkaddplotdirs file found.  Copied from config.forkaddplotdirs.template."
   echo "  WARNING:  forkaddplotdirs will not function until config.forkaddplotdirs is manually configured."
   cp $FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs.template $FORKTOOLSDIR/ftconfigs/config.forkaddplotdirs
+fi 
+if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkremoveplotdirs" ) ]]; then
+  echo "No existing config.forkremoveplotdirs file found.  Copied from config.forkremoveplotdirs.template."
+  echo "  WARNING:  forkremoveplotdirs will not function until config.forkremoveplotdirs is manually configured."
+  cp $FORKTOOLSDIR/ftconfigs/config.forkremoveplotdirs.template $FORKTOOLSDIR/ftconfigs/config.forkremoveplotdirs
 fi 
 if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forklog" ) ]]; then
   echo "No existing config.forklog file found.  Copied from config.forklog.template."
@@ -79,7 +86,25 @@ if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkfixconfig" ) ]]; then
   echo "No existing config.forkfixconfig file found.  Copied from config.forkfixconfig.template."
   echo "  forkfixconfig will function correctly with forktools defaults, but user may change defaults as desired in config.forkfixconfig ."
   cp $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.template $FORKTOOLSDIR/ftconfigs/config.forkfixconfig
-fi 
+else
+  echo "Updating config.forkfixconfig with any new settings."
+  cp $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.template $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.working 
+  OLDIFS=$IFS
+  IFS=''
+  while read line; do
+     HASEQUAL=$( echo $line | grep -c '=' )
+     if [[ $HASEQUAL == 0 ]]; then
+       continue
+     fi
+     CURVAR=$( echo $line | sed 's/=.*/=/' )
+     CURVALUE=$( echo $line | sed 's/.*=//' )
+     TEMPLATEVALUE=$(grep "^$CURVAR" "$FORKTOOLSDIR/ftconfigs/config.forkfixconfig.working" | sed 's/.*=//' )
+     sed -i.bak "s/${CURVAR}${TEMPLATEVALUE}/${CURVAR}${CURVALUE}/" $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.working
+  done < "$FORKTOOLSDIR/ftconfigs/config.forkfixconfig"
+  mv $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.working $FORKTOOLSDIR/ftconfigs/config.forkfixconfig
+  rm $FORKTOOLSDIR/ftconfigs/config.forkfixconfig.working.bak  
+  IFS=$OLDIFS
+fi
 if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.forkedit" ) ]]; then
   echo "No existing config.forkedit file found.  Copied from config.forkedit.template."
   echo "  forkedit will use gedit as the text editor by default, but this can be changed to your preferred editor in config.forkedit."
@@ -89,14 +114,29 @@ if [[ ( ! -f "$FORKTOOLSDIR/ftconfigs/config.logging" ) ]]; then
   echo "No existing config.logging file found.  Copied from config.logging.template."
   echo "  Only forkmon logging is enabled by default.  Update config.logging to enable logs for any or every forktool (except forkconfig)."
   cp $FORKTOOLSDIR/ftconfigs/config.logging.template $FORKTOOLSDIR/ftconfigs/config.logging
-fi 
-
+else
+  echo "Updating config.logging with settings for new tools."
+  cp $FORKTOOLSDIR/ftconfigs/config.logging.template $FORKTOOLSDIR/ftconfigs/config.logging.working 
+  OLDIFS=$IFS
+  IFS=''
+  while read line; do
+     HASEQUAL=$( echo $line | grep -c '=' )
+     if [[ $HASEQUAL == 0 ]]; then
+       continue
+     fi
+     CURVAR=$( echo $line | sed 's/=.*/=/' )
+     CURVALUE=$( echo $line | sed 's/.*=//' )
+     TEMPLATEVALUE=$(grep "^$CURVAR" "$FORKTOOLSDIR/ftconfigs/config.logging.working" | sed 's/.*=//' )
+     sed -i.bak "s/${CURVAR}${TEMPLATEVALUE}/${CURVAR}${CURVALUE}/" $FORKTOOLSDIR/ftconfigs/config.logging.working
+  done < "$FORKTOOLSDIR/ftconfigs/config.logging"
+  mv $FORKTOOLSDIR/ftconfigs/config.logging.working $FORKTOOLSDIR/ftconfigs/config.logging
+  rm $FORKTOOLSDIR/ftconfigs/config.logging.working.bak  
+  IFS=$OLDIFS
+fi
 
 echo "Making forktool scripts executable..."
 cd $FORKTOOLSDIR
 chmod +x fork*
 
-
-echo "forktools installation completed!  I hope you'll enjoy.  - Qwinn"
-
+echo "forktools installation completed!  Happy farming!  - Qwinn"
 

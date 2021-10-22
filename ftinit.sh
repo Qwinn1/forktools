@@ -1,6 +1,6 @@
 # To be included in all forktools.  Calls all configuration includes and defines forktools functions.
 
-HELPREQUEST=$( printf '%s' $* | grep '-help' ) 
+HELPREQUEST=$( printf '%s' $* | grep '\-help' ) 
 if [[ $HELPREQUEST != '' ]]; then
   print_usage
   exit
@@ -52,8 +52,16 @@ FTCURRENTTOOL=$( basename $0 | sed 's/q$//' )
 if [[ $FTCURRENTTOOL == 'forkstart' ]]; then
   FTCURRENTTOOL='forkstartall'
 fi
-if [[ -f $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL ]]; then
-  . $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL
+if [[ $FTCURRENTTOOL == 'forkaddplotdirs' || $FTCURRENTTOOL == 'forkfixconfig' ]]; then
+   if [[ -f $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL.$1 ]]; then
+     . $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL.$1
+   else
+     . $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL
+   fi
+else
+  if [[ -f $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL ]]; then
+    . $FORKTOOLSDIR/ftconfigs/config.$FTCURRENTTOOL
+  fi
 fi
 
 

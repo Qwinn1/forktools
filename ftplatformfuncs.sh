@@ -8,7 +8,21 @@ if [[ $OSTYPE == 'darwin'* ]]; then
       fi
     }
     function forkss () {
-      join <(ps x -o pid,comm | awk '{print $1 " \"" $2 "\""}' | sort) <(lsof -i4 -i TCP -n | grep LISTEN | awk '{print $2 " " $9 " :"}' | sort)
+      join <(ps x -o pid,comm | awk '{print $1 " \"" $2 "\""}' | sort) <(lsof -i4 -i TCP -n -P | grep LISTEN | awk '{print $2 " " $9 " :"}' | sort)
+    }
+    function forkssoutput () {
+      OLDIFS=$IFS
+      IFS=''
+      CONFLICTS=$( echo $FORKSS | grep :$port[^0-9] | grep -v '"'${PROCESSNAME}_ )
+      if [[ $CONFLICTS != '' ]]; then
+         if [[ $SCANNEDMSG == 0 ]]; then
+            printf "Scanned %-15.15s - Conflicts Found!\n" $fork
+            SCANNEDMSG=1
+         fi
+         echo "$fork port $port in use by:  $CONFLICTS"
+      fi
+      IFS=$OLDIFS      
+      return 0
     }
     function forkmemory () {
       ps -x -o rss= -p $(pgrep ^${fork}_) | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
@@ -24,7 +38,30 @@ else
       date -d $2"${1} day" +"%Y-%m-%d"
     }
     function forkss () {
-      ss -atnp 2>/dev/null | grep -v TIME-WAIT
+      ss -atnp 2>/dev/null | awk '{ printf "%s %s %s\n", $1, $4, $6 }' | grep LISTEN
+    }
+    function forkssoutput () {
+      OLDIFS=$IFS
+      IFS=''
+      FORKLENGTH=$( expr length $FORKNAME )
+      if [[ $FORKLENGTH == 15 ]]; then
+        CONFLICTS=$( echo $FORKSS | grep :$port[^0-9] | grep -v '"'${PROCESSNAME} | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
+      else
+        CONFLICTS=$( echo $FORKSS | grep :$port[^0-9] | grep -v '"'${PROCESSNAME}_ | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
+      fi
+      if [[ $CONFLICTS != '' ]]; then
+         if [[ $SCANNEDMSG == 0 ]]; then
+            printf "Scanned %-15.15s - Conflicts Found!\n" $fork
+            TITLES=$( ss -atnp | head -1 | awk '{$1=$1};1' )
+            TITLES=$( awk    '{ printf ("                                       %-8.8s %-5.5s %-19.19s %-50s\n", $1, $4, $5, $8 ); }' <<< "$TITLES" )
+            echo $TITLES
+            SCANNEDMSG=1
+         fi
+         CONFDESC=$(echo "$fork port $port in use by:" )
+         CONFLICTS=$( awk -v confdesc="$CONFDESC" '{ printf ("%-38.38s %-8.8s %-25.25s %-50s\n", confdesc, $1, $2, $3 ); }' <<< "$CONFLICTS" )
+         echo $CONFLICTS         
+      fi
+      IFS=$OLDIFS      
     }
     function forkmemory () {
       for pid in $(pgrep ^${fork}_); do 

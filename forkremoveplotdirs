@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+. $FORKTOOLSDIR/ftconfigs/config.logging
+
+if [[ $LOGFORKREMOVEPLOTDIRS == 'true' ]]; then
+  forkremoveplotdirsq $* | tee -a $FORKTOOLSDIR/ftlogs/forkremoveplotdirs.log
+else
+  forkremoveplotdirsq $*
+fi  

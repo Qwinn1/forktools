@@ -41,10 +41,6 @@ if [[ ( -d "$FORKTOOLSHIDDENDIRS/.beernetwork" ) && ( ! -d "$FORKTOOLSHIDDENDIRS
   printf 'Created symlink: '
   ln -sv $FORKTOOLSHIDDENDIRS/.beernetwork $FORKTOOLSHIDDENDIRS/.beer
 fi
-if [[ ( -d "$FORKTOOLSHIDDENDIRS/.venidium/kition" ) && ( ! -d "$FORKTOOLSHIDDENDIRS/.venidium/mainnet" ) ]]; then
-  printf 'Created symlink: '
-  ln -sv $FORKTOOLSHIDDENDIRS/.venidium/kition $FORKTOOLSHIDDENDIRS/.venidium/mainnet
-fi
 if [[ ( -d "$FORKTOOLSHIDDENDIRS/.chia/ext9" ) && ( ! -d "$FORKTOOLSHIDDENDIRS/.nchain/mainnet" ) ]]; then
   if [[ ( ! -d "$FORKTOOLSHIDDENDIRS/.nchain" ) ]]; then
     printf 'Created dummy directory: '
