@@ -165,7 +165,8 @@ if [[ $FARMERONLY != 1 ]]; then
      if [[ $TESTDEBUG2 > $YESTERDAYSTAMP ]]; then
         YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.2')
      fi
-     
+
+     PORTPARSINGDONE=0
      . $FORKTOOLSDIR/ftcheckprocs.sh
 
      FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
