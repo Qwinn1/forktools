@@ -100,8 +100,14 @@ if [[ $SUMMARIZEBYDAY == 'Yes' || $SUMMARIZEBYMONTH == 'Yes' ]]; then
    OLDIFS=$IFS
    IFS=''
    if [[ $SUMMARIZEBYDAY == 'Yes' ]]; then
+      STARTFROM=$(echo $STARTFROM | cut -c1-10 )
+      ENDDATE=$(echo $ENDDATE | cut -c1-10 )
       MERGEDCOINLIST=$( echo $MERGEDCOINLIST | awk '{print substr($1,1,10) " " $2 " N/A N/A N/A"}' )
    else
+      STARTFROM=$(echo $STARTFROM | cut -c1-7 )
+      ORIGENDDATE=$ENDDATE
+      ENDDATE=$(MonthOffset 1)      
+      ENDDATE=$(echo $ENDDATE | cut -c1-7 )
       MERGEDCOINLIST=$( echo $MERGEDCOINLIST | awk '{print substr($1,1,7) " " $2 " N/A N/A N/A"}' )
    fi      
    IFS=$OLDIFS
@@ -122,7 +128,7 @@ printf '                    Today:      %10s %3s\n' "$TODAYADDRESSCHANGE" "$COIN
 printf '                    Yesterday:  %10s %3s\n' "$YESTERDAYADDRESSCHANGE" "$COINNAME"
 
 if [[ $TRANSACTIONLIST == '' ]]; then
-  echo
+  echo "here"
   printf '           No transactions from %10s to %10s\n' "$STARTFROM" "$ENDDATE"
   echo
   exit
@@ -184,8 +190,12 @@ TOTALFORRANGE=$(echo "(($TOTALFORRANGE + $PRINTAMOUNT))" | bc -l)
 COUNTFORRANGE=$(echo "(($COUNTFORRANGE + 1))" | bc)
 
 echo -e '---------------------------------------------------------------------'
-# Set ENDDATE one day back for display purposes
-ENDDATE=$(DateOffset -1 $ENDDATE)
+# Set ENDDATE one day (or one month) back for display purposes
+if [[ $SUMMARIZEBYMONTH != 'Yes' ]]; then
+  ENDDATE=$(DateOffset -1 $ENDDATE)
+else
+  ENDDATE=$(echo $ORIGENDDATE | cut -c1-7 )
+fi
 if [[ $SUMMARIZEBYDAY = 'Yes' ]]; then
    printf 'Daily summary from %10s to %10s:      %12s %-5s\n' "$STARTFROM" "$ENDDATE" "$TOTALFORRANGE" "$COINNAME"
 elif [[ $SUMMARIZEBYMONTH = 'Yes' ]]; then

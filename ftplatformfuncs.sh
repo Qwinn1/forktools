@@ -7,6 +7,13 @@ if [[ $OSTYPE == 'darwin'* ]]; then
           date -j -f "%Y-%m-%d" -v${1}d $2 +"%Y-%m-%d"
       fi
     }
+    function MonthOffset () {
+      if [ $# -eq 1 ] ; then
+          date -j -v${1}m +"%Y-%m"
+      else
+          date -j -f "%Y-%m" -v${1}m $2 +"%Y-%m"
+      fi
+    }
     function forkss () {
       join <(ps x -o pid,comm | awk '{print $1 " \"" $2 "\""}' | sort) <(lsof -i4 -i TCP -n -P | grep LISTEN | awk '{print $2 " " $9 " :"}' | sort)
     }
@@ -37,6 +44,9 @@ else
     function DateOffset () {
       date -d $2"${1} day" +"%Y-%m-%d"
     }
+    function MonthOffset () {
+      date -d $2"${1} month" +"%Y-%m"
+    }    
     function forkss () {
       ss -atnp 2>/dev/null | awk '{ printf "%s %s %s\n", $1, $4, $6 }' | grep LISTEN
     }
