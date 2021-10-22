@@ -97,12 +97,10 @@ if [[ $SETMULTIPROC != '' ]]; then
    if [[ $EXISTINGMULTIPROC = '' ]]; then
       FULLNODESYNCED=''
       if [[ $FULLNODERUNNING == 1 ]]; then
-         echo "here3"
          FULLNODESYNCED='No'
          cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain
          . ./activate
          BLOCKCHAINSTATE=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_blockchain_state | python -m json.tool)
-         echo "here4"         
          FULLNODESYNCED=$(c1grep '"synced":'  <<< "$BLOCKCHAINSTATE" | sed 's/.*://' | sed 's/,//' | awk '{$1=$1};1' )
       fi   
       if [[ $FULLNODESYNCED != 'true' ]]; then

@@ -110,7 +110,7 @@ if [[ $SUMMARIZEBYDAY == 'Yes' || $SUMMARIZEBYMONTH == 'Yes' ]]; then
    else
       STARTFROM=$(echo $STARTFROM | cut -c1-7 )
       ORIGENDDATE=$ENDDATE
-      ENDDATE=$(MonthOffset 1)      
+      ENDDATE=$(MonthOffset +1)      
       ENDDATE=$(echo $ENDDATE | cut -c1-7 )
       MERGEDCOINLIST=$( echo $MERGEDCOINLIST | awk '{print substr($1,1,7) " " $2 " N/A N/A N/A"}' )
    fi      
@@ -132,7 +132,6 @@ printf '                    Today:      %10s %3s\n' "$TODAYADDRESSCHANGE" "$COIN
 printf '                    Yesterday:  %10s %3s\n' "$YESTERDAYADDRESSCHANGE" "$COINNAME"
 
 if [[ $TRANSACTIONLIST == '' ]]; then
-  echo "here"
   printf '           No transactions from %10s to %10s\n' "$STARTFROM" "$ENDDATE"
   echo
   exit
