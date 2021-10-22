@@ -31,7 +31,7 @@ function print_usage () {
    echo "                                                 'forkname keys show' (presumably your hot wallet"
    echo "                                                 address) will be used instead of target address."
    echo "    -d                                        Summarize by day."
-   echo "    -m                                        Summarize by month."
+   echo "    -m                                        Summarize by month.  Defaults to starting from 2021-03."
    echo "    -help | --help                            Show this information again."
    echo
    exit 0
@@ -89,6 +89,10 @@ done
 if [[ $LASTXDAYS != '' ]]; then
    STARTFROM=$(echo "(($LASTXDAYS - 1))" | bc)
    STARTFROM=$(DateOffset -${STARTFROM})
+fi
+
+if [[ $SETSTARTDATE == '' && $SUMMARIZEBYMONTH = 'Yes' ]]; then
+   STARTFROM='2021-03'
 fi
 
 if [[ $STARTDATE != '' && ($SETLASTXDAYS = '' || $SETSTARTDATE != '') ]]; then
