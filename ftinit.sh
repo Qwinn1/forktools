@@ -10,18 +10,21 @@ fi
 
 # Display forktool startup string.  Silenced after first time so forktools can call other forktools without redisplaying in the call.
 # Also makes sure that any redirected errors go to the parent forktool's error log, not to the log of a called forktool.
-if [[ $FTBASECOMMAND == '' || $FORKTOOLCALL == 'Yes' ]]; then
+if [[ $FTBASECOMMAND == '' ]]; then
   export FTBASECOMMAND=$( basename $0 | sed 's/q$//' )
   if [[ "$*" == '' ]]; then
     export FTFULLCOMMAND=$(printf '%s' "$FTBASECOMMAND" )
   else
     export FTFULLCOMMAND=$(printf '%s %s' "$FTBASECOMMAND" "$*")
   fi
-  if [[ $FORKTOOLCALL == 'Yes' ]]; then
+  if [[ $ORIGFULLCOMMAND == '' ]]; then
      echo "'$FTFULLCOMMAND' initiated on `date`..."
      echo
-  fi
-  export FORKTOOLCALL='No'  
+  else
+     echo "'$ORIGFULLCOMMAND' initiated on `date`..."
+     echo
+  fi  
+       
   if [[ $FTERRORSTOFILE == 'Yes' ]]; then
     exec 3>&2  # capture current stderr output destination
     exec 2>> "$FORKTOOLSDIR/ftlogs/$FTBASECOMMAND.errors" #reroute stderr

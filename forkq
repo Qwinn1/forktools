@@ -33,13 +33,28 @@ function print_usage () {
    exit 0
 }
 
-VALIDATEFORKNAME='Yes'
-. ftinit.sh
+HELPREQUEST=$( printf '%s' $* | grep '\-help' ) 
+if [[ $HELPREQUEST != '' ]]; then
+  print_usage
+  exit
+fi   
 
-export FORKTOOLCALL='No'
+if [[ ! -d $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain ]]; then
+   echo "fork:  Directory $1-blockchain does not exist.  fork aborted."
+   exit
+fi
+   
+ORIGBASECOMMAND=$( basename $0 | sed 's/q$//' )
+if [[ "$*" == '' ]]; then
+  ORIGFULLCOMMAND=$(printf '%s' "$ORIGBASECOMMAND" )
+else
+  ORIGFULLCOMMAND=$(printf '%s %s' "$ORIGBASECOMMAND" "$*")   
+fi
+
 FORKNAME=$1
 shift;
 
+export FORKTOOLCALL='No'
 case "$1" in
   "sum"             ) FORKCOMMAND="farm summary";;
   "wal"             ) FORKCOMMAND="wallet show";;
@@ -61,11 +76,12 @@ case "$1" in
 esac
 
 if [[ $FORKTOOLCALL == 'No' ]]; then
+   . $FORKTOOLSDIR/ftinit.sh
    cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain 
    . ./activate 
    $FORKNAME $FORKCOMMAND
    deactivate
-else
+elif [[ $FORKTOOLCALL == 'Yes' ]]; then
    $FORKCOMMAND
 fi
 
