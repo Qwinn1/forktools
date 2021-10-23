@@ -59,7 +59,7 @@ case "$1" in
   "sum"             ) FORKCOMMAND="farm summary";;
   "wal"             ) FORKCOMMAND="wallet show";;
   "ver"             ) FORKCOMMAND="version";;
-  "add"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'foraddplotdirs %s %s' "$FORKNAME" "$*" );;
+  "add"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkaddplotdirs %s %s' "$FORKNAME" "$*" );;
   "ben"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkbenchips %s %s' "$FORKNAME" "$*" );;
   "edi"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkedit %s %s' "$FORKNAME" "$*" );;
   "exp"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkexplore %s %s' "$FORKNAME" "$*" );;
