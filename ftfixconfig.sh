@@ -86,6 +86,13 @@ while read line; do
      OLDPARALLELREAD=$line
      continue     
   fi
+  if [[ $SETENABLEUPNP != '' && $SECTION == *full_node:* && $WORKLINE == *enable_upnp:* ]];
+  then
+     OLDENABLEUPNP=$(sed 's/enable_upnp: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+     NEWENABLEUPNP=$(sed "s/$OLDENABLEUPNP/$SETENABLEUPNP/" <<< "$WORKLINE")$PRESERVECOMMENT
+     OLDENABLEUPNP=$line
+     continue     
+  fi    
   
 done < $CURRENTCONFIG
 
@@ -157,6 +164,11 @@ fi
 if [[ $SETPARALLELREAD != '' && $OLDPARALLELREAD != $NEWPARALLELREAD ]]; then  
   echo "  Old Harvester Parallel Read: " $OLDFARMPEER
   echo "  New Harvester Parallel Read: " $NEWFARMPEER
+  ANYCHANGES='Yes'
+fi
+if [[ $SETENABLEUPNP != '' && $OLDENABLEUPNP != $NEWENABLEUPNP ]]; then  
+  echo "  Old Enable UPNP: " $OLDENABLEUPNP
+  echo "  New Enable UPNP: " $NEWENABLEUPNP
   ANYCHANGES='Yes'
 fi
 if [[ $SETMULTIPROC != '' && $SKIPMULTIPROC == 'No' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then
@@ -291,6 +303,10 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
    if [[ $SETPARALLELREAD != '' && $OLDPARALLELREAD != $NEWPARALLELREAD ]]; then  
       echo "Setting harvester parallel read..."
       sed -i.bak "s/$OLDPARALLELREAD/$NEWPARALLELREAD/" $CURRENTCONFIG
+   fi
+   if [[ $SETENABLEUPNP != '' && $OLDENABLEUPNP != $NEWENABLEUPNP ]]; then  
+      echo "Setting enable upnp..."
+      sed -i.bak "s/$OLDENABLEUPNP/$NEWENABLEUPNP/" $CURRENTCONFIG
    fi
    if [[ $SETMULTIPROC != '' && $SKIPMULTIPROC == 'No' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then  
       echo "Adding/replacing multiprocessing limit..."

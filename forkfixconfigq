@@ -89,4 +89,10 @@ for FORKNAME in $FORKLIST; do
    echo "forkfixconfig $FORKNAME:  Analyzing $CURRENTCONFIG."
    . ftfixconfig.sh
 done   
+echo
+if [[ $1 == 'all' ]]; then
+   echo "'forkfixconfig all' complete.  Remember to restart services ('forkstart all -s 30', as an example, to get a 30 second delay between restarts.) for the changes to take effect."
+else
+   echo "'forkfixconfig $1' complete.  Remember to restart services ('forkstart $1 -f|-fnw|-h') for the changes to take effect."
+fi
 
