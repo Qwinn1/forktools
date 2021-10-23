@@ -7,10 +7,13 @@ function print_usage () {
    echo "    directory, then also checks the initial-config.yaml that generates the config during a fresh"
    echo "    installation.  If they are the same, that fork will display only one line and the last column"
    echo "    will display 'matched'.  If they are not the same, that fork will display two lines, one for the"
-   echo "    operating config.yaml in the hidden directory and the other the settings from initial-config.yaml."
-   echo "    Review those carefully, as at least one of the ports does not match."
-   echo "            If you have a mismatch, and the discrepancy was not intended, running forkupdate for the"
-   echo "    fork is a quick solution, as it always generates a new config from the initial-config.yaml."
+   echo "    standard ports from the initial-config.yaml and the other from the operating config.yaml in the"
+   echo "    hidden directory.  Review those carefully, as at least one of the ports does not match."
+   echo "            If you have a mismatch and the discrepancy is not intended, running forkupdate for the"
+   echo "    fork is a quick solution as it always generates a new config from the initial-config.yaml."
+   echo "            If the discrepancy is intended to resolve a port conflict, consider creating a"
+   echo "    config.forkfixconfig.forkname override so that forktools can consistently apply this override"
+   echo "    during forkfixconfig and forkupdate."
    echo
    echo "PARAMETERS:"
    echo "     -help | --help      Show this information again."
@@ -25,6 +28,8 @@ FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 
 printf "FORK            VERSION         HARVESTER  HARVESTER  FARMER     FARMER     WALLET     WALLET     TIMELORD   TIMELORD   FULLNODE   FULLNODE   DAEMON     UI         Match\n"
 printf "                                           RPC                   RPC                   RPC        LAUNCHER                         RPC                              Init?\n"
+echo   "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+
 
 
 for FORKNAME in $FORKLIST; do
@@ -37,7 +42,6 @@ for FORKNAME in $FORKLIST; do
       continue
    fi  
 
-   # Get all ports.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
    . $FORKTOOLSDIR/ftparseports.sh
    
    IFULLNODEPORT=$FULLNODEPORT
@@ -57,16 +61,14 @@ for FORKNAME in $FORKLIST; do
    CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
    . $FORKTOOLSDIR/ftparseports.sh
 
-   cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain
-   . ./activate
    FORKVER=$( $FORKTOOLSDIR/fork $FORKNAME ver )
    
+   MATCHSTATUS='matched'
    if [[ $HARVESTERPORT != $IHARVESTERPORT || $HARVESTERRPCPORT != $IHARVESTERRPCPORT || $FARMERPORT != $IFARMERPORT || $FARMERRPCPORT != $IFARMERRPCPORT ||  $WALLETPORT != $IWALLETPORT || $WALLETRPCPORT != $IWALLETRPCPORT || $TIMELORDLAUNCHERPORT != $ITIMELORDLAUNCHERPORT || $TIMELORDPORT != $ITIMELORDPORT || $FULLNODEPORT != $IFULLNODEPORT || $FULLNODERPCPORT != $IFULLNODERPCPORT || $DAEMONPORT != $IDAEMONPORT || $UIPORT != $IUIPORT ]]; then
-      printf "%-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s config.yaml\n" $FORKNAME $FORKVER $HARVESTERPORT $HARVESTERRPCPORT $FARMERPORT $FARMERRPCPORT $WALLETPORT $WALLETRPCPORT $TIMELORDLAUNCHERPORT $TIMELORDPORT $FULLNODEPORT $FULLNODERPCPORT $DAEMONPORT $UIPORT
       printf "%-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s initial-config.yaml\n" $FORKNAME $FORKVER $IHARVESTERPORT $IHARVESTERRPCPORT $IFARMERPORT $IFARMERRPCPORT $IWALLETPORT $IWALLETRPCPORT $ITIMELORDLAUNCHERPORT $ITIMELORDPORT $IFULLNODEPORT $IFULLNODERPCPORT $IDAEMONPORT $IUIPORT
-   else
-      printf "%-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s matched\n" $FORKNAME $FORKVER $HARVESTERPORT $HARVESTERRPCPORT $FARMERPORT $FARMERRPCPORT $WALLETPORT $WALLETRPCPORT $TIMELORDLAUNCHERPORT $TIMELORDPORT $FULLNODEPORT $FULLNODERPCPORT $DAEMONPORT $UIPORT
-   fi   
+      MATCHSTATUS='config.yaml'      
+   fi
+   printf "%-15s %-15s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-11s\n" $FORKNAME $FORKVER $HARVESTERPORT $HARVESTERRPCPORT $FARMERPORT $FARMERRPCPORT $WALLETPORT $WALLETRPCPORT $TIMELORDLAUNCHERPORT $TIMELORDPORT $FULLNODEPORT $FULLNODERPCPORT $DAEMONPORT $UIPORT $MATCHSTATUS
 done
 
 

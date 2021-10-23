@@ -80,28 +80,41 @@ if [[ $HARVESTERONLY != 1 ]]; then
      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
      fi
-     FORKNAME=$fork     
-     cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log 
-     YESTERDAYLOGLIST='debug.log'
-     TESTDEBUG1=''
-     TESTDEBUG2=''
-     if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 ]; then
-        TESTDEBUG1=$(tail -1 debug.log.1)
+     FORKNAME=$fork
+     if [[ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log ]]; then
+        cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log        
+        TODAYLOGLIST='debug.log'
+        YESTERDAYLOGLIST='debug.log'
+        TESTDEBUG1=''
+        TESTDEBUG2=''
+        if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 ]; then
+           TESTDEBUG1=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 | grep "^20" | tail -1)
+           if [[ $TESTDEBUG1 > $TODAYSTAMP ]]; then     
+              TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.1')
+           fi
+           if [[ $TESTDEBUG1 > $YESTERDAYSTAMP ]]; then
+              YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.1')
+           fi
+           if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 ]; then
+              TESTDEBUG2=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 | grep "^20" | tail -1)
+              if [[ $TESTDEBUG2 > $TODAYSTAMP ]]; then     
+                 TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.2')
+              fi
+              if [[ $TESTDEBUG2 > $YESTERDAYSTAMP ]]; then
+                 YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.2')
+              fi
+           fi
+        fi
+        HARVESTERERRORS=$(grep -a "Harvester did not respond" $YESTERDAYLOGLIST | grep -c -e $TODAYSTAMP -e $YESTERDAYSTAMP )
+     else 
+        HARVESTERERRORS='NoLog'
      fi
-     if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 ]; then
-        TESTDEBUG2=$(tail -1 debug.log.2)
-     fi
-     if [[ $TESTDEBUG1 > $YESTERDAYSTAMP ]]; then
-        YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.1')
-     fi
-     if [[ $TESTDEBUG2 > $YESTERDAYSTAMP ]]; then
-        YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.2')
-     fi
-     HARVESTERERRORS=$(grep -a "Harvester did not respond" $YESTERDAYLOGLIST | grep -c -e $TODAYSTAMP -e $YESTERDAYSTAMP )
      FORKMEM=$(forkmemory)
      FORKVERSION=$($FORKTOOLSDIR/fork $fork ver)
-     FULLNODEPROCESS='\s'$FORKNAME'_full'   
-     FNWORKERS=$(ps -ef | grep -v grep | grep -c "$FULLNODEPROCESS" )
+     OLDIFS=$IFS
+     IFS=''
+     FNWORKERS=$(echo $PROCESSEF | grep -c "^${FORKNAME}_full" )
+     IFS=$OLDIFS
      . $FORKTOOLSDIR/ftrpcinclude.sh
      EFFORT=${EFFORT%.*}
      ADDRESSBALANCE=${ADDRESSBALANCE%.*}
@@ -148,7 +161,7 @@ if [[ $FARMERONLY != 1 ]]; then
      . $FORKTOOLSDIR/ftcheckprocs.sh
 
      FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
-     LASTHARVESTERLINE=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log | grep -a "plots were eligible" | tail -1)
+     LASTHARVESTERLINE=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log | grep -a "plots were eligible" | sort | tail -1)
      if [[ $LASTHARVESTERLINE == '' ]]; then
         LASTHARVESTTIME=0
         LASTHARVESTEPOCH=0
@@ -169,7 +182,7 @@ if [[ $FARMERONLY != 1 ]]; then
         TESTDEBUG1=''
         TESTDEBUG2=''
         if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 ]; then
-           TESTDEBUG1=$(tail -1 $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1)
+           TESTDEBUG1=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 | grep "^202" | sort | tail -1)
            if [[ $TESTDEBUG1 > $TODAYSTAMP ]]; then     
               TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.1')
            fi
@@ -177,7 +190,7 @@ if [[ $FARMERONLY != 1 ]]; then
               YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.1')
            fi
            if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 ]; then
-              TESTDEBUG2=$(tail -1 $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2)
+              TESTDEBUG2=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 | grep "^202" | sort | tail -1)
               if [[ $TESTDEBUG2 > $TODAYSTAMP ]]; then     
                  TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.2')
               fi

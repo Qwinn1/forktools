@@ -32,9 +32,19 @@ if [[ $FTBASECOMMAND == '' ]]; then
   fi  
 fi
 
-if [[ $VALIDATEFORKNAME == 'Yes' && ! -d $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain ]]; then
-   echo "$FTFULLCOMMAND:  Directory $1-blockchain does not exist.  '$FTBASECOMMAND' aborted."
-   exit
+if [[ $VALIDATEFORKNAME == 'Yes' ]]; then
+   if [[ ! -d $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain ]]; then
+      echo "$FTFULLCOMMAND:  Directory $1-blockchain does not exist.  '$FTBASECOMMAND' aborted."
+      exit
+   fi
+   if [[ ! -f $FORKTOOLSHIDDENDIRS/.$1/mainnet/config/config.yaml ]]; then
+      echo "$FTFULLCOMMAND:  $FORKTOOLSHIDDENDIRS/.$1/mainnet/config/config.yaml does not exist.  '$FTBASECOMMAND' aborted."
+      exit
+   fi
+   if [[ ! -f $FORKTOOLSHIDDENDIRS/.$1/mainnet/log/debug.log ]]; then
+      echo "$FTFULLCOMMAND:  $FORKTOOLSHIDDENDIRS/.$1/mainnet/log/debug.log does not exist.  '$FTBASECOMMAND' aborted."
+      exit
+   fi
 fi
    
 trap stopforkscript SIGINT
