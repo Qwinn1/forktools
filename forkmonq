@@ -137,7 +137,6 @@ if [[ $HARVESTERONLY != 1 ]]; then
      printf '%-17.17s %-15.15s %-5.5s  %-10.10s%5.5s%9.9s %7d%10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%11.11s %5s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$FARMSTATUS" "$PEERCOUNT" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$PRINTEFFORT"
   done
 fi
-
 IFS=$ORIGIFS
 
 if [[ $FARMERONLY != 1 ]]; then
@@ -161,7 +160,7 @@ if [[ $FARMERONLY != 1 ]]; then
      . $FORKTOOLSDIR/ftcheckprocs.sh
 
      FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
-     LASTHARVESTERLINE=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log | grep -a "plots were eligible" | sort | tail -1)
+     LASTHARVESTERLINE=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log | grep -a "plots were eligible" | tail -1)
      if [[ $LASTHARVESTERLINE == '' ]]; then
         LASTHARVESTTIME=0
         LASTHARVESTEPOCH=0
@@ -182,7 +181,7 @@ if [[ $FARMERONLY != 1 ]]; then
         TESTDEBUG1=''
         TESTDEBUG2=''
         if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 ]; then
-           TESTDEBUG1=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 | grep "^202" | sort | tail -1)
+           TESTDEBUG1=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 | grep "^202" | tail -1)
            if [[ $TESTDEBUG1 > $TODAYSTAMP ]]; then     
               TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.1')
            fi
@@ -190,7 +189,7 @@ if [[ $FARMERONLY != 1 ]]; then
               YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.1')
            fi
            if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 ]; then
-              TESTDEBUG2=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 | grep "^202" | sort | tail -1)
+              TESTDEBUG2=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 | grep "^202" | tail -1)
               if [[ $TESTDEBUG2 > $TODAYSTAMP ]]; then     
                  TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.2')
               fi
