@@ -80,9 +80,18 @@ if [[ $FORKCERTSMODE == '-export' ]]; then
    done
    echo "forkcerts:  Export complete.  Certificate folders copied to forktools/ftcerts."   
 elif [[ $FORKCERTSMODE == '-import' ]]; then
-   CAFOLDERLIST=$( ls -d1 $FORKTOOLSDIR/ftcerts )
+   OLDIFS=$IFS
+   IFS=''
+   if [[ ! -d $FORKTOOLSDIR/ftcerts ]]; then
+      echo "forkcerts:  $FORKTOOLSDIR/ftcerts folder not found.  Aborting."
+   fi
+
+   cd $FORKTOOLSDIR/ftcerts
+   CAFOLDERLIST=$( ls -d1 * )
+   IFS=$OLDIFS   
+   ANYIMPORTED=''
    for FORKNAME in $CAFOLDERLIST; do
-      if [[ $4 != 'all' && $4 != $FORKNAME ]]; then
+      if [[ $3 != 'all' && $3 != $FORKNAME ]]; then
          continue
       fi
       if [[ ! -d $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain ]]; then
@@ -99,18 +108,23 @@ elif [[ $FORKCERTSMODE == '-import' ]]; then
       if [[ $SETFARMERPEER != $FARMERIP ]]; then
          continue
       fi
-      ISFARMERRUNNING=$(grep -c "^${FORKNAME}$" $FARMERLIST )
+      ISFARMERRUNNING=$( echo $FARMERLIST | c1grep -c "^${FORKNAME}$" )
       if [[ $ISFARMERRUNNING > 0 ]]; then
          echo "WARNING:  ca folder for $FORKNAME from $FARMERIP is detected but farmer is running on this server too.  Do you have two farmers?  Skipping."
          continue
       fi
-      echo "forkcerts:  Running 'fork ${FORKNAME} init -c ${FORKTOOLSDIR}/ftcerts/${FORKNAME}/ca"
-#      $FORKTOOLSDIR/fork $FORKNAME init -c $FORKTOOLSDIR/ftcerts/$FORKNAME/ca
-      echo "forkcerts:  Running 'forkfixconfig ${FORKNAME} ${SETFARMERPEER}"
-#      $FORKTOOLSDIR/forkfixconfig ${FORKNAME} ${SETFARMERPEER}
+      echo "forkcerts:  Running 'fork ${FORKNAME} init -c ${FORKTOOLSDIR}/ftcerts/${FORKNAME}/ca'"
+      $FORKTOOLSDIR/fork $FORKNAME init -c $FORKTOOLSDIR/ftcerts/$FORKNAME/ca
+      echo "forkcerts:  Running 'forkfixconfig ${FORKNAME} ${SETFARMERPEER}'"
+      $FORKTOOLSDIR/forkfixconfig ${FORKNAME} ${SETFARMERPEER}
       echo
+      ANYIMPORTED='Yes'
    done
-   echo "forkcerts:  Import complete."
+   if [[ $ANYIMPORTED = 'Yes' ]]; then
+      echo "forkcerts:  Import complete."
+   else
+      echo "forkcerts:  Import complete.  No valid ca folders that were exported by IP $FARMERIP were found."
+   fi
 else
    echo "forkcerts:  First parameter must be either -export or -import.  Aborting forkcerts."
    print_usage
