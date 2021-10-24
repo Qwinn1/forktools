@@ -1,0 +1,118 @@
+#! /usr/bin/env bash
+
+function print_usage () {
+   echo "forkcerts help:"
+   echo
+   echo "SYNOPSIS:  This tool is used to faciliate adding remote harvesters to a farmer.  You should"
+   echo "    become familiar with the manual process before running forkcerts."
+   echo "           This tool compiles all of the certificates in ca folders into a single directory -"
+   echo "    forktools/ftcerts - for easy copy to a remote harvester in order to run init -c on them."
+   echo "           Actually moving them from the farmer to the harvester is left up to the user."
+   echo
+   echo "   USAGE:  Step 1) Get all farmers up and running. Install/update forktools on both farmer and"
+   echo "                   remote harvester."
+   echo "           Step 2) Run 'forkcerts -export 10.0.0.123 forkname|all' on the farmer, with the address"
+   echo "                   being the farmer peer IP that you want set in the harvester configs."
+   echo "                   This will copy the ca files for one or all forks running active farmers"
+   echo "                   to the forktools/ftcerts folder, as forkname/ca.  It will also create"
+   echo "                   a small config file in each forkname folder with the specified IP address."
+   echo "           Step 3) Copy forktools/ftcerts from your farmer to forktools/ftcerts on your harvester"
+   echo "                   (create it if it doesn't exist)."
+   echo "           Step 4) On the harvester server, make sure all the forks that you want farming, not"
+   echo "                   just harvesting, are up and running. Any forks running farmers are sure to be"
+   echo "                   ignored by forkcerts for the next step, as they should be."
+   echo "           Step 5) Run 'forkcerts -import 10.0.0.123 forkname|all'.  This will run 'forkname init -c'"
+   echo "                   pointing at one fork or all forks with ca folders that were created with the IP address"
+   echo "                   specified during Step 2."
+   echo "                   It will also set that IP address as farmer peer, host in the harvester's configs."
+   echo
+   echo "PARAMETERS:"
+   echo "     -export|-import     One or the other, -export or -import, must be the first parameter."
+   echo "     IP Address          The IP address of the farmer peer in the farmer-harvester relationship."
+   echo "     forkname|all        Run for a specified fork, or, all forks depending on context:"
+   echo "                            during -export, 'all' refers to all running farmers."
+   echo "                            during -import, 'all' refers to all found folders with the specified IP."
+   echo "     -help | --help      Show this information again."
+   echo
+   exit 0
+}
+REALPWD=$PWD
+FORKCERTSMODE=$1
+FARMERIP=$2
+FORKNAME=$3
+
+if [[ $FORKNAME != 'all' ]]; then
+  VALIDATEFORKNAME='Yes'
+fi
+. ftinit.sh
+
+. $FORKTOOLSDIR/ftbuildrunlists.sh
+
+if [[ $FORKCERTSMODE == '-export' ]]; then
+   INDIRECTORY=$(echo $REALPWD | grep "${FORKTOOLSDIR}/ftcerts/" )
+   
+   if [[ $INDIRECTORY != '' ]]; then
+      echo "forkcerts -export will destroy and recreate folders under the forktools/ftcerts directory, one of which is your present working directory."
+      echo "This could lead to errors after forkcerts completes."
+      echo "Please navigate to any directory that is not a subdirectory of forktools/ftcerts and then restart forkcerts."
+      exit
+   fi
+   
+   if [[ ! -d $FORKTOOLSDIR/ftcerts ]]; then
+      mkdir $FORKTOOLSDIR/ftcerts
+   fi
+   
+   for FORKNAME in $FARMERLIST; do
+      if [[ $3 != 'all' && $3 != $FORKNAME ]]; then
+         continue
+      fi
+      CURRENTCA=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/ca
+      if [[ ! -d $CURRENTCA ]]; then
+         continue
+      fi
+      if [[ -d $FORKTOOLSDIR/ftcerts/$FORKNAME ]]; then
+         rm -r $FORKTOOLSDIR/ftcerts/$FORKNAME
+         mkdir $FORKTOOLSDIR/ftcerts/$FORKNAME
+      fi
+      cp -r $CURRENTCA $FORKTOOLSDIR/ftcerts/$FORKNAME/ca
+      echo "forkcerts -export:  Creating $FORKTOOLSDIR/ftcerts/$FORKNAME"
+      echo "SETFARMERPEER='${FARMERIP}'" > $FORKTOOLSDIR/ftcerts/$FORKNAME/config.$FORKNAME.farmerip
+   done
+   echo "forkcerts:  Export complete.  Certificate folders copied to forktools/ftcerts."   
+elif [[ $FORKCERTSMODE == '-import' ]]; then
+   CAFOLDERLIST=$( ls -d1 $FORKTOOLSDIR/ftcerts )
+   for FORKNAME in $CAFOLDERLIST; do
+      if [[ $4 != 'all' && $4 != $FORKNAME ]]; then
+         continue
+      fi
+      if [[ ! -d $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain ]]; then
+         continue
+      fi
+      if [[ ! -f $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml ]]; then
+         continue
+      fi
+      if [[ -f $FORKTOOLSDIR/ftcerts/$FORKNAME/config.$FORKNAME.farmerip ]]; then
+         . $FORKTOOLSDIR/ftcerts/$FORKNAME/config.$FORKNAME.farmerip
+      else
+         continue
+      fi
+      if [[ $SETFARMERPEER != $FARMERIP ]]; then
+         continue
+      fi
+      ISFARMERRUNNING=$(grep -c "^${FORKNAME}$" $FARMERLIST )
+      if [[ $ISFARMERRUNNING > 0 ]]; then
+         echo "WARNING:  ca folder for $FORKNAME from $FARMERIP is detected but farmer is running on this server too.  Do you have two farmers?  Skipping."
+         continue
+      fi
+      echo "forkcerts:  Running 'fork ${FORKNAME} init -c ${FORKTOOLSDIR}/ftcerts/${FORKNAME}/ca"
+#      $FORKTOOLSDIR/fork $FORKNAME init -c $FORKTOOLSDIR/ftcerts/$FORKNAME/ca
+      echo "forkcerts:  Running 'forkfixconfig ${FORKNAME} ${SETFARMERPEER}"
+#      $FORKTOOLSDIR/forkfixconfig ${FORKNAME} ${SETFARMERPEER}
+      echo
+   done
+   echo "forkcerts:  Import complete."
+else
+   echo "forkcerts:  First parameter must be either -export or -import.  Aborting forkcerts."
+   print_usage
+fi
+
