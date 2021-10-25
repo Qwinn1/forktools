@@ -46,9 +46,9 @@ if [[ $VALIDATEFORKNAME == 'Yes' ]]; then
       echo "$FTFULLCOMMAND:  $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml does not exist.  '$FTBASECOMMAND' aborted."
       exit
    fi
-   if [[ ! -f $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log ]]; then
-      echo "$FTFULLCOMMAND:  $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log does not exist.  '$FTBASECOMMAND' aborted."
-      exit
+#   if [[ ! -f $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log ]]; then
+#      echo "$FTFULLCOMMAND:  $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log does not exist.  '$FTBASECOMMAND' aborted."
+#      exit
    fi
 fi
    
