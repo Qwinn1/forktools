@@ -55,12 +55,12 @@ if [[ $1 != 'all' && $1 != 'farmers' && $1 != 'harvesters' ]]; then
 fi
 
 . ftinit.sh
+. $FORKTOOLSDIR/ftbuildrunlists.sh
 
 if [[ $1 == 'all' ]]; then
   cd $FORKTOOLSBLOCKCHAINDIRS
   FORKLIST=$( ls -d1 *-blockchain | sed 's/-blockchain//' )
 else 
-  . $FORKTOOLSDIR/ftbuildrunlists.sh
   if [[ $1 == 'farmers' ]]; then
      FORKLIST=$FARMERLIST
   elif [[ $1 == 'harvesters' ]]; then
