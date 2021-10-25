@@ -49,7 +49,7 @@ if [[ $VALIDATEFORKNAME == 'Yes' ]]; then
 #   if [[ ! -f $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log ]]; then
 #      echo "$FTFULLCOMMAND:  $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/debug.log does not exist.  '$FTBASECOMMAND' aborted."
 #      exit
-   fi
+#   fi
 fi
    
 trap stopforkscript SIGINT
