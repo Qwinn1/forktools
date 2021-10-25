@@ -7,22 +7,22 @@ function print_usage () {
    echo
    echo "SYNOPSIS:  This tool edits the python fork source code to apply popular and time-tested patches"
    echo "    to chia or forks that for whatever reason the fork developer has not yet applied."
-   echo "           In this debut of forkpatch, the only supported patch is the excellent grayfallstown"
-   echo "   'multiprocessing_limit' patch which, depending on the number of cores of your CPU, greatly"
-   echo "   reduces CPU and memory usage by starting fewer full node worker processes.  The default number"
-   echo "   of workers started by chia code is roughly equivalent to the number of threads of your CPU."
-   echo "   For me, this results in 20 workers.  This is huge overkill for a fork that is already synced,"
-   echo "   as even setting a multiprocessing_limit of 2 is enough to keep a chain synced without issue."
    echo "           forkpatch does extensive validation to make sure the code it is modifying hasn't been"
    echo "   altered in any way that might interfere with the automated application of the patch, but it"
    echo "   is still highly recommended to confirm that farming continues well following running forkpatch."
-   echo "   forkmon in particular will almost instantly show the results of adding the multiproc patch,"
-   echo "   under the FULLNODE WORKERS column, as soon as plots are reloaded (since forkpatch does need"
-   echo "   to restart fork services for the patch to be applied.)  If full node worker count does not"
-   echo "   decrease, make sure the multiprocessing_limit parameter is in the config.  This can be set"
-   echo "   for all forks very quickly with 'forkfixconfig all'."
+   echo 
+   echo "SUPPORTED PATCHES: -multiproc and -logwinningplots."
    echo
-   echo "            -multiproc patches $FORKNAME/consensus/blockchain.py"
+   echo "      -multiproc:  the excellent grayfallstown 'multiprocessing_limit' patch which, depending on"
+   echo "   the number of cores of your CPU, greatly reduces CPU and memory usage by starting fewer full"
+   echo "   node worker processes.  The default number of workers started by chia code is roughly equivalent"
+   echo "   to the number of threads of your CPU.  For me, this results in 20 workers.  This is huge overkill"
+   echo "   for a fork that is already synced, as even setting a multiprocessing_limit of 2 is enough to keep"
+   echo "   a chain synced without issue.  -multiproc patches forkname/consensus/blockchain.py"
+   echo
+   echo "      -logwinningplots:  when a proof is found, this patch will create an additional line in the logs"
+   echo "   identifying the specific plot in which that proof was found. -logwinningplots patches"
+   echo "   forkname/harvester/harvester_api.py"
    echo
    echo "PARAMETERS:"
    echo "     forkname | all      Required.  Apply patch to a single fork or all forks running a farmer process."
@@ -37,7 +37,7 @@ if [[ $1 != 'all' ]]; then
 fi
 . ftinit.sh
 
-if [[ $2 != '-multiproc' ]]; then
+if [[ $2 != '-multiproc' && $2 != '-logwinningplots' ]]; then
   echo "forkpatch:  Patch name must be specified as second parameter.  The only patch currently supported is: -multiproc"
   echo "Aborting forkpatch."
   exit
@@ -140,3 +140,75 @@ if [[ $2 == '-multiproc' ]]; then
    echo "forkpatch complete:  Verify patched forks have lowered fullnode worker counts in forkmon. If not, try running forkfixconfig to add the parameter."
 fi
 
+if [[ $2 == '-logwinningplots' ]]; then
+   for FORKNAME in $FARMERLIST; do
+      if [[ $1 != 'all' && $1 != $FORKNAME ]]; then
+         continue
+      fi
+      CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml      
+      if [[ ! -f $CURRENTCONFIG ]]; then
+         continue
+      fi      
+      echo
+      PROGRAMTOMOD=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/harvester/harvester_api.py      
+      if [[ -f $PROGRAMTOMOD ]]; then
+         echo "forkpatch:  Analyzing suitability of $FORKNAME for automated -logwinningplots patching."      
+        . $FORKTOOLSDIR/ftparseports.sh
+        . $FORKTOOLSDIR/ftcheckprocs.sh
+      
+         FINDPROOFSINFILENAME=$( grep -c 'proofs in {filename}' $PROGRAMTOMOD )
+         if [[ $FINDPROOFSINFILENAME > 0 ]]; then
+            echo "forkpatch:  $FORKNAME failed code validation - already patched.  Skipping $FORKNAME."
+            continue
+         fi
+         SENDMSGLINE=$( grep -n '^                await peer.send_message(msg)$' $PROGRAMTOMOD  | sed 's/:.*//' )
+         if [[ $SENDMSGLINE == '' ]]; then
+            echo "forkpatch:  $FORKNAME failed code validation - first placement key code missing or has non-standard indendation.  Skipping $FORKNAME."
+            continue
+         fi
+         NOWKEYLINE=$( grep -n '^        now = uint64(int(time.time()))$'  $PROGRAMTOMOD | sed 's/:.*//' )
+         if [[ $NOWKEYLINE != '' ]]; then
+            let LINEDIFF=$NOWKEYLINE-$SENDMSGLINE
+            if [[ $LINEDIFF != 2 ]]; then
+               echo "forkpatch:  $FORKNAME failed code validation - placement keys exist but non-standard separation.  Skipping $FORKNAME."
+               continue
+            fi
+         else
+            echo "forkpatch:  $FORKNAME failed code validation - second placement key code missing or has non-standard indendation.  Skipping $FORKNAME."
+            continue
+         fi
+         echo "forkpatch:  $FORKNAME deemed suitable for automated -logwinningplots patching. Attempting to mod $FORKNAME/harvester/harvester_api.py."
+         echo "            harvester_api.py will be backed up to $FORKNAME/harvester_api.py.ftbackup"
+
+         sed -i.ftbackup "/^                await peer.send_message(msg)$/a\            # Next three lines added by forkpatch -logwinningplots\n            if sublist:\n                self.harvester.log.info(\n                    f\"Found {len(sublist)} proofs in {filename} in {time_taken:.5f} s\"\n                )" $PROGRAMTOMOD
+
+         echo "forkpatch:  Attempting to restart fork with same services."
+         if [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 1 && $FULLNODERUNNING == 1 ]]; then
+            FORKSTARTPARAM='-f'
+         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 1 ]]; then
+            FORKSTARTPARAM='-fnw'
+         elif [[ $FARMERRUNNING == 0 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
+            FORKSTARTPARAM='-h'
+         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 0 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
+            FORKSTARTPARAM='-fo'         
+         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
+            FORKSTARTPARAM='-fh'
+         else 
+            echo "forkpatch:  You should now run forkstart -f, -fnw or -h to resume whichever service you prefer for this fork."
+            exit
+         fi
+            
+         $FORKTOOLSDIR/forkstart $FORKNAME $FORKSTARTPARAM
+         if [[ $1 = 'all' ]]; then            
+            echo "forkpatch:  Sleeping for 30 seconds to allow $FORKNAME restart a moment to process before proceeding."            
+            sleep 30
+         fi
+         
+      else
+         echo "forkpatch: $FORKNAME code $PROGRAMTOMOD not found.  Skipping $FORKNAME."
+         continue
+      fi
+   done
+   echo "forkpatch complete:  An additional line in the logs will identify the specific plot proofs are found in for all patched forks."   
+fi
+      
