@@ -1,5 +1,7 @@
 # To be included in all forktools.  Calls all configuration includes and defines forktools functions.
 
+export LC_ALL=C.UTF-8
+
 HELPREQUEST=$( printf '%s' $* | grep '\-help' ) 
 if [[ $HELPREQUEST != '' ]]; then
   print_usage
