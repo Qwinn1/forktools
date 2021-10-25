@@ -38,7 +38,7 @@ fi
 . ftinit.sh
 
 if [[ $2 != '-multiproc' && $2 != '-logwinningplots' ]]; then
-  echo "forkpatch:  Patch name must be specified as second parameter.  The only patch currently supported is: -multiproc"
+  echo "forkpatch:  Patch name must be specified as second parameter.  Available patches are -multiproc and -logwinningplots"
   echo "Aborting forkpatch."
   exit
 fi
