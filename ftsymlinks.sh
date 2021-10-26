@@ -23,6 +23,10 @@ if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/Olive-blockchain" ) && ( ! -d "$FORKTOOLSBL
   printf 'Created symlink: '
   ln -sv $FORKTOOLSBLOCKCHAINDIRS/Olive-blockchain $FORKTOOLSBLOCKCHAINDIRS/olive-blockchain
 fi
+if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain" ) && ( ! -d "$FORKTOOLSBLOCKCHAINDIRS/sit-blockchain" ) ]]; then
+  printf 'Created symlink: '
+  ln -sv $FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain $FORKTOOLSBLOCKCHAINDIRS/sit-blockchain
+fi
 
 # Symlink creation for .hidden dirs
 if [[ ( -d "$FORKTOOLSHIDDENDIRS/.spare-blockchain" ) && ( ! -d "$FORKTOOLSHIDDENDIRS/.spare" ) ]]; then
@@ -56,9 +60,9 @@ fi
 
 
 # Symlink creation for code directories
-if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain/chia" ) && ( ! -d "$FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain/silicoin" ) ]]; then
+if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain/chia" ) && ( ! -d "$FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain/sit" ) ]]; then
   printf 'Created symlink: '
-  ln -sv $FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain/chia $FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain/silicoin
+  ln -sv $FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain/chia $FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain/sit
 fi
 if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/ext9-blockchain/chia" ) && ( ! -d "$FORKTOOLSBLOCKCHAINDIRS/ext9-blockchain/nchain" ) ]]; then
   printf 'Created symlink: '
