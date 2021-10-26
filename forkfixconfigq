@@ -8,8 +8,9 @@ function print_usage () {
    echo "           Parameters that can be automatically set by forkfixconfig are log_level,"
    echo "    log_maxfilesrotation, plot_load_frequency (forkfixconfig will edit interval_seconds"
    echo "    instead if the fork uses that newer parameter), batch_size, batch_sleep_milliseconds,"
-   echo "    and target_peer_count.  'farmer_peer host:' can also be passed as a parameter for pure"
-   echo "    harvesters."
+   echo "    upnp_enabled, parallel_read (only useful to MacOS X users using exfat drives),"
+   echo "    db_sync setting for both main and wallet dbs, and target_peer_count."
+   echo "          'farmer_peer host:' can also be passed as a parameter for pure harvesters."
    echo "           forkfixconfig can even add multiprocessing_limit, a fork-only parameter"
    echo "    created by grayfallstown that some forks have implemented which limits the number of"
    echo "    fullnode workers created in order to save memory.  The normal limit, which is"
@@ -90,9 +91,11 @@ for FORKNAME in $FORKLIST; do
    . ftfixconfig.sh
 done   
 echo
-if [[ $1 == 'all' ]]; then
-   echo "'forkfixconfig all' complete.  Remember to restart services ('forkstart all -s 30', as an example, to get a 30 second delay between restarts) for any changes to take effect."
-elif [[ $REPLY =~ ^[Yy]$ ]]; then
-   echo "'forkfixconfig $1' complete.  Remember to restart services ('forkstart $1 -f|-fnw|-h') for the changes to take effect."
+if [[ $FTBASECOMMAND == 'forkfixconfig' ]]; then
+   if [[ $1 == 'all' ]]; then
+      echo "'forkfixconfig all' complete.  Remember to restart services ('forkstart all -s 30', as an example, to get a 30 second delay between restarts) for any changes to take effect."
+   elif [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo "'forkfixconfig $1' complete.  Remember to restart services ('forkstart $1 -f|-fnw|-h') for the changes to take effect."
+   fi
 fi
 
