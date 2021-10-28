@@ -107,7 +107,20 @@ echo "   Farmer target address : " $SETFARMTARGET
 echo "   Pool target address   : " $SETPOOLTARGET
 echo "   Multiprocessing_limit : " $ORIGMULTIPROC
 echo
+echo "Checking if any forkpatch patches were applied so they can be re-applied at the end of forkupdate."
 
+MULTIPROCPATCH=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/blockchain.py
+MULTIPROCPATCH=$( c1grep -c 'added by forkpatch -multiproc' $MULTIPROCPATCH )
+if [[ $MULTIPROCPATCH > 0 ]]; then
+   echo "  Confirmed forkpatch -multiproc is applied.  Will attempt to reapply -multiproc patch before forkupdate ends."
+fi
+LOGWINNINGPLOTSPATCH=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/harvester/harvester_api.py
+LOGWINNINGPLOTSPATCH=$( c1grep -c 'added by forkpatch -logwinningplots' $LOGWINNINGPLOTSPATCH )
+if [[ $LOGWINNINGPLOTSPATCH > 0 ]]; then
+   echo "  Confirmed forkpatch -logwinningplots is applied.  Will attempt to reapply -logwinningplots patch before update ends."
+fi
+
+echo
 echo "forkupdate:  Stopping services."
 forkstop $1
 
@@ -201,6 +214,16 @@ else
    mv $BLOCKDIR.preupdate-$DATESUFFIX $BLOCKDIR
    mv $CURRENTCONFIG.preupdate-$DATESUFFIX $CURRENTCONFIG
 fi
+
+if [[ $MULTIPROCPATCH > 0 ]]; then
+  echo "Running 'forkpatch $FORKNAME -multiproc'"
+  forkpatchq $FORKNAME -multiproc
+fi
+if [[ $LOGWINNINGPLOTSPATCH > 0 ]]; then
+  echo "Running 'forkpatch $FORKNAME -logwinningplots'"
+  forkpatchq $FORKNAME -logwinningplots
+fi
+echo
 
 if [[ $DAEMONRUNNING == 1 ]]; then
    echo "forkupdate:  Restarting fork with same services it had when it was stopped."
