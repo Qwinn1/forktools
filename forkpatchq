@@ -44,7 +44,9 @@ if [[ $2 != '-multiproc' && $2 != '-logwinningplots' ]]; then
 fi
 
 . ftbuildrunlists.sh
-if [[ $1 != 'all' ]]; then
+if [[ $FTBASECOMMAND == 'forkupdate' ]]; then
+   FARMERLIST=$1
+elif [[ $1 != 'all' ]]; then
    OLDIFS=$IFS
    IFS=''
    FORKNAMERUNNING=$( echo $FARMERLIST | grep "^$1$" )
@@ -110,34 +112,16 @@ if [[ $2 == '-multiproc' ]]; then
          sed -i.ftbackup "/^from ${FORKNAMEINCODE}.util.streamable import recurse_jsonify/a # Next two lines added by forkpatch -multiproc\nfrom ${FORKNAMEINCODE}.util.default_root import DEFAULT_ROOT_PATH\nfrom ${FORKNAMEINCODE}.util.config import load_config" $PROGRAMTOMOD
          sed -i.ftbak "/^        num_workers = max(cpu_count - 2, 1)/a\        # Next three lines added by forkpatch -multiproc\n        config = load_config(DEFAULT_ROOT_PATH, \"config.yaml\")\n        if 'multiprocessing_limit' in config.keys():\n            num_workers = min(num_workers, int(config[\"multiprocessing_limit\"]));" $PROGRAMTOMOD
          rm ${PROGRAMTOMOD}.ftbak
-
-         echo "forkpatch:  Attempting to restart fork with same services."
-         if [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 1 && $FULLNODERUNNING == 1 ]]; then
-            FORKSTARTPARAM='-f'
-         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 1 ]]; then
-            FORKSTARTPARAM='-fnw'
-         elif [[ $FARMERRUNNING == 0 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
-            FORKSTARTPARAM='-h'
-         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 0 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
-            FORKSTARTPARAM='-fo'         
-         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
-            FORKSTARTPARAM='-fh'
-         else 
-            echo "forkpatch:  You should now run forkstart -f, -fnw or -h to resume whichever service you prefer for this fork."
-            exit
-         fi
-            
-         $FORKTOOLSDIR/forkstart $FORKNAME $FORKSTARTPARAM
-         if [[ $1 = 'all' ]]; then            
-            echo "forkpatch:  Sleeping for 30 seconds to allow $FORKNAME restart a moment to process before proceeding."            
-            sleep 30
-         fi
       else
          echo "forkpatch: $FORKNAME code $PROGRAMTOMOD not found.  Skipping $FORKNAME."
          continue
       fi
+
+      if [[ $FTBASECOMMAND != 'forkupdate' ]]; then
+         . $FORKTOOLSDIR/ftrestart.sh      
+      fi
+      echo "forkpatch complete:  Verify patched forks have lowered fullnode worker counts in forkmon. If not, try running forkfixconfig to add the parameter."      
    done
-   echo "forkpatch complete:  Verify patched forks have lowered fullnode worker counts in forkmon. If not, try running forkfixconfig to add the parameter."
 fi
 
 if [[ $2 == '-logwinningplots' ]]; then
@@ -181,34 +165,15 @@ if [[ $2 == '-logwinningplots' ]]; then
          echo "            harvester_api.py will be backed up to $FORKNAME/harvester_api.py.ftbackup"
 
          sed -i.ftbackup "/^                await peer.send_message(msg)$/a\            # Next three lines added by forkpatch -logwinningplots\n            if sublist:\n                self.harvester.log.info(\n                    f\"Found {len(sublist)} proofs in {filename} in {time_taken:.5f} s\"\n                )" $PROGRAMTOMOD
-
-         echo "forkpatch:  Attempting to restart fork with same services."
-         if [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 1 && $FULLNODERUNNING == 1 ]]; then
-            FORKSTARTPARAM='-f'
-         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 1 ]]; then
-            FORKSTARTPARAM='-fnw'
-         elif [[ $FARMERRUNNING == 0 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
-            FORKSTARTPARAM='-h'
-         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 0 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
-            FORKSTARTPARAM='-fo'         
-         elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
-            FORKSTARTPARAM='-fh'
-         else 
-            echo "forkpatch:  You should now run forkstart -f, -fnw or -h to resume whichever service you prefer for this fork."
-            exit
-         fi
-            
-         $FORKTOOLSDIR/forkstart $FORKNAME $FORKSTARTPARAM
-         if [[ $1 = 'all' ]]; then            
-            echo "forkpatch:  Sleeping for 30 seconds to allow $FORKNAME restart a moment to process before proceeding."            
-            sleep 30
-         fi
-         
       else
          echo "forkpatch: $FORKNAME code $PROGRAMTOMOD not found.  Skipping $FORKNAME."
          continue
       fi
+      
+      if [[ $FTBASECOMMAND != 'forkupdate' ]]; then
+         . $FORKTOOLSDIR/ftrestart.sh
+      fi
+      echo "forkpatch complete:  An additional line in the logs will identify the specific plot proofs are found in for all patched forks."   
    done
-   echo "forkpatch complete:  An additional line in the logs will identify the specific plot proofs are found in for all patched forks."   
 fi
       
