@@ -48,7 +48,24 @@ else
       date -d $2"${1} month" +"%Y-%m"
     }    
     function forkss () {
-      ss -atnp 2>/dev/null | awk '{ printf "%s %s %s\n", $1, $4, $6 }' | grep LISTEN
+      LOCALIPS=$( ifconfig | grep 'inet ' | awk '{ print $2 }' )
+      # We do two passes of ss -atnp output, collecting matches of local ips on column 4 first (local), then on column 5 (peers), then concatenate
+      BUILDEXPR=$(echo 'ss -atnp 2>/dev/null | ')
+      BUILDEXPR=$(echo $BUILDEXPR " awk '{ printf \"%s %s %s\n\", " )
+      BUILDEXPR4=$(echo $BUILDEXPR ' $1, $4, $6 }')
+      BUILDEXPR5=$(echo $BUILDEXPR ' $1, $5, $6 }')
+      BUILDEXPR4=$(echo $BUILDEXPR4 "' | grep " )
+      BUILDEXPR5=$(echo $BUILDEXPR5 "' | grep " )      
+      OLDIFS=$IFS
+      IFS=$'\n'
+      for localip in $LOCALIPS; do
+        BUILDEXPR4=$(printf '%s -e %s' $BUILDEXPR4 $localip )
+        BUILDEXPR5=$(printf '%s -e %s' $BUILDEXPR5 $localip )        
+      done
+      FULLLIST=$( eval $BUILDEXPR4 && eval $BUILDEXPR5 )
+      IFS=''
+      echo $FULLLIST      
+      IFS=$OLDIFS      
     }
     function forkssoutput () {
       OLDIFS=$IFS
