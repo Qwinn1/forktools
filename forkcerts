@@ -72,8 +72,8 @@ if [[ $FORKCERTSMODE == '-export' ]]; then
       fi
       if [[ -d $FORKTOOLSDIR/ftcerts/$FORKNAME ]]; then
          rm -r $FORKTOOLSDIR/ftcerts/$FORKNAME
-         mkdir $FORKTOOLSDIR/ftcerts/$FORKNAME
       fi
+      mkdir $FORKTOOLSDIR/ftcerts/$FORKNAME
       cp -r $CURRENTCA $FORKTOOLSDIR/ftcerts/$FORKNAME/ca
       echo "forkcerts -export:  Creating $FORKTOOLSDIR/ftcerts/$FORKNAME"
       echo "SETFARMERPEER='${FARMERIP}'" > $FORKTOOLSDIR/ftcerts/$FORKNAME/config.$FORKNAME.farmerip
