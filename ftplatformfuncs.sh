@@ -54,8 +54,8 @@ else
       BUILDEXPR=$(echo $BUILDEXPR " awk '{ printf \"%s %s %s\n\", " )
       BUILDEXPR4=$(echo $BUILDEXPR ' $1, $4, $6 }')
       BUILDEXPR5=$(echo $BUILDEXPR ' $1, $5, $6 }')
-      BUILDEXPR4=$(echo $BUILDEXPR4 "' | grep " )
-      BUILDEXPR5=$(echo $BUILDEXPR5 "' | grep " )      
+      BUILDEXPR4=$(echo $BUILDEXPR4 "' | grep -e [::] | grep " )
+      BUILDEXPR5=$(echo $BUILDEXPR5 "' | grep -e [::] | grep " )      
       OLDIFS=$IFS
       IFS=$'\n'
       for localip in $LOCALIPS; do
