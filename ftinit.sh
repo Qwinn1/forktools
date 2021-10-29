@@ -1,7 +1,5 @@
 # To be included in all forktools.  Calls all configuration includes and defines forktools functions.
 
-export LC_ALL=C.UTF-8
-
 HELPREQUEST=$( printf '%s' $* | grep '\-help' ) 
 if [[ $HELPREQUEST != '' ]]; then
   print_usage
@@ -9,6 +7,9 @@ if [[ $HELPREQUEST != '' ]]; then
 fi   
 
 . ftplatformfuncs.sh
+
+PLATFORMLOCALE=$(getlocale)
+export LC_ALL=$PLATFORMLOCALE
 
 # Display forktool startup string.  Silenced after first time so forktools can call other forktools without redisplaying in the call.
 # Also makes sure that any redirected errors go to the parent forktool's error log, not to the log of a called forktool.

@@ -1,5 +1,8 @@
 # platform-specific function definitions
 if [[ $OSTYPE == 'darwin'* ]]; then
+    function getlocale () {
+      echo 'en_US.utf8'
+    }
     function DateOffset () {
       if [ $# -eq 1 ] ; then
           date -j -v${1}d +"%Y-%m-%d"
@@ -41,6 +44,9 @@ if [[ $OSTYPE == 'darwin'* ]]; then
       xargs -I {} date -j -f "@%s" "{}" "+%Y-%m-%dT%H:%M:%S" | awk '{$1=$1};1'
     }
 else
+    function getlocale () {
+      echo 'C.UTF-8'
+    }
     function DateOffset () {
       date -d $2"${1} day" +"%Y-%m-%d"
     }
