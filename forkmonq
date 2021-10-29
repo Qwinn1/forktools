@@ -145,7 +145,7 @@ if [[ $FARMERONLY != 1 ]]; then
     echo -e "------------------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ----------------------------------------------------------------"
   fi
   echo
-  printf  '                                                               File    File   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
+  printf  '                                                               Plot    Plot   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
   printf  '                                  Srvcs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since\n'
   printf  'Harvester         Version         DNFHW   #Plots    Harvest   Today   Y/Day     Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
   echo -e "---------------------------------------------------------------------------------------------------------------------------------------------"
@@ -211,8 +211,8 @@ if [[ $FARMERONLY != 1 ]]; then
         YESTERDAYMAX=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
         TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -ac ' below 5 seconds ' )
         YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac ' below 5 seconds ')   
-        TODAYFILEERRORS=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -ac 'badbit or failbit' )
-        YESTERDAYFILEERRORS=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac 'badbit or failbit' )
+        TODAYFILEERRORS=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -ac -e 'badbit or failbit' -e 'Invalid file' -e 'may no longer exist' -e 'multiple copies of the' )
+        YESTERDAYFILEERRORS=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac -e 'badbit or failbit' -e 'Invalid file' -e 'may no longer exist' -e 'multiple copies of the' )
         PROOFSTODAYLIST=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )
         PROOFSYESTERDAYLIST=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )   
         PROOFCOUNT=0
