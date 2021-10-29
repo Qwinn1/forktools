@@ -1,7 +1,7 @@
 # platform-specific function definitions
 if [[ $OSTYPE == 'darwin'* ]]; then
     function getlocale () {
-      echo 'en_US.utf8'
+      echo 'en_US.UTF-8'
     }
     function DateOffset () {
       if [ $# -eq 1 ] ; then
