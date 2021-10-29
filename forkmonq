@@ -68,7 +68,7 @@ done
 if [[ $HARVESTERONLY != 1 ]]; then
   printf '\n'
   if [[ $VALIDATEFORKNAME == 'No' ]]; then
-    echo -e "---------------------------------------------------------------------- FARMERS: $FARMERCOUNT --------------------------------------------------------------------"
+    echo -e "---------------------------------------------------------------------- FARMERS: $FARMERCOUNT ---------------------------------------------------------------------"
     printf '\n'
   fi
   if [[ $FARMERCOUNT > 0 ]]; then
@@ -142,12 +142,13 @@ IFS=$ORIGIFS
 if [[ $FARMERONLY != 1 ]]; then
   printf '\n'
   if [[ $VALIDATEFORKNAME == 'No' ]]; then
-    echo -e "----------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ---------------------------------------------------------"
+    echo -e "------------------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ----------------------------------------------------------------"
   fi
-  printf  '                                                               Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
-  printf  '                                  Srvcs                Last   Response   Response   Response   Response   Warns  Warns   Since\n'
-  printf  'Harvester         Version         DNFHW   #Plots    Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
-  echo -e "------------------------------------------------------------------------------------------------------------------------------"
+  echo
+  printf  '                                                               File    File   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
+  printf  '                                  Srvcs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since\n'
+  printf  'Harvester         Version         DNFHW   #Plots    Harvest   Today   Y/Day     Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
+  echo -e "---------------------------------------------------------------------------------------------------------------------------------------------"
   for fork in $HARVESTERLIST; do
      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
@@ -210,6 +211,8 @@ if [[ $FARMERONLY != 1 ]]; then
         YESTERDAYMAX=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
         TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -ac ' below 5 seconds ' )
         YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac ' below 5 seconds ')   
+        TODAYFILEERRORS=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -ac 'badbit or failbit' )
+        YESTERDAYFILEERRORS=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac 'badbit or failbit' )
         PROOFSTODAYLIST=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )
         PROOFSYESTERDAYLIST=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )   
         PROOFCOUNT=0
@@ -220,7 +223,7 @@ if [[ $FARMERONLY != 1 ]]; then
           let PROOFCOUNT=$PROOFCOUNT+$proof
         done
      fi
-     printf '%-17.17s %-15.15s %-6.6s%8.8s %10s %9.2fs %9.2fs %9.2fs %9.2fs %7s %6s %7s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$PLOTCOUNT" "$LASTHARVESTAGO" "$TODAYAVG" "$YESTERDAYAVG" "$TODAYMAX" "$YESTERDAYMAX" "$TODAYFIVESECWARNS" "$YESTERDAYFIVESECWARNS" "$PROOFCOUNT"
+     printf '%-17.17s %-15.15s %-6.6s%8.8s %10s  %6.6s  %6.6s%9.2fs %9.2fs %9.2fs %9.2fs %7s %6s %7s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$PLOTCOUNT"  "$LASTHARVESTAGO" "$TODAYFILEERRORS" "$YESTERDAYFILEERRORS" "$TODAYAVG" "$YESTERDAYAVG" "$TODAYMAX" "$YESTERDAYMAX" "$TODAYFIVESECWARNS" "$YESTERDAYFIVESECWARNS" "$PROOFCOUNT"
   done
 fi
 echo
