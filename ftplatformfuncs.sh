@@ -54,7 +54,7 @@ else
       date -d $2"${1} month" +"%Y-%m"
     }    
     function forkss () {
-      LOCALIPS=$( ifconfig | grep 'inet ' | awk '{ print $2 }' )
+      LOCALIPS=$( ip address | grep 'inet ' | awk '{ print $2 }'  | sed 's|/.*||' )
       # We do two passes of ss -atnp output, collecting matches of local ips on column 4 first (local), then on column 5 (peers), then concatenate
       BUILDEXPR=$(echo 'ss -atnp 2>/dev/null | ')
       BUILDEXPR=$(echo $BUILDEXPR " awk '{ printf \"%s %s %s\n\", " )
