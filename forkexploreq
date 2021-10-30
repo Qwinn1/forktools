@@ -106,13 +106,13 @@ if [[ $SUMMARIZEBYDAY == 'Yes' || $SUMMARIZEBYMONTH == 'Yes' ]]; then
    if [[ $SUMMARIZEBYDAY == 'Yes' ]]; then
       STARTFROM=$(echo $STARTFROM | cut -c1-10 )
       ENDDATE=$(echo $ENDDATE | cut -c1-10 )
-      MERGEDCOINLIST=$( echo $MERGEDCOINLIST | awk '{print substr($1,1,10) " " $2 " N/A N/A N/A"}' )
+      MERGEDCOINLIST=$( echo $MERGEDCOINLIST | awk '{print substr($1,1,10) " " $2 " " $3 " N/A N/A"}' )
    else
       STARTFROM=$(echo $STARTFROM | cut -c1-7 )
       ORIGENDDATE=$ENDDATE
       ENDDATE=$(MonthOffset +1)      
       ENDDATE=$(echo $ENDDATE | cut -c1-7 )
-      MERGEDCOINLIST=$( echo $MERGEDCOINLIST | awk '{print substr($1,1,7) " " $2 " N/A N/A N/A"}' )
+      MERGEDCOINLIST=$( echo $MERGEDCOINLIST | awk '{print substr($1,1,7) " " $2 " " $3 " N/A N/A"}' )
    fi      
    IFS=$OLDIFS
 fi   
@@ -148,8 +148,8 @@ TOTALFORRANGE=0
 COUNTFORRANGE=0
 while read line; do
   DATETRANS=$(echo $line | awk '{print $1}')
-  BLOCKAMOUNT=$(echo $line | awk '{print $2}')
-  COINBASE=$(echo $line | awk '{print $3}')
+  COINBASE=$(echo $line | awk '{print $2}')
+  BLOCKAMOUNT=$(echo $line | awk '{print $3}')  
   HEIGHTCONFIRMED=$(echo $line | awk '{print $4}')
   HEIGHTSPENT=$(echo $line | awk '{print $5}')
 
@@ -157,18 +157,16 @@ while read line; do
   then 
      BLOCKAMOUNT=$(echo "(($BLOCKAMOUNT+$PREVBLOCKAMOUNT))" | bc)
   else
-     BUILDEXPR=$(echo "echo 'scale = 2; (($PREVBLOCKAMOUNT / $MMMULTIPLIER))' | bc -l")
+     BUILDEXPR=$(echo "echo 'scale = 3; (($PREVBLOCKAMOUNT / $MMMULTIPLIER))' | bc -l")
      PRINTAMOUNT=$(eval $BUILDEXPR)
      TOTALFORRANGE=$(echo "(($TOTALFORRANGE + $PRINTAMOUNT))" | bc -l)
      COUNTFORRANGE=$(echo "(($COUNTFORRANGE + 1))" | bc -l)
-     if [[ $SUMMARIZEBYDAY == 'Yes' || $SUMMARIZEBYMONTH == 'Yes' ]]; then
-       FARMEDBLOCK='N/A'
-     elif [[ $PREVCOINBASE = true ]]; then
+     if [[ $PREVCOINBASE = true ]]; then
        FARMEDBLOCK='Yes'
      else
        FARMEDBLOCK='No'
      fi
-     printf '%-19s    %-10s  %-10s %-3s %12.12s %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
+     printf '%-19s    %-10s  %-10s %-3s %12.3f %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
   fi
   FIRSTLOOP=0
   PREVDATETRANS=$DATETRANS
@@ -179,16 +177,14 @@ while read line; do
 done <<< "$TRANSACTIONLIST"
 
 # Add the last line.
-BUILDEXPR=$(echo "echo 'scale = 2; (($PREVBLOCKAMOUNT / $MMMULTIPLIER))' | bc -l")
+BUILDEXPR=$(echo "echo 'scale = 3; (($PREVBLOCKAMOUNT / $MMMULTIPLIER))' | bc -l")
 PRINTAMOUNT=$(eval $BUILDEXPR)
-if [[ $SUMMARIZEBYDAY == 'Yes' || $SUMMARIZEBYMONTH == 'Yes' ]]; then
-  FARMEDBLOCK='N/A'
-elif [[ $PREVCOINBASE = true ]]; then
+if [[ $PREVCOINBASE = true ]]; then
   FARMEDBLOCK='Yes'
 else
   FARMEDBLOCK='No'
 fi
-printf '%-19s    %-10s  %-10s %-3s %12.12s %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
+printf '%-19s    %-10s  %-10s %-3s %12.3f %-5s\n' "$PREVDATETRANS" "$PREVHEIGHTCONFIRMED" "$PREVHEIGHTSPENT" "$FARMEDBLOCK" "$PRINTAMOUNT" "$COINNAME" 
 TOTALFORRANGE=$(echo "(($TOTALFORRANGE + $PRINTAMOUNT))" | bc -l)
 COUNTFORRANGE=$(echo "(($COUNTFORRANGE + 1))" | bc)
 

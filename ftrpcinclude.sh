@@ -70,11 +70,11 @@ COINBASELIST=$(grep "coinbase"  <<< "$COININFO" | sed 's/"coinbase"://' | sed 's
 CONFIRMEDLIST=$(grep "confirmed_block_index"  <<< "$COININFO" | sed 's/"confirmed_block_index"://' | sed 's/,//' | awk '{$1=$1};1' )
 SPENTLIST=$(grep "spent_block_index"  <<< "$COININFO" | sed 's/"spent_block_index"://' | sed 's/,//' | awk '{$1=$1};1' )
 
-MERGEDCOINLIST=$(paste <(printf %s "$TIMESTAMPEPOCHLIST") <(printf %s "$COINAMOUNTLIST") <(printf %s "$COINBASELIST") <(printf %s "$CONFIRMEDLIST") <(printf %s "$SPENTLIST") | sort)
+MERGEDCOINLIST=$(paste <(printf %s "$TIMESTAMPEPOCHLIST") <(printf %s "$COINBASELIST") <(printf %s "$COINAMOUNTLIST") <(printf %s "$CONFIRMEDLIST") <(printf %s "$SPENTLIST") | sort)
 
 if [[ $HIDEBALANCE != 1 ]]; then
    # Sum address balance from unspent MERGEDCOINLIST
-   ADDRESSBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
+   ADDRESSBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
    # A ton of extra formatting work for ridiculous forks with like 20000 block rewards (looking at you cryptodoge and chaingreen)
    if [[ "$ADDRESSBALANCE" > 9999 ]]; then
       ADDRESSBALANCE= $( (($ADDRESSBALANCE / 1000)) | bc )
@@ -83,14 +83,14 @@ if [[ $HIDEBALANCE != 1 ]]; then
 fi
 
 TODAYADDRESSCHANGE=$(grep $TODAYSTAMP <<< "$MERGEDCOINLIST")
-TODAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20f' <<< "$TODAYADDRESSCHANGE" )
+TODAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$TODAYADDRESSCHANGE" )
 YESTERDAYADDRESSCHANGE=$(grep $YESTERDAYSTAMP <<< "$MERGEDCOINLIST")
-YESTERDAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $2 / mult )); }' OFMT='%20.20f' <<< "$YESTERDAYADDRESSCHANGE")
+YESTERDAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$YESTERDAYADDRESSCHANGE")
 IFS=DEFAULT_IFS
 
 # Sum farmed balance from coinbase = true
 IFS=$'\t' 
-FARMEDBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($3 == "true") s += (( $2 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
+FARMEDBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($2 == "true") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
 IFS=''
 
 BLOCKCHAINSTATE=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_blockchain_state | python -m json.tool)
