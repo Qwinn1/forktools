@@ -60,13 +60,13 @@ else
       BUILDEXPR=$(echo $BUILDEXPR " awk '{ printf \"%s %s %s\n\", " )
       BUILDEXPR4=$(echo $BUILDEXPR ' $1, $4, $6 }')
       BUILDEXPR5=$(echo $BUILDEXPR ' $1, $5, $6 }')
-      BUILDEXPR4=$(echo $BUILDEXPR4 "' | grep -e [::] | grep " )
-      BUILDEXPR5=$(echo $BUILDEXPR5 "' | grep -e [::] | grep " )      
+      BUILDEXPR4=$(echo $BUILDEXPR4 "' | grep -e '\[::\]' -e '0.0.0.0' " )
+      BUILDEXPR5=$(echo $BUILDEXPR5 "' | grep -e '\[::\]' -e '0.0.0.0' " )      
       OLDIFS=$IFS
       IFS=$'\n'
       for localip in $LOCALIPS; do
-        BUILDEXPR4=$(printf '%s -e %s' $BUILDEXPR4 $localip )
-        BUILDEXPR5=$(printf '%s -e %s' $BUILDEXPR5 $localip )        
+        BUILDEXPR4=$(printf "%s -e '%s'" $BUILDEXPR4 $localip )
+        BUILDEXPR5=$(printf "%s -e '%s'" $BUILDEXPR5 $localip )        
       done
       FULLLIST=$( eval $BUILDEXPR4 && eval $BUILDEXPR5 )
       IFS=''
