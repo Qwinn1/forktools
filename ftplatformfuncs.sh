@@ -76,12 +76,7 @@ else
     function forkssoutput () {
       OLDIFS=$IFS
       IFS=''
-      FORKLENGTH=$( expr length $FORKNAME )
-      if [[ $FORKLENGTH == 15 ]]; then
-        CONFLICTS=$( echo $FORKSS | grep :$port[^0-9] | grep -v '"'${PROCESSNAME} | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
-      else
-        CONFLICTS=$( echo $FORKSS | grep :$port[^0-9] | grep -v '"'${PROCESSNAME}_ | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
-      fi
+      CONFLICTS=$( echo $FORKSS | grep :$port[^0-9] | grep -v '"'${PROCESSNAME}'"' | grep -v '"'${PROCESSNAME}_ | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
       if [[ $CONFLICTS != '' ]]; then
          if [[ $SCANNEDMSG == 0 ]]; then
             printf "Scanned %-15.15s - Conflicts Found!\n" $fork
