@@ -95,12 +95,12 @@ YESTERDAYSTAMP=$(DateOffset -1)
 
 ##  FUNCTIONS
 
-# Takes a period of time and represents it in the form of "1d 2h 3m 4s"
+# Takes a period of time and represents it in the form of "1d2h3m4s"
 assemble_timestring () {
   # Currently works from days to seconds.
   # Parameter $1:  # of the provided unit
   # Parameter $2:  "m" or "s" - unit of parameter $1, as a single character.  Example:  to convert "432 minutes" to an ago string, pass in 432 and "m"
-  # Parameter $3:  Lowest unit to return.  1 = second, 2 = minute, 3 = hour, 4 = day
+  # Parameter $3:  Lowest unit to return.  1 = second, 2 = minute, 3 = hour, 4 = day.  Will go lower than this unit only if total time is below this unit.
   # Parameter $4:  Highest unit to return.  1 = second, 2 = minute, 3 = hour, 4 = day
   # Parameter $5:  Maximum time units to concatenate.  Defaults to 2.
   TIMECOUNTER=$1
@@ -125,21 +125,21 @@ assemble_timestring () {
     TIMECOUNTER=$(echo $(( $TIMECOUNTER % 86400)))
     TIMEMAXFINALUNITS=$TIMEMAXFINALUNITS-1
   fi
-  if [[ $TIMECOUNTER -gt 3599 && $TIMEMINUNIT -lt 4 && $TIMEMAXUNIT -gt 2 && $TIMEMAXFINALUNITS -gt 0 ]]; then
+  if [[ $TIMECOUNTER -gt 3599 && ( $TIMEMINUNIT -lt 4 || $RETURNTEXT = '') && $TIMEMAXUNIT -gt 2 && $TIMEMAXFINALUNITS -gt 0 ]]; then
     TIMECURRENTAMT=$(echo $(("$TIMECOUNTER / 3600")))
     TIMECURRENTUNIT='h'
     RETURNTEXT=$(echo "$RETURNTEXT$TIMECURRENTAMT$TIMECURRENTUNIT")
     TIMECOUNTER=$(echo $(( $TIMECOUNTER % 3600)))
     TIMEMAXFINALUNITS=$TIMEMAXFINALUNITS-1
   fi
-  if [[ $TIMECOUNTER -gt 59 && $TIMEMINUNIT -lt 3 && $TIMEMAXUNIT -gt 1 && $TIMEMAXFINALUNITS -gt 0 ]]; then
+  if [[ $TIMECOUNTER -gt 59 && ( $TIMEMINUNIT -lt 3 || $RETURNTEXT = '') && $TIMEMAXUNIT -gt 1 && $TIMEMAXFINALUNITS -gt 0 ]]; then
     TIMECURRENTAMT=$(echo $(("$TIMECOUNTER / 60")))
     TIMECURRENTUNIT='m'
     RETURNTEXT=$(echo "$RETURNTEXT$TIMECURRENTAMT$TIMECURRENTUNIT")
     TIMECOUNTER=$(echo $(( $TIMECOUNTER % 60)))
     TIMEMAXFINALUNITS=$TIMEMAXFINALUNITS-1
   fi
-  if [[ $TIMECOUNTER -gt 0 && $TIMEMINUNIT -lt 2 && $TIMEMAXUNIT -gt 0 && $TIMEMAXFINALUNITS -gt 0 ]]; then
+  if [[ $TIMECOUNTER -gt 0 && ( $TIMEMINUNIT -lt 2 || $RETURNTEXT = '') && $TIMEMAXUNIT -gt 0 && $TIMEMAXFINALUNITS -gt 0 ]]; then
     TIMECURRENTAMT=$(echo $(("$TIMECOUNTER / 1")))
     TIMECURRENTUNIT='s'
     RETURNTEXT=$(echo "$RETURNTEXT$TIMECURRENTAMT$TIMECURRENTUNIT")
