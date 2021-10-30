@@ -75,7 +75,8 @@ CHIAPROCS=$(forkss | grep "\"chia" )
 OLDVERSION=$(forkq $FORKNAME ver)
 echo "forkupdate:  Updating from current version # :" $OLDVERSION
 
-
+POOLLISTSECTION=0
+SETPOOLLIST=''
 # Get farmer peer from harvester section.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
 OLDIFS=$IFS
 IFS=''
@@ -94,6 +95,17 @@ while read line; do
   if [[ $SECTION == *pool:* && $WORKLINE == *target_address:* ]]; then
     SETPOOLTARGET=$(grep "target_address: " <<< "$WORKLINE" | sed 's/.*target_address: //' | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
   fi
+  if [[ $SECTION == *pool:* && $WORKLINE == *pool_list:* ]]; then
+    SETPOOLLIST=$( echo $line )
+    POOLLISTSECTION=1
+    continue
+  fi
+  if [[ $SECTION == *pool:* && $WORKLINE == *selected_network:* ]]; then
+    POOLLISTSECTION=0  
+  fi
+  if [[ $SECTION == *pool:* && $POOLLISTSECTION == 1 ]]; then
+    SETPOOLLIST+=$( printf '\n%s' $line )
+  fi
 done < $CURRENTCONFIG
 IFS=$OLDIFS
 
@@ -106,6 +118,13 @@ echo "   Farmer peer           : " $FARMERPEER
 echo "   Farmer target address : " $SETFARMTARGET
 echo "   Pool target address   : " $SETPOOLTARGET
 echo "   Multiprocessing_limit : " $ORIGMULTIPROC
+if [[ $SETPOOLLIST != '' ]]; then
+  echo "Pooling parameters detected.  Preserving pool_list parameters:"
+  OLDIFS=$IFS
+  IFS=''
+  echo $SETPOOLLIST
+  IFS=$OLDIFS  
+fi
 echo
 echo "Checking if any forkpatch patches were applied so they can be re-applied at the end of forkupdate."
 
@@ -172,6 +191,9 @@ while read line; do
     OLDPOOLTARGET=$(grep "target_address: " <<< "$WORKLINE" | sed 's/.*target_address: //' | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
     OLDPOOLTARGETLINENO=$LINENUMBER
   fi
+  if [[ $SECTION == *pool:* && $WORKLINE == *network_overrides:* ]]; then
+    NETWORKOVERRIDESLINENO=$LINENUMBER
+  fi    
 done < "$CURRENTCONFIG"
 IFS=$OLDIFS
 
@@ -179,6 +201,9 @@ if [[ $OLDFARMTARGET != '' && $OLDPOOLTARGET != '' ]]; then
   echo "forkupdate:  Setting farmer and pool reward target addresses in new config.yaml to pre-forkupdate values."
   sed -i.bak "${OLDFARMTARGETLINENO}s/$OLDFARMTARGET/$SETFARMTARGET/" $CURRENTCONFIG
   sed -i.bak "${OLDPOOLTARGETLINENO}s/$OLDPOOLTARGET/$SETPOOLTARGET/" $CURRENTCONFIG
+  if [[ $SETPOOLLIST != '' ]]; then
+     sed -i.bak "${NETWORKOVERRIDESLINENO}r /dev/stdin" $CURRENTCONFIG <<< "$SETPOOLLIST"
+  fi
   # Making sure we don't add multiproc a second time in case forkfixconfig miraculously did it
   NEWMULTIPROC=$( grep "multiprocessing_limit" $CURRENTCONFIG )
   if [[ $NEWMULTIPROC == '' ]]; then
