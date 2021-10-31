@@ -2,7 +2,7 @@
 
 Eighteen 100% local, 100% bash scripts to make fork maintenance and monitoring infinitely easier.  Very useful even if you're only farming Chia.  Includes a 100% local blockchain explorer that can provide full history of any wallet address, deeply detailed monitoring stats, service starting and stopping, code patching, automated config.yaml editing (including mass adding and/or deleting of plot directory lists), fully scripted updating of any fork to the latest released version, all forktool output can now be logged to files, and most commands can now be run for a single fork or all of them at once.  Requires extremely little configuration (really only have to supply your plot directories for 'forkaddplotdirs' to work, and which services for which forks 'forkstart all' should start), but there are lots of optional configuration options available to fine tune other forktools to your taste.
 
-Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations under Windows.
+Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 installations under Windows.  (Debian 10 users may need to run sudo apt install bc)
 
 # The Short List Of Commands And What They Do
 
@@ -19,31 +19,30 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 - `forklog`             \- Powerful and versatile debug.log parser
 - `forkfixconfig`       \- Allows you to quickly set your preferred settings in one or all fork's config.yamls.
 - `forkedit`            \- Simply opens up a fork's config.yaml in your preferred text editor (gedit by default)
+- `forkcerts`           \- Makes setting up remote harvesters much easier, particularly when performing this task for many forks at once.
 - `forkcheck`           \- Displays all configured ports for all forks in a chart, and identifies any non-standard ports configured for each fork.
 - `forkports`           \- Checks to make sure the ports used by each fork are actually only being used by that fork
 - `forktargets`         \- Displays a list of the target receive addresses for every fork running a farmer
 - `forknodes`           \- Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
 - `forkbenchips`        \- Benchmarks your server's capacity for running a timelord
 
+# CHANGELOG, VERSION 4.1:
 
-# Changelog, Version 4.0:
+- Users running forktools under certain locale settings (such as European locales that display commans instead of periods for decimals) should no longer suffer minor display and calculation issues.
+- New tool 'forkcerts` makes setting up remote harvesters much easier.  It will export all farmer `ca` folders containing ssl certs into a single folder for easy transfer to and import on remote harvesters for the `init -c` process required on remote harvester setups. Also sets the farmer peer setting in the harvester config.yamls during the import process.
+- `fork`, in addition to the 3 previous abbreviations 'sum', 'wal' and 'ver', now supports an additional 13 three-letter abbreviations for various other forktools.  For example, instead of running `forkfixconfig chia`, you can run `fork chia fix`.  Run `fork -help` for the list of available abbreviations. 
+- `forkpatch` now supports a second patch, -logwinningplots, which will identify the specific plot any proof was found in in your debug.log.
+- `forkupdate` will now automatically detect whether any forkpatch was previously applied to the fork and attempt to reapply them just before the restart at the end of forkupdate.
+- `forkfixconfig` now supports setting `enable_upnp`.  Like all other parameters, this can be set by a fork-specific config override if desired.
+- `forkupdate` will now preserve chia pooling parameters and foxypool pooling parameters when recreating the fork's config.yaml.
+- `forkexplore` transaction details now go to 3 decimal point precision, rather than 2.
+- `forkexplore` can now be run in summary mode with -d (for daily) and -m (for monthly) switches.  Will report farmed and non-farmed balances separately for easier trend analysis.
+- `forkports` has been refined even more to detect more local port usage and exclude more remote port usage in conflict determination.
+- `forkmon` now shows "Plot Errors Today" and "Plot Errors Y/Day" in the harvester section.  This count sums 4 different plot related errors that can be found in the harvester logs.
+- `forkmon` will now show the number of seconds since winning the last block, rather than a blank, when the last block was won less than a minute ago.
+- `forkmon` harvester section will now display forks that have just been set up and never actually started harvesting yet more gracefully.
+- `forkmon` and `forkexplore` can now be run with -o switch, intended to allow users to monitor their NFT recovery addresses.  This relies on the user having set up a config.nftaddress.forkname file in the ftconfigs folder specifying the NFT recovery address for each fork they want to monitor with `forkmon -o` or `forkexplore -o`.
 
-- New tool `forkremoveplotdirs`.  Identical to forkaddplotdirs except that it removes plot directories instead of adding them.  Has its own config file that needs to be edited in order to use.
-- New tool `forkcheck`.  Whereas forkports monitors actual port usage, forkcheck lists all the ports as set in your config.yaml's in a nicely formatted chart (very similar in layout to the Chia Forks Trader "Unofficial List of Chia Forks" ports tab) and, as a bonus, compares them to the ports in the fork's `initial-config.yaml` and identifies all non-standard ports in your operating configs.
-- New tool `forkpatch`.  Applies popular code patches to all forks, with plenty of validation to ensure the patch can be applied safely.  For now, only supports grayfallstown's excellent multiprocessing_limit patch that can drastically reduce CPU and memory usage.  Works on every known fork.  And there will be more global code patches to come!
-- Extensive improvements to `forkports`.  Now runs for every installed fork it can find, rather than only forks running a harvester process.  Now ignores conflicts with timelord port and timelord launcher port (because the vast majority of people don't run them) and introducer port and remote peer port usage (because neither conflicts with local ports).  Forks with very long names (looking at you, LLC) will no longer show as conflicting with itself.  And forkports now runs much much much much much faster.
-- `forktargets` now also runs much much faster
-- `forkaddplotdirs` and the new `forkremoveplotdirs` now support fork-specific config files.  For example, if you have a different set of plot directories for chives, simply create `ftconfigs/config.forkaddplotdirs.chives`, and set the fork-specific plot directories in it.  These fork-specific configs will be respected even when running with 'all' parameter and when run from within `forkupdate`.
-- `forkfixconfig` also supports fork specific configs now, but behaves slightly differently.  You name them the same way (`config.forkfixconfig.forkname`) and you COULD make it a duplicate of the entire main `config.forkfixconfig` file and it would all work (any setting in `config.forkfixconfig` can be overridden by the value set in `config.forkfixconfig.forkname`), but you probably shouldn't, because the settings in the main file, `config.forkfixconfig`, are still operative and applied *unless* overwritten by the settings in the fork specific config.  So for example if you want to just override the Maize full node RPC port to resolve the conflict with Tranzact's full node port, create `config.forkfixconfig.maize` and have only one line in it, `SETFULLNODERPCPORT= 8667`.  Then even when you update the fork with forkupdate, that port setting will always be re-applied, and all the other global settings from the main `config.forkfixconfig` will also still be applied.  This way you still only have to maintain the global settings that you don't ever override in one place, `config.forkfixconfig`.
-- The install scripts have been improved so that, when new parameters are added to a forktool's config template file, the new parameters will be automatically added to your own custom config files and all of your personal preferred settings will be preserved.
-- A bug that could very very rarely cause some forktools to just display the -help information and nothing else has been fixed.
-- All hardcoded references to specific forks in forktools code have been removed. The code that deals with forks that use "chia" process names and otherwise do things in a non-standard fashion is entirely dynamic now, and if a fork changes the way it handles those things from one version to another, forktools will support both versions.
-- `forkfixconfig` can now be used to edit `parallel_read` in the harvester section, which is mainly only useful to Mac OS X users using exfat-formatted drives.
-- `forkmon` now has a "Srvcs DNFHW" column in both sections. This identifies which services are running.  The DNFHW refers to Daemon Node Farmer Harvester Wallet, and it will show Y  under that service's letter if it's running, and N if it isn't.
-- Many irrelevant bash error messages, particularly in `forkmon` and `forkexplore`, that were generated during normal, expected operation will no longer be logged or visible to users.
-- If a newly installed fork is still below height 500, accurate ETW calculations aren't possible. `forkmon` will now show "Ht<500" under ETW and "N/A" under Effort in this circumstance.
-- If a newly installed fork has never had a successful harvest, `forkmon` will now show 'Never' under LastHarvest rather than the number of seconds since 1970.
-- Symlink creation for venidium removed now that it has moved to mainnet.
 
 # INSTALLATION INSTRUCTIONS:
 
@@ -266,6 +265,26 @@ https://discord.gg/XmTEZ4SHtj
 
 
 ## OLDER CHANGELOGS
+
+
+# Changelog, Version 4.0:
+
+- New tool `forkremoveplotdirs`.  Identical to forkaddplotdirs except that it removes plot directories instead of adding them.  Has its own config file that needs to be edited in order to use.
+- New tool `forkcheck`.  Whereas forkports monitors actual port usage, forkcheck lists all the ports as set in your config.yaml's in a nicely formatted chart (very similar in layout to the Chia Forks Trader "Unofficial List of Chia Forks" ports tab) and, as a bonus, compares them to the ports in the fork's `initial-config.yaml` and identifies all non-standard ports in your operating configs.
+- New tool `forkpatch`.  Applies popular code patches to all forks, with plenty of validation to ensure the patch can be applied safely.  For now, only supports grayfallstown's excellent multiprocessing_limit patch that can drastically reduce CPU and memory usage.  Works on every known fork.  And there will be more global code patches to come!
+- Extensive improvements to `forkports`.  Now runs for every installed fork it can find, rather than only forks running a harvester process.  Now ignores conflicts with timelord port and timelord launcher port (because the vast majority of people don't run them) and introducer port and remote peer port usage (because neither conflicts with local ports).  Forks with very long names (looking at you, LLC) will no longer show as conflicting with itself.  And forkports now runs much much much much much faster.
+- `forktargets` now also runs much much faster
+- `forkaddplotdirs` and the new `forkremoveplotdirs` now support fork-specific config files.  For example, if you have a different set of plot directories for chives, simply create `ftconfigs/config.forkaddplotdirs.chives`, and set the fork-specific plot directories in it.  These fork-specific configs will be respected even when running with 'all' parameter and when run from within `forkupdate`.
+- `forkfixconfig` also supports fork specific configs now, but behaves slightly differently.  You name them the same way (`config.forkfixconfig.forkname`) and you COULD make it a duplicate of the entire main `config.forkfixconfig` file and it would all work (any setting in `config.forkfixconfig` can be overridden by the value set in `config.forkfixconfig.forkname`), but you probably shouldn't, because the settings in the main file, `config.forkfixconfig`, are still operative and applied *unless* overwritten by the settings in the fork specific config.  So for example if you want to just override the Maize full node RPC port to resolve the conflict with Tranzact's full node port, create `config.forkfixconfig.maize` and have only one line in it, `SETFULLNODERPCPORT= 8667`.  Then even when you update the fork with forkupdate, that port setting will always be re-applied, and all the other global settings from the main `config.forkfixconfig` will also still be applied.  This way you still only have to maintain the global settings that you don't ever override in one place, `config.forkfixconfig`.
+- The install scripts have been improved so that, when new parameters are added to a forktool's config template file, the new parameters will be automatically added to your own custom config files and all of your personal preferred settings will be preserved.
+- A bug that could very very rarely cause some forktools to just display the -help information and nothing else has been fixed.
+- All hardcoded references to specific forks in forktools code have been removed. The code that deals with forks that use "chia" process names and otherwise do things in a non-standard fashion is entirely dynamic now, and if a fork changes the way it handles those things from one version to another, forktools will support both versions.
+- `forkfixconfig` can now be used to edit `parallel_read` in the harvester section, which is mainly only useful to Mac OS X users using exfat-formatted drives.
+- `forkmon` now has a "Srvcs DNFHW" column in both sections. This identifies which services are running.  The DNFHW refers to Daemon Node Farmer Harvester Wallet, and it will show Y  under that service's letter if it's running, and N if it isn't.
+- Many irrelevant bash error messages, particularly in `forkmon` and `forkexplore`, that were generated during normal, expected operation will no longer be logged or visible to users.
+- If a newly installed fork is still below height 500, accurate ETW calculations aren't possible. `forkmon` will now show "Ht<500" under ETW and "N/A" under Effort in this circumstance.
+- If a newly installed fork has never had a successful harvest, `forkmon` will now show 'Never' under LastHarvest rather than the number of seconds since 1970.
+- Symlink creation for venidium removed now that it has moved to mainnet.
 
 # Changelog, Version 3.11:
 
