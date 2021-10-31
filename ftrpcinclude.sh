@@ -40,12 +40,18 @@ if [[ $MMMULTIPLIER == '' ]]; then
 fi
 MMMULTIPLIER=$(echo "(( $MMMULTIPLIER ))" | bc )
 
+ADDRESS=''
 # Get wallet target address (can be different from what is set in config.yaml, if config was directly edited after last time farmer was started)
-if [[ $HOTSWITCH == '' ]]; then
+if [[ $NFTSWITCH == 'on' ]]; then
+   if [[ -f $FORKTOOLSDIR/ftconfigs/config.nftaddress.$FORKNAME ]]; then
+      . $FORKTOOLSDIR/ftconfigs/config.nftaddress.$FORKNAME
+      ADDRESS=$( echo $USEOTHERADDRESS )
+   fi
+elif [[ $HOTSWITCH == 'on' ]]; then
+   ADDRESS=$($FORKNAME keys show | grep "First wallet address: " | head -1 | sed 's/First wallet address: //' )
+else
    ADDRESS=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{"search_for_private_key":false}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_reward_targets | python -m json.tool )
    ADDRESS=$(echo $ADDRESS | sed 's/.*"farmer_target": "//' | sed 's/",.*//' | awk '{$1=$1};1')
-else
-   ADDRESS=$($FORKNAME keys show | grep "First wallet address: " | head -1 | sed 's/First wallet address: //' )
 fi
 
 # Address override.  Pass to forkexplore as -a parameter.
@@ -53,45 +59,46 @@ if [[ $SPECIFIEDADDRESS != '' ]]; then
   ADDRESS=$SPECIFIEDADDRESS
 fi
 
-# Get puzzle hash for that address
-PUZZLEHASH=$(echo "python3 -c 'import $FORKNAME.util.bech32m as b; print(b.decode_puzzle_hash(\""$ADDRESS"\"). hex())'")
-PUZZLEHASH=$(eval $PUZZLEHASH)
+if [[ $ADDRESS != '' ]]; then
+   # Get puzzle hash for that address
+   PUZZLEHASH=$(echo "python3 -c 'import $FORKNAME.util.bech32m as b; print(b.decode_puzzle_hash(\""$ADDRESS"\"). hex())'")
+   PUZZLEHASH=$(eval $PUZZLEHASH)
 
+   # Get coin history for address
+   COININFO=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"puzzle_hash\":\""$PUZZLEHASH"\", \"include_spent_coins\":true}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_coin_records_by_puzzle_hash | python -m json.tool")
+   COININFO=$(eval $COININFO)
 
-# Get coin history for address
-COININFO=$(echo "curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{\"puzzle_hash\":\""$PUZZLEHASH"\", \"include_spent_coins\":true}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_coin_records_by_puzzle_hash | python -m json.tool")
-COININFO=$(eval $COININFO)
+   IFS=''
+   # Parse JSON for one line per coin
+   TIMESTAMPEPOCHLIST=$(grep "timestamp"  <<< "$COININFO" | sed 's/"timestamp"://' | sed 's/,//' | awk '{$1=$1};1' | awk '{print "@"$1}' | EpochToDate )
+   COINAMOUNTLIST=$(grep "amount"  <<< "$COININFO" | sed 's/"amount"://' | sed 's/,//' | awk '{$1=$1};1' )
+   COINBASELIST=$(grep "coinbase"  <<< "$COININFO" | sed 's/"coinbase"://' | sed 's/,//' | awk '{$1=$1};1' )
+   CONFIRMEDLIST=$(grep "confirmed_block_index"  <<< "$COININFO" | sed 's/"confirmed_block_index"://' | sed 's/,//' | awk '{$1=$1};1' )
+   SPENTLIST=$(grep "spent_block_index"  <<< "$COININFO" | sed 's/"spent_block_index"://' | sed 's/,//' | awk '{$1=$1};1' )
 
-IFS=''
-# Parse JSON for one line per coin
-TIMESTAMPEPOCHLIST=$(grep "timestamp"  <<< "$COININFO" | sed 's/"timestamp"://' | sed 's/,//' | awk '{$1=$1};1' | awk '{print "@"$1}' | EpochToDate )
-COINAMOUNTLIST=$(grep "amount"  <<< "$COININFO" | sed 's/"amount"://' | sed 's/,//' | awk '{$1=$1};1' )
-COINBASELIST=$(grep "coinbase"  <<< "$COININFO" | sed 's/"coinbase"://' | sed 's/,//' | awk '{$1=$1};1' )
-CONFIRMEDLIST=$(grep "confirmed_block_index"  <<< "$COININFO" | sed 's/"confirmed_block_index"://' | sed 's/,//' | awk '{$1=$1};1' )
-SPENTLIST=$(grep "spent_block_index"  <<< "$COININFO" | sed 's/"spent_block_index"://' | sed 's/,//' | awk '{$1=$1};1' )
+   MERGEDCOINLIST=$(paste <(printf %s "$TIMESTAMPEPOCHLIST") <(printf %s "$COINBASELIST") <(printf %s "$COINAMOUNTLIST") <(printf %s "$CONFIRMEDLIST") <(printf %s "$SPENTLIST") | sort)
 
-MERGEDCOINLIST=$(paste <(printf %s "$TIMESTAMPEPOCHLIST") <(printf %s "$COINBASELIST") <(printf %s "$COINAMOUNTLIST") <(printf %s "$CONFIRMEDLIST") <(printf %s "$SPENTLIST") | sort)
-
-if [[ $HIDEBALANCE != 1 ]]; then
-   # Sum address balance from unspent MERGEDCOINLIST
-   ADDRESSBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
-   # A ton of extra formatting work for ridiculous forks with like 20000 block rewards (looking at you cryptodoge and chaingreen)
-   if [[ "$ADDRESSBALANCE" > 9999 ]]; then
-      ADDRESSBALANCE= $( (($ADDRESSBALANCE / 1000)) | bc )
-      ADDRESSBALANCE="$ADDRESSBALANCE"K
+   if [[ $HIDEBALANCE != 1 ]]; then
+      # Sum address balance from unspent MERGEDCOINLIST
+      ADDRESSBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
+      # A ton of extra formatting work for ridiculous forks with like 20000 block rewards (looking at you cryptodoge and chaingreen)
+      if [[ "$ADDRESSBALANCE" > 9999 ]]; then
+         ADDRESSBALANCE= $( (($ADDRESSBALANCE / 1000)) | bc )
+         ADDRESSBALANCE="$ADDRESSBALANCE"K
+      fi
    fi
+
+   TODAYADDRESSCHANGE=$(grep $TODAYSTAMP <<< "$MERGEDCOINLIST")
+   TODAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$TODAYADDRESSCHANGE" )
+   YESTERDAYADDRESSCHANGE=$(grep $YESTERDAYSTAMP <<< "$MERGEDCOINLIST")
+   YESTERDAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$YESTERDAYADDRESSCHANGE")
+   IFS=DEFAULT_IFS
+
+   # Sum farmed balance from coinbase = true
+   IFS=$'\t' 
+   FARMEDBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($2 == "true") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
+   IFS=''
 fi
-
-TODAYADDRESSCHANGE=$(grep $TODAYSTAMP <<< "$MERGEDCOINLIST")
-TODAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$TODAYADDRESSCHANGE" )
-YESTERDAYADDRESSCHANGE=$(grep $YESTERDAYSTAMP <<< "$MERGEDCOINLIST")
-YESTERDAYADDRESSCHANGE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($5 == "0") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$YESTERDAYADDRESSCHANGE")
-IFS=DEFAULT_IFS
-
-# Sum farmed balance from coinbase = true
-IFS=$'\t' 
-FARMEDBALANCE=$(awk -v mult="$MMMULTIPLIER" 'END { print s } { if ($2 == "true") s += (( $3 / mult )); }' OFMT='%20.20f' <<< "$MERGEDCOINLIST" )
-IFS=''
 
 BLOCKCHAINSTATE=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/full_node/private_full_node.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FULLNODERPCPORT/get_blockchain_state | python -m json.tool)
 
@@ -212,7 +219,10 @@ IFS=''
 CURRENTDATEEPOCH=$(date +%s)
 LASTBLOCKDATE=$(c1grep 'true' <<< "$MERGEDCOINLIST" | tail -1 | awk '{print $1}' )
 
-if [[ $LASTBLOCKDATE == '' ]]; then
+if [[ $ADDRESS = '' ]]; then
+  BLOCKWON='false'
+  EFFORT=99999
+elif [[ $LASTBLOCKDATE == '' ]]; then
   BLOCKWON='false'
   # Calculate effort from date of first harvest in logs if possible
   # For speed purposes, find the highest log available instead of grabbing them all
