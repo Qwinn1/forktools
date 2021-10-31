@@ -2,7 +2,7 @@
 
 Eighteen 100% local, 100% bash scripts to make fork maintenance and monitoring infinitely easier.  Very useful even if you're only farming Chia.  Includes a 100% local blockchain explorer that can provide full history of any wallet address, deeply detailed monitoring stats, service starting and stopping, code patching, automated config.yaml editing (including mass adding and/or deleting of plot directory lists), fully scripted updating of any fork to the latest released version, all forktool output can now be logged to files, and most commands can now be run for a single fork or all of them at once.  Requires extremely little configuration (really only have to supply your plot directories for 'forkaddplotdirs' to work, and which services for which forks 'forkstart all' should start), but there are lots of optional configuration options available to fine tune other forktools to your taste.
 
-Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 installations under Windows.  (Debian 10 users may need to run sudo apt install bc)
+Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 installations under Windows.
 
 # The Short List Of Commands And What They Do
 
@@ -28,6 +28,7 @@ Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 ins
 
 # CHANGELOG, VERSION 4.1:
 
+- Confirmed compatibility with Debian 10.  Note that Debian users may need to run `apt install bc` as the `bc` function, which allows for some basic mathematical processing in bash, does not appear to be part of a default Debian installation.
 - Users running forktools under certain locale settings (such as European locales that display commans instead of periods for decimals) should no longer suffer minor display and calculation issues.
 - New tool 'forkcerts` makes setting up remote harvesters much easier.  It will export all farmer `ca` folders containing ssl certs into a single folder for easy transfer to and import on remote harvesters for the `init -c` process required on remote harvester setups. Also sets the farmer peer setting in the harvester config.yamls during the import process.
 - `fork`, in addition to the 3 previous abbreviations 'sum', 'wal' and 'ver', now supports an additional 13 three-letter abbreviations for various other forktools.  For example, instead of running `forkfixconfig chia`, you can run `fork chia fix`.  Run `fork -help` for the list of available abbreviations. 
@@ -42,6 +43,7 @@ Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 ins
 - `forkmon` will now show the number of seconds since winning the last block, rather than a blank, when the last block was won less than a minute ago.
 - `forkmon` harvester section will now display forks that have just been set up and never actually started harvesting yet more gracefully.
 - `forkmon` and `forkexplore` can now be run with -o switch, intended to allow users to monitor their NFT recovery addresses.  This relies on the user having set up a config.nftaddress.forkname file in the ftconfigs folder specifying the NFT recovery address for each fork they want to monitor with `forkmon -o` or `forkexplore -o`.
+- Symlink creation for silicoin revised to the new 'sit' naming structure.
 
 
 # INSTALLATION INSTRUCTIONS:
