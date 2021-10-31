@@ -43,7 +43,7 @@ Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 ins
 - `forkmon` will now show the number of seconds since winning the last block, rather than a blank, when the last block was won less than a minute ago.
 - `forkmon` harvester section will now display forks that have just been set up and never actually started harvesting yet more gracefully.
 - `forkmon` and `forkexplore` can now be run with -o switch, intended to allow users to monitor their NFT recovery addresses.  This relies on the user having set up a config.nftaddress.forkname file in the ftconfigs folder specifying the NFT recovery address for each fork they want to monitor with `forkmon -o` or `forkexplore -o`.
-- Symlink creation for silicoin revised to the new 'sit' naming structure.
+- Symlink creation for silicoin revised to the new `sit` naming structure.
 
 
 # INSTALLATION INSTRUCTIONS:
