@@ -37,7 +37,7 @@ Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 ins
 - `forkupdate` will now automatically detect whether any forkpatch was previously applied to the fork and attempt to reapply them just before the restart at the end of forkupdate.
 - `forkupdate` will now preserve chia pooling parameters and foxypool pooling parameters when recreating the fork's config.yaml.
 - `forkexplore` transaction details now go to 3 decimal point precision, rather than 2.
-- `forkexplore` can now be run in summary mode with -d (for daily) and -m (for monthly) switches.  Will report farmed and non-farmed balances separately for easier trend analysis.
+- `forkexplore` can now be run in summary mode with -d (for daily) and -m (for monthly) switches.  Will report farmed and non-farmed totals separately for easier trend analysis.
 - `forkports` has been refined even more to detect more local port usage and exclude more remote port usage in conflict determination.
 - `forkmon` now shows "Plot Errors Today" and "Plot Errors Y/Day" in the harvester section.  This count sums 4 different plot related errors that can be found in the harvester logs.
 - `forkmon` will now show the number of seconds since winning the last block, rather than a blank, when the last block was won less than a minute ago.
