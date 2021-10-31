@@ -29,7 +29,7 @@ Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 ins
 # CHANGELOG, VERSION 4.1:
 
 - Confirmed compatibility with Debian 10.  Note that Debian users may need to run `apt install bc` as the `bc` function, which allows for some basic mathematical processing in bash, does not appear to be part of a default Debian installation.
-- Users running forktools under certain locale settings (such as European locales that display commans instead of periods for decimals) should no longer suffer minor display and calculation issues.
+- Users running forktools under certain locale settings (such as European locales that display commas instead of periods for decimals) should no longer suffer minor display and calculation issues.
 - New tool `forkcerts` makes setting up remote harvesters much easier.  It will export all farmer `ca` folders containing ssl certs into a single folder for easy transfer to and import on remote harvesters for the required `init -c` process.  Also sets the farmer peer setting in the harvester config.yamls during the import process.
 - `fork`, in addition to the 3 previous abbreviations 'sum', 'wal' and 'ver', now supports an additional 13 three-letter abbreviations for various other forktools.  For example, instead of running `forkfixconfig chia`, you can run `fork chia fix`.  Run `fork -help` for the list of available abbreviations.  Note that the capability of running for 'all' forks cannot be replicated in this way. `fork` can still only be run for one forkname at a time.
 - `forkpatch` now supports a second patch, -logwinningplots, which will identify the specific plot any proof was found in in your debug.log.
