@@ -66,37 +66,41 @@ bash installft.sh   # or 'bash installfttest.sh' for testing branch
 
 # FORKTOOLS MAJOR FEATURES:
 
-- forkexplore ( 100% local address explorer ) :
-
-```qwinn@Huginn:~/.silicoin/mainnet/log$ forkexplore hddcoin -s 2021-08-28 -u 2021-08-30
+- forkexplore ( 100% local address explorer ) in new daily summary mode:
+```'forkexplore apple -d' initiated on Wed Nov  3 17:29:17 EDT 2021...
 
                          EXPLORING Address:
-   hdd1w5hw0qsv0se7fasdfasd9un8325g0kyl6fdafaaw0953ha5phxh2313ss8fvkg2
+   apple18ccn7ksalj9gu0t4yzj89fdsfadsfdsav7886yz22xcdx707axwmdlane8ql76k03
 
-                    Balance:           343 HDD
-                    Today:               8 HDD
-                    Yesterday:           2 HDD
+                    Balance:          1010 APPLE
+                    Today:               8 APPLE
+                    Yesterday:          10 APPLE
 ---------------------------------------------------------------------
                        Height      Height     Farmed         Total
 DateTime               Confirmed   Spent      Block?        Amount
 ---------------------------------------------------------------------
-2021-08-28T03:56:32    252432      0          Yes         2.00 HDD  
-2021-08-28T07:41:38    253161      0          Yes         2.00 HDD  
-2021-08-28T08:32:03    253336      0          Yes         2.00 HDD  
-2021-08-28T11:39:57    253959      0          Yes         2.00 HDD  
-2021-08-28T12:02:45    254036      0          Yes         2.00 HDD  
-2021-08-28T19:57:23    255552      0          No         13.00 HDD  
-2021-08-28T22:39:44    256057      0          Yes         2.00 HDD  
-2021-08-28T23:18:25    256170      0          Yes         2.00 HDD  
-2021-08-29T01:48:40    256658      0          Yes         2.00 HDD  
-2021-08-29T13:44:29    258960      0          Yes         2.00 HDD  
-2021-08-29T16:21:35    259447      0          Yes         2.00 HDD  
-2021-08-29T17:28:27    259644      0          Yes         2.00 HDD  
-2021-08-30T08:00:15    262475      0          Yes         2.00 HDD  
-2021-08-30T18:47:29    264529      0          Yes         2.00 HDD  
-2021-08-30T22:32:24    265164      0          Yes         2.00 HDD  
+2021-10-15             N/A         N/A        Yes       12.000 APPLE
+2021-10-16             N/A         N/A        Yes       16.000 APPLE
+2021-10-17             N/A         N/A        Yes        6.000 APPLE
+2021-10-18             N/A         N/A        Yes       12.000 APPLE
+2021-10-19             N/A         N/A        Yes       16.000 APPLE
+2021-10-20             N/A         N/A        Yes       12.000 APPLE
+2021-10-21             N/A         N/A        Yes       10.000 APPLE
+2021-10-22             N/A         N/A        Yes       12.000 APPLE
+2021-10-23             N/A         N/A        Yes       10.000 APPLE
+2021-10-24             N/A         N/A        Yes        6.000 APPLE
+2021-10-26             N/A         N/A        Yes       16.000 APPLE
+2021-10-27             N/A         N/A        Yes        8.000 APPLE
+2021-10-28             N/A         N/A        Yes       14.000 APPLE
+2021-10-29             N/A         N/A        Yes       22.000 APPLE
+2021-10-30             N/A         N/A        Yes       12.000 APPLE
+2021-10-31             N/A         N/A        Yes       12.000 APPLE
+2021-11-01             N/A         N/A        Yes        8.000 APPLE
+2021-11-02             N/A         N/A        Yes       10.000 APPLE
+2021-11-03             N/A         N/A        Yes        8.000 APPLE
 ---------------------------------------------------------------------
-    15 transactions from 2021-08-28 to 2021-08-30:       41.00 HDD  
+Daily summary from 2021-10-15 to 2021-11-03:           222.000 APPLE
+
 ```
 
 - forkmon ( Detailed overview of all running farmers and harvesters ) :
