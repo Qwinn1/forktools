@@ -43,7 +43,7 @@ Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 ins
 - `forkmon` will now show the number of seconds since winning the last block, rather than a blank, when the last block was won less than a minute ago.
 - `forkmon` harvester section will now display forks that have just been set up and never actually started harvesting yet more gracefully.
 - `forkmon` and `forkexplore` can now be run with -o switch, intended to allow users to monitor their NFT recovery addresses.  This relies on the user having set up a config.nftaddress.forkname file in the ftconfigs folder specifying the NFT recovery address for each fork they want to monitor with `forkmon -o` or `forkexplore -o`.
-- Symlink creation for silicoin revised to the new `sit` naming structure.
+- Symlink creation for silicoin revised to the new `sit` naming structure.  Technical support for this fork should not be misconstrued as a recommendation to farm this fork.
 
 
 # INSTALLATION INSTRUCTIONS:
@@ -123,20 +123,19 @@ goji              0.2.3           YYYYN  Farming       8     5415  558912   424 
 
 ...
 
------------------------------------------------------ HARVESTERS: 19 ---------------------------------------------------------
-                                                               Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs
-                                  Srvcs                Last   Response   Response   Response   Response   Warns  Warns   Since
-Harvester         Version         DNFHW   #Plots    Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day
-------------------------------------------------------------------------------------------------------------------------------
-apple             1.2.90          YYYYN     5415     2s ago      0.71s      0.73s     36.94s     85.37s      32     83      10      
-avocado           1.1.7.dev124    YYYYN     5415     3s ago      0.72s      0.73s     10.24s     10.38s      10     34      16      
-beet              2.1.3b0         YYYYN     5415     2s ago      0.72s      0.74s     10.39s     10.36s      11     25      59      
-btcgreen          2.2.4           YYYYN     5415     7s ago      0.70s      0.71s     10.41s     43.49s      18     68      21      
-cannabis          1.2.301         YYYYN     5415     8s ago      0.72s      0.73s     10.44s     10.83s      21     37      16      
-covid             1.2.9           YYYYN     5415     6s ago      0.70s      0.70s     10.36s     15.61s      26     44      10      
-flax              0.1.3           YYYYN     5415    11s ago      0.69s      0.70s     10.32s     18.02s      16     30       4      
-flora             0.2.10          YYYYN     5415     8s ago      0.71s      0.70s     10.35s     15.56s      18     36       4      
-goji              0.2.3           YYYYN     5415     1s ago      0.73s      0.73s     10.32s     10.38s      24     43      13 
+------------------------------------------------------------- HARVESTERS: 19 ----------------------------------------------------------------
+
+                                                               Plot    Plot   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs
+                                  Srvcs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since
+Harvester         Version         DNFHW   #Plots    Harvest   Today   Y/Day     Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day
+---------------------------------------------------------------------------------------------------------------------------------------------
+apple             1.2.90          YYYYN     5415     2s ago       0       0     0.68s      0.70s      4.20s      5.98s       0      2       9
+avocado           1.1.7.dev124    YYYYN     5415     1s ago       0       0     0.71s      0.73s      4.21s      4.61s       0      0      12
+beet              2.1.3b0         YYYYN     5415     5s ago       0       0     0.72s      0.72s      5.13s      5.48s       1      1      81
+btcgreen          2.2.6.dev8      YYYYN     5415     6s ago       0       0     0.68s      0.72s      5.06s    105.10s       1     32      11
+cannabis          1.2.301         YYYYN     5415     6s ago       0       0     0.72s      0.72s      3.44s      4.68s       0      0      11
+covid             1.2.9           YYYYN     5415     5s ago       0       0     0.69s      0.69s      4.76s      3.87s       0      0      12
+
 ```
 
 - forkfixconfig ( Automated editing of fork config.yamls to preferred settings as set up in config.forkfixconfig )
@@ -251,12 +250,13 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 
 # COMMANDS WITH MULTIPLE PARAMETERS/SWITCHES
 
-- `fork`                   \-  Allows you to issue commands from any directory as if you were cd'd into the fork's -blockchain directory and activated. It allows for 3 3-letter abbreviations for the 2nd parameter - 'sum' for 'farm summary', 'wal' for 'wallet show' and 'ver' for 'version'.
+- `fork`                   \-  Allows you to issue commands from any directory as if you were cd'd into the fork's -blockchain directory and activated. It allows for 16 3-letter abbreviations for the 2nd parameter - 'sum' for 'farm summary', 'wal' for 'wallet show', 'ver' for 'version', and now 13 additional abbreviations for other forktools.  Run `fork -help` for details.  Note that `fork` can still only support a specific forkname as the first parameter, it does not support running other forktools for 'all' even if the forktool itself supports running for all forks.
 - `forkstart`              \-  Use this to start up one, or all, of your farmers, harvesters, and timelords.  By editing config.forkstartall, you can run `forkstart all` to start every farmer and harvester you like sequentially (great for use following a reboot).  When running for a single fork, use one of the following switches:  `forkstart forkname -fnw` for farmer-no-wallet, `-f` for farmer with wallet, `-h` for harvester and `-t` for timelord.  Run `forkstart -help` for complete usage details.
 - `forkstop`               \-  Use this to stop all services for one or all forks (great for prepping for a shutdown).  Run `forkstop -help` for usage details.
 - `forklog`                \-  This single function has now replaced all previous log parsing forktools. Running it without switches will just get you a tail of the log.  You can manipulate log output now any way I could think of if you get creative with the switches, but you're still able to duplicate the quick and simple older versions with a single switch for each.  Just run `forklog -help` to get a full list of options. The first line of forklog output will be the actual bash command that is constructed after all the switches and parameters are interpreted that produces the output that follows.
-- `forkexplore`            \-  100% local address explorer.  Provides address balances for your target receive address for the selected fork, but has an additional -a switch which allows you to explore any receive address you wish, hot or cold, and all the same date range options that forklog has.  Does not require sync, just a running farmer and full node.  Run `forkexplore -help` for detailed usage instructions.
-- `forkpatch`              \-  Can be run for one fork or 'all' forks.  Used to apply useful code patches to every fork.  For now, can only add grayfallstown's multiprocessing_limit patch.  This phenomenal patch has been known to reduce RAM usage by 30-40% per fork (effects can vary depending on the number of CPU cores, the more cores you have the more improvement you'll see), and forkpatch allows you to apply it to every fork.
+- `forkexplore`            \-  100% local address explorer.  Provides address balances for your target receive address for the selected fork, but has an additional -a switch which allows you to explore any receive address you wish, hot or cold, and all the same date range options that forklog has.  Does not require sync, just a running farmer and full node.  Can run in --daily and --monthly summary modes.  Run `forkexplore -help` for detailed usage instructions.
+- `forkpatch`              \-  Can be run for one fork or 'all' forks.  Used to apply useful code patches to every fork.  As of version 4.1, supports two patches:   First, patch -multiproc, grayfallstown's phenomenal multiprocessing_limit patch, which has been known to reduce RAM usage by 30-40% per fork (effects can vary depending on the number of CPU cores, the more cores you have the more improvement you'll see), and forkpatch allows you to apply it to every fork.  Second, patch -logwinningplots will add a line to your debug.logs identifying the specific plot in which each and every proof was found.
+- `forkcerts`              \-  Makes setting up remote harvesters much easier.  It will export all farmer `ca` folders containing ssl certs into a single folder for easy transfer to and import on remote harvesters for the required `init -c` process.  Also sets the farmer peer setting in the harvester config.yamls during the import process.
 
 
 # DISCORD SERVER
