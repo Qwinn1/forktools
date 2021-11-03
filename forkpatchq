@@ -162,7 +162,7 @@ if [[ $2 == '-logwinningplots' ]]; then
             continue
          fi
          echo "forkpatch:  $FORKNAME deemed suitable for automated -logwinningplots patching. Attempting to mod $FORKNAME/harvester/harvester_api.py."
-         echo "            harvester_api.py will be backed up to $FORKNAME/harvester_api.py.ftbackup"
+         echo "            harvester_api.py will be backed up to $FORKNAME/harvester/harvester_api.py.ftbackup"
 
          sed -i.ftbackup "/^                await peer.send_message(msg)$/a\            # Next three lines added by forkpatch -logwinningplots\n            if sublist:\n                self.harvester.log.info(\n                    f\"Found {len(sublist)} proofs in {filename} in {time_taken:.5f} s\"\n                )" $PROGRAMTOMOD
       else
