@@ -33,7 +33,7 @@ Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 ins
 - New tool `forkcerts` makes setting up remote harvesters much easier.  It will export all farmer `ca` folders containing ssl certs into a single folder for easy transfer to and import on remote harvesters for the required `init -c` process.  Also sets the farmer peer setting in the harvester config.yamls during the import process.
 - `fork`, in addition to the 3 previous abbreviations 'sum', 'wal' and 'ver', now supports an additional 13 three-letter abbreviations for various other forktools.  For example, instead of running `forkfixconfig chia`, you can run `fork chia fix`.  Run `fork -help` for the list of available abbreviations.  Note that the capability of running for 'all' forks cannot be replicated in this way. `fork` can still only be run for one forkname at a time.
 - `forkpatch` now supports a second patch, -logwinningplots, which will identify the specific plot any proof was found in in your debug.log.
-- `forkfixconfig` now supports setting `enable_upnp`.  Like all other parameters, this can be set by a fork-specific config override if desired.
+- `forkfixconfig` now supports setting `enable_upnp` and the two new db_sync parameters added by Chia.  Like all other parameters, this can be set by a fork-specific config override if desired.
 - `forkupdate` will now automatically detect whether any forkpatch was previously applied to the fork and attempt to reapply them just before the restart at the end of forkupdate.
 - `forkupdate` will now preserve chia pooling parameters and foxypool pooling parameters when recreating the fork's config.yaml.
 - `forkexplore` transaction details now go to 3 decimal point precision, rather than 2.
