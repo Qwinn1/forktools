@@ -86,6 +86,29 @@ while read line; do
      OLDPARALLELREAD=$line
      continue     
   fi
+  if [[ $SETBLOCKCHAINDBSYNC != '' && $SECTION == *full_node:* && $WORKLINE == *db_sync:* ]];
+  then
+     OLDBLOCKCHAINDBSYNC=$(grep "db_sync: " <<< "$WORKLINE" | sed 's/db_sync: //' | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
+     NEWBLOCKCHAINDBSYNC=$(sed "s/$OLDBLOCKCHAINDBSYNC/$SETBLOCKCHAINDBSYNC/" <<< "$WORKLINE")$PRESERVECOMMENT
+     OLDBLOCKCHAINDBSYNC=$line
+     BLOCKCHAINDBSYNCLINENO=$LINENUMBER
+     continue     
+  fi
+  if [[ $SETWALLETDBSYNC != '' && $SECTION == *wallet:* && $WORKLINE == *db_sync:* ]];
+  then
+     OLDWALLETDBSYNC=$(grep "db_sync: " <<< "$WORKLINE" | sed 's/db_sync: //' | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
+     NEWWALLETDBSYNC=$(sed "s/$OLDWALLETDBSYNC/$SETWALLETDBSYNC/" <<< "$WORKLINE")$PRESERVECOMMENT
+     OLDWALLETDBSYNC=$line
+     WALLETDBSYNCLINENO=$LINENUMBER
+     continue     
+  fi
+  if [[ $SETENABLEUPNP != '' && $SECTION == *full_node:* && $WORKLINE == *enable_upnp:* ]];
+  then
+     OLDENABLEUPNP=$(sed 's/enable_upnp: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+     NEWENABLEUPNP=$(sed "s/$OLDENABLEUPNP/$SETENABLEUPNP/" <<< "$WORKLINE")$PRESERVECOMMENT
+     OLDENABLEUPNP=$line
+     continue     
+  fi    
   
 done < $CURRENTCONFIG
 
@@ -159,6 +182,23 @@ if [[ $SETPARALLELREAD != '' && $OLDPARALLELREAD != $NEWPARALLELREAD ]]; then
   echo "  New Harvester Parallel Read: " $NEWFARMPEER
   ANYCHANGES='Yes'
 fi
+if [[ $SETBLOCKCHAINDBSYNC != '' && $OLDBLOCKCHAINDBSYNC != $NEWBLOCKCHAINDBSYNC ]]; then  
+  echo "  Old Blockchain DB Sync (Pragma): " $OLDBLOCKCHAINDBSYNC
+  echo "  New Blockchain DB Sync (Pragma): " $NEWBLOCKCHAINDBSYNC
+  ANYCHANGES='Yes'
+fi
+if [[ $SETWALLETDBSYNC != '' && $OLDWALLETDBSYNC != $NEWWALLETDBSYNC ]]; then  
+  echo "  Old Wallet DB Sync (Pragma): " $OLDWALLETDBSYNC
+  echo "  New Wallet DB Sync (Pragma): " $NEWWALLETDBSYNC
+  ANYCHANGES='Yes'
+fi
+
+if [[ $SETENABLEUPNP != '' && $OLDENABLEUPNP != $NEWENABLEUPNP ]]; then  
+  echo "  Old Enable UPNP: " $OLDENABLEUPNP
+  echo "  New Enable UPNP: " $NEWENABLEUPNP
+  ANYCHANGES='Yes'
+fi
+
 if [[ $SETMULTIPROC != '' && $SKIPMULTIPROC == 'No' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then
   echo "  Old Multiprocessing Limit: " $OLDMULTIPROC
   echo "  New Multiprocessing Limit: " $NEWMULTIPROC
@@ -291,6 +331,18 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
    if [[ $SETPARALLELREAD != '' && $OLDPARALLELREAD != $NEWPARALLELREAD ]]; then  
       echo "Setting harvester parallel read..."
       sed -i.bak "s/$OLDPARALLELREAD/$NEWPARALLELREAD/" $CURRENTCONFIG
+   fi
+   if [[ $SETBLOCKCHAINDBSYNC != '' && $OLDBLOCKCHAINDBSYNC != $NEWBLOCKCHAINDBSYNC ]]; then  
+      echo "Setting blockchain db sync level..."
+      sed -i.bak "${BLOCKCHAINDBSYNCLINENO}s/$OLDBLOCKCHAINDBSYNC/$NEWBLOCKCHAINDBSYNC/" $CURRENTCONFIG
+   fi
+   if [[ $SETWALLETDBSYNC != '' && $OLDWALLETDBSYNC != $NEWWALLETDBSYNC ]]; then  
+      echo "Setting wallet db sync level..."
+      sed -i.bak "${WALLETDBSYNCLINENO}s/$OLDWALLETDBSYNC/$NEWWALLETDBSYNC/" $CURRENTCONFIG
+   fi
+   if [[ $SETENABLEUPNP != '' && $OLDENABLEUPNP != $NEWENABLEUPNP ]]; then  
+      echo "Setting enable upnp..."
+      sed -i.bak "s/$OLDENABLEUPNP/$NEWENABLEUPNP/" $CURRENTCONFIG
    fi
    if [[ $SETMULTIPROC != '' && $SKIPMULTIPROC == 'No' && $OLDMULTIPROC != $NEWMULTIPROC ]]; then  
       echo "Adding/replacing multiprocessing limit..."

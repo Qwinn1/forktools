@@ -1,8 +1,8 @@
 # Qwinn's forktools
 
-Eighteen 100% local, 100% bash scripts to make fork maintenance and monitoring infinitely easier.  Very useful even if you're only farming Chia.  Includes a 100% local blockchain explorer that can provide full history of any wallet address, deeply detailed monitoring stats, service starting and stopping, code patching, automated config.yaml editing (including mass adding and/or deleting of plot directory lists), fully scripted updating of any fork to the latest released version, all forktool output can now be logged to files, and most commands can now be run for a single fork or all of them at once.  Requires extremely little configuration (really only have to supply your plot directories for 'forkaddplotdirs' to work, and which services for which forks 'forkstart all' should start), but there are lots of optional configuration options available to fine tune other forktools to your taste.
+Nineteen 100% local, 100% bash scripts to make fork maintenance and monitoring infinitely easier.  Very useful even if you're only farming Chia.  Includes a 100% local blockchain explorer that can provide full history of any wallet address, deeply detailed monitoring stats, service starting and stopping, code patching, automated config.yaml editing (including mass adding and/or deleting of plot directory lists), fully scripted updating of any fork to the latest released version, all forktool output can now be logged to files, and most commands can now be run for a single fork or all of them at once.  Requires extremely little configuration (really only have to supply your plot directories for 'forkaddplotdirs' to work, and which services for which forks 'forkstart all' should start), but there are lots of optional configuration options available to fine tune other forktools to your taste.
 
-Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations under Windows.
+Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 installations under Windows.
 
 # The Short List Of Commands And What They Do
 
@@ -19,31 +19,32 @@ Fully tested and compatible under Ubuntu 20.04, MacOS X, and WSL2 installations 
 - `forklog`             \- Powerful and versatile debug.log parser
 - `forkfixconfig`       \- Allows you to quickly set your preferred settings in one or all fork's config.yamls.
 - `forkedit`            \- Simply opens up a fork's config.yaml in your preferred text editor (gedit by default)
+- `forkcerts`           \- Makes setting up remote harvesters much easier, particularly when performing this task for many forks at once.
 - `forkcheck`           \- Displays all configured ports for all forks in a chart, and identifies any non-standard ports configured for each fork.
 - `forkports`           \- Checks to make sure the ports used by each fork are actually only being used by that fork
 - `forktargets`         \- Displays a list of the target receive addresses for every fork running a farmer
 - `forknodes`           \- Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
 - `forkbenchips`        \- Benchmarks your server's capacity for running a timelord
 
+# CHANGELOG, VERSION 4.1:
 
-# Changelog, Version 4.0:
+- Confirmed compatibility with Debian 10.  Note that Debian users may need to run `apt install bc` as the `bc` function, which allows for some basic mathematical processing in bash, does not appear to be part of a default Debian installation.
+- Users running forktools under certain locale settings (such as European locales that display commas instead of periods for decimals) should no longer suffer minor display and calculation issues.
+- New tool `forkcerts` makes setting up remote harvesters much easier.  It will export all farmer `ca` folders containing ssl certs into a single folder for easy transfer to and import on remote harvesters for the required `init -c` process.  Also sets the farmer peer setting in the harvester config.yamls during the import process.
+- `fork`, in addition to the 3 previous abbreviations 'sum', 'wal' and 'ver', now supports an additional 13 three-letter abbreviations for various other forktools.  For example, instead of running `forkfixconfig chia`, you can run `fork chia fix`.  Run `fork -help` for the list of available abbreviations.  Note that the capability of running for 'all' forks cannot be replicated in this way. `fork` can still only be run for one forkname at a time.
+- `forkpatch` now supports a second patch, -logwinningplots, which will identify the specific plot any proof was found in in your debug.log.
+- `forkfixconfig` now supports setting `enable_upnp`.  Like all other parameters, this can be set by a fork-specific config override if desired.
+- `forkupdate` will now automatically detect whether any forkpatch was previously applied to the fork and attempt to reapply them just before the restart at the end of forkupdate.
+- `forkupdate` will now preserve chia pooling parameters and foxypool pooling parameters when recreating the fork's config.yaml.
+- `forkexplore` transaction details now go to 3 decimal point precision, rather than 2.
+- `forkexplore` can now be run in summary mode with -d (for daily) and -m (for monthly) switches.  Will report farmed and non-farmed totals separately for easier trend analysis.
+- `forkports` has been refined even more to detect more local port usage and exclude more remote port usage in conflict determination.
+- `forkmon` now shows "Plot Errors Today" and "Plot Errors Y/Day" in the harvester section.  This count sums 4 different plot related errors that can be found in the harvester logs.
+- `forkmon` will now show the number of seconds since winning the last block, rather than a blank, when the last block was won less than a minute ago.
+- `forkmon` harvester section will now display forks that have just been set up and never actually started harvesting yet more gracefully.
+- `forkmon` and `forkexplore` can now be run with -o switch, intended to allow users to monitor their NFT recovery addresses.  This relies on the user having set up a config.nftaddress.forkname file in the ftconfigs folder specifying the NFT recovery address for each fork they want to monitor with `forkmon -o` or `forkexplore -o`.
+- Symlink creation for silicoin revised to the new `sit` naming structure.  Technical support for this fork should not be misconstrued as a recommendation to farm this fork.
 
-- New tool `forkremoveplotdirs`.  Identical to forkaddplotdirs except that it removes plot directories instead of adding them.  Has its own config file that needs to be edited in order to use.
-- New tool `forkcheck`.  Whereas forkports monitors actual port usage, forkcheck lists all the ports as set in your config.yaml's in a nicely formatted chart (very similar in layout to the Chia Forks Trader "Unofficial List of Chia Forks" ports tab) and, as a bonus, compares them to the ports in the fork's `initial-config.yaml` and identifies all non-standard ports in your operating configs.
-- New tool `forkpatch`.  Applies popular code patches to all forks, with plenty of validation to ensure the patch can be applied safely.  For now, only supports grayfallstown's excellent multiprocessing_limit patch that can drastically reduce CPU and memory usage.  Works on every known fork.  And there will be more global code patches to come!
-- Extensive improvements to `forkports`.  Now runs for every installed fork it can find, rather than only forks running a harvester process.  Now ignores conflicts with timelord port and timelord launcher port (because the vast majority of people don't run them) and introducer port and remote peer port usage (because neither conflicts with local ports).  Forks with very long names (looking at you, LLC) will no longer show as conflicting with itself.  And forkports now runs much much much much much faster.
-- `forktargets` now also runs much much faster
-- `forkaddplotdirs` and the new `forkremoveplotdirs` now support fork-specific config files.  For example, if you have a different set of plot directories for chives, simply create `ftconfigs/config.forkaddplotdirs.chives`, and set the fork-specific plot directories in it.  These fork-specific configs will be respected even when running with 'all' parameter and when run from within `forkupdate`.
-- `forkfixconfig` also supports fork specific configs now, but behaves slightly differently.  You name them the same way (`config.forkfixconfig.forkname`) and you COULD make it a duplicate of the entire main `config.forkfixconfig` file and it would all work (any setting in `config.forkfixconfig` can be overridden by the value set in `config.forkfixconfig.forkname`), but you probably shouldn't, because the settings in the main file, `config.forkfixconfig`, are still operative and applied *unless* overwritten by the settings in the fork specific config.  So for example if you want to just override the Maize full node RPC port to resolve the conflict with Tranzact's full node port, create `config.forkfixconfig.maize` and have only one line in it, `SETFULLNODERPCPORT= 8667`.  Then even when you update the fork with forkupdate, that port setting will always be re-applied, and all the other global settings from the main `config.forkfixconfig` will also still be applied.  This way you still only have to maintain the global settings that you don't ever override in one place, `config.forkfixconfig`.
-- The install scripts have been improved so that, when new parameters are added to a forktool's config template file, the new parameters will be automatically added to your own custom config files and all of your personal preferred settings will be preserved.
-- A bug that could very very rarely cause some forktools to just display the -help information and nothing else has been fixed.
-- All hardcoded references to specific forks in forktools code have been removed. The code that deals with forks that use "chia" process names and otherwise do things in a non-standard fashion is entirely dynamic now, and if a fork changes the way it handles those things from one version to another, forktools will support both versions.
-- `forkfixconfig` can now be used to edit `parallel_read` in the harvester section, which is mainly only useful to Mac OS X users using exfat-formatted drives.
-- `forkmon` now has a "Srvcs DNFHW" column in both sections. This identifies which services are running.  The DNFHW refers to Daemon Node Farmer Harvester Wallet, and it will show Y  under that service's letter if it's running, and N if it isn't.
-- Many irrelevant bash error messages, particularly in `forkmon` and `forkexplore`, that were generated during normal, expected operation will no longer be logged or visible to users.
-- If a newly installed fork is still below height 500, accurate ETW calculations aren't possible. `forkmon` will now show "Ht<500" under ETW and "N/A" under Effort in this circumstance.
-- If a newly installed fork has never had a successful harvest, `forkmon` will now show 'Never' under LastHarvest rather than the number of seconds since 1970.
-- Symlink creation for venidium removed now that it has moved to mainnet.
 
 # INSTALLATION INSTRUCTIONS:
 
@@ -65,37 +66,41 @@ bash installft.sh   # or 'bash installfttest.sh' for testing branch
 
 # FORKTOOLS MAJOR FEATURES:
 
-- forkexplore ( 100% local address explorer ) :
-
-```qwinn@Huginn:~/.silicoin/mainnet/log$ forkexplore hddcoin -s 2021-08-28 -u 2021-08-30
+- forkexplore ( 100% local address explorer ) in new daily summary mode:
+```'forkexplore apple -d' initiated on Wed Nov  3 17:29:17 EDT 2021...
 
                          EXPLORING Address:
-   hdd1w5hw0qsv0se7fasdfasd9un8325g0kyl6fdafaaw0953ha5phxh2313ss8fvkg2
+   apple18ccn7ksalj9gu0t4yzj89fdsfadsfdsav7886yz22xcdx707axwmdlane8ql76k03
 
-                    Balance:           343 HDD
-                    Today:               8 HDD
-                    Yesterday:           2 HDD
+                    Balance:          1010 APPLE
+                    Today:               8 APPLE
+                    Yesterday:          10 APPLE
 ---------------------------------------------------------------------
                        Height      Height     Farmed         Total
 DateTime               Confirmed   Spent      Block?        Amount
 ---------------------------------------------------------------------
-2021-08-28T03:56:32    252432      0          Yes         2.00 HDD  
-2021-08-28T07:41:38    253161      0          Yes         2.00 HDD  
-2021-08-28T08:32:03    253336      0          Yes         2.00 HDD  
-2021-08-28T11:39:57    253959      0          Yes         2.00 HDD  
-2021-08-28T12:02:45    254036      0          Yes         2.00 HDD  
-2021-08-28T19:57:23    255552      0          No         13.00 HDD  
-2021-08-28T22:39:44    256057      0          Yes         2.00 HDD  
-2021-08-28T23:18:25    256170      0          Yes         2.00 HDD  
-2021-08-29T01:48:40    256658      0          Yes         2.00 HDD  
-2021-08-29T13:44:29    258960      0          Yes         2.00 HDD  
-2021-08-29T16:21:35    259447      0          Yes         2.00 HDD  
-2021-08-29T17:28:27    259644      0          Yes         2.00 HDD  
-2021-08-30T08:00:15    262475      0          Yes         2.00 HDD  
-2021-08-30T18:47:29    264529      0          Yes         2.00 HDD  
-2021-08-30T22:32:24    265164      0          Yes         2.00 HDD  
+2021-10-15             N/A         N/A        Yes       12.000 APPLE
+2021-10-16             N/A         N/A        Yes       16.000 APPLE
+2021-10-17             N/A         N/A        Yes        6.000 APPLE
+2021-10-18             N/A         N/A        Yes       12.000 APPLE
+2021-10-19             N/A         N/A        Yes       16.000 APPLE
+2021-10-20             N/A         N/A        Yes       12.000 APPLE
+2021-10-21             N/A         N/A        Yes       10.000 APPLE
+2021-10-22             N/A         N/A        Yes       12.000 APPLE
+2021-10-23             N/A         N/A        Yes       10.000 APPLE
+2021-10-24             N/A         N/A        Yes        6.000 APPLE
+2021-10-26             N/A         N/A        Yes       16.000 APPLE
+2021-10-27             N/A         N/A        Yes        8.000 APPLE
+2021-10-28             N/A         N/A        Yes       14.000 APPLE
+2021-10-29             N/A         N/A        Yes       22.000 APPLE
+2021-10-30             N/A         N/A        Yes       12.000 APPLE
+2021-10-31             N/A         N/A        Yes       12.000 APPLE
+2021-11-01             N/A         N/A        Yes        8.000 APPLE
+2021-11-02             N/A         N/A        Yes       10.000 APPLE
+2021-11-03             N/A         N/A        Yes        8.000 APPLE
 ---------------------------------------------------------------------
-    15 transactions from 2021-08-28 to 2021-08-30:       41.00 HDD  
+Daily summary from 2021-10-15 to 2021-11-03:           222.000 APPLE
+
 ```
 
 - forkmon ( Detailed overview of all running farmers and harvesters ) :
@@ -122,20 +127,19 @@ goji              0.2.3           YYYYN  Farming       8     5415  558912   424 
 
 ...
 
------------------------------------------------------ HARVESTERS: 19 ---------------------------------------------------------
-                                                               Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs
-                                  Srvcs                Last   Response   Response   Response   Response   Warns  Warns   Since
-Harvester         Version         DNFHW   #Plots    Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day
-------------------------------------------------------------------------------------------------------------------------------
-apple             1.2.90          YYYYN     5415     2s ago      0.71s      0.73s     36.94s     85.37s      32     83      10      
-avocado           1.1.7.dev124    YYYYN     5415     3s ago      0.72s      0.73s     10.24s     10.38s      10     34      16      
-beet              2.1.3b0         YYYYN     5415     2s ago      0.72s      0.74s     10.39s     10.36s      11     25      59      
-btcgreen          2.2.4           YYYYN     5415     7s ago      0.70s      0.71s     10.41s     43.49s      18     68      21      
-cannabis          1.2.301         YYYYN     5415     8s ago      0.72s      0.73s     10.44s     10.83s      21     37      16      
-covid             1.2.9           YYYYN     5415     6s ago      0.70s      0.70s     10.36s     15.61s      26     44      10      
-flax              0.1.3           YYYYN     5415    11s ago      0.69s      0.70s     10.32s     18.02s      16     30       4      
-flora             0.2.10          YYYYN     5415     8s ago      0.71s      0.70s     10.35s     15.56s      18     36       4      
-goji              0.2.3           YYYYN     5415     1s ago      0.73s      0.73s     10.32s     10.38s      24     43      13 
+------------------------------------------------------------- HARVESTERS: 19 ----------------------------------------------------------------
+
+                                                               Plot    Plot   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs
+                                  Srvcs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since
+Harvester         Version         DNFHW   #Plots    Harvest   Today   Y/Day     Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day
+---------------------------------------------------------------------------------------------------------------------------------------------
+apple             1.2.90          YYYYN     5415     2s ago       0       0     0.68s      0.70s      4.20s      5.98s       0      2       9
+avocado           1.1.7.dev124    YYYYN     5415     1s ago       0       0     0.71s      0.73s      4.21s      4.61s       0      0      12
+beet              2.1.3b0         YYYYN     5415     5s ago       0       0     0.72s      0.72s      5.13s      5.48s       1      1      81
+btcgreen          2.2.6.dev8      YYYYN     5415     6s ago       0       0     0.68s      0.72s      5.06s    105.10s       1     32      11
+cannabis          1.2.301         YYYYN     5415     6s ago       0       0     0.72s      0.72s      3.44s      4.68s       0      0      11
+covid             1.2.9           YYYYN     5415     5s ago       0       0     0.69s      0.69s      4.76s      3.87s       0      0      12
+
 ```
 
 - forkfixconfig ( Automated editing of fork config.yamls to preferred settings as set up in config.forkfixconfig )
@@ -250,12 +254,13 @@ This section is now obsolete as `bash installft.sh` will set up any known needed
 
 # COMMANDS WITH MULTIPLE PARAMETERS/SWITCHES
 
-- `fork`                   \-  Allows you to issue commands from any directory as if you were cd'd into the fork's -blockchain directory and activated. It allows for 3 3-letter abbreviations for the 2nd parameter - 'sum' for 'farm summary', 'wal' for 'wallet show' and 'ver' for 'version'.
+- `fork`                   \-  Allows you to issue commands from any directory as if you were cd'd into the fork's -blockchain directory and activated. It allows for 16 3-letter abbreviations for the 2nd parameter - 'sum' for 'farm summary', 'wal' for 'wallet show', 'ver' for 'version', and now 13 additional abbreviations for other forktools.  Run `fork -help` for details.  Note that `fork` can still only support a specific forkname as the first parameter, it does not support running other forktools for 'all' even if the forktool itself supports running for all forks.
 - `forkstart`              \-  Use this to start up one, or all, of your farmers, harvesters, and timelords.  By editing config.forkstartall, you can run `forkstart all` to start every farmer and harvester you like sequentially (great for use following a reboot).  When running for a single fork, use one of the following switches:  `forkstart forkname -fnw` for farmer-no-wallet, `-f` for farmer with wallet, `-h` for harvester and `-t` for timelord.  Run `forkstart -help` for complete usage details.
 - `forkstop`               \-  Use this to stop all services for one or all forks (great for prepping for a shutdown).  Run `forkstop -help` for usage details.
 - `forklog`                \-  This single function has now replaced all previous log parsing forktools. Running it without switches will just get you a tail of the log.  You can manipulate log output now any way I could think of if you get creative with the switches, but you're still able to duplicate the quick and simple older versions with a single switch for each.  Just run `forklog -help` to get a full list of options. The first line of forklog output will be the actual bash command that is constructed after all the switches and parameters are interpreted that produces the output that follows.
-- `forkexplore`            \-  100% local address explorer.  Provides address balances for your target receive address for the selected fork, but has an additional -a switch which allows you to explore any receive address you wish, hot or cold, and all the same date range options that forklog has.  Does not require sync, just a running farmer and full node.  Run `forkexplore -help` for detailed usage instructions.
-- `forkpatch`              \-  Can be run for one fork or 'all' forks.  Used to apply useful code patches to every fork.  For now, can only add grayfallstown's multiprocessing_limit patch.  This phenomenal patch has been known to reduce RAM usage by 30-40% per fork (effects can vary depending on the number of CPU cores, the more cores you have the more improvement you'll see), and forkpatch allows you to apply it to every fork.
+- `forkexplore`            \-  100% local address explorer.  Provides address balances for your target receive address for the selected fork, but has an additional -a switch which allows you to explore any receive address you wish, hot or cold, and all the same date range options that forklog has.  Does not require sync, just a running farmer and full node.  Can run in --daily and --monthly summary modes.  Run `forkexplore -help` for detailed usage instructions.
+- `forkpatch`              \-  Can be run for one fork or 'all' forks.  Used to apply useful code patches to every fork.  As of version 4.1, supports two patches:   First, patch -multiproc, grayfallstown's phenomenal multiprocessing_limit patch, which has been known to reduce RAM usage by 30-40% per fork (effects can vary depending on the number of CPU cores, the more cores you have the more improvement you'll see), and forkpatch allows you to apply it to every fork.  Second, patch -logwinningplots will add a line to your debug.logs identifying the specific plot in which each and every proof was found.
+- `forkcerts`              \-  Makes setting up remote harvesters much easier.  It will export all farmer `ca` folders containing ssl certs into a single folder for easy transfer to and import on remote harvesters for the required `init -c` process.  Also sets the farmer peer setting in the harvester config.yamls during the import process.
 
 
 # DISCORD SERVER
@@ -266,6 +271,26 @@ https://discord.gg/XmTEZ4SHtj
 
 
 ## OLDER CHANGELOGS
+
+
+# Changelog, Version 4.0:
+
+- New tool `forkremoveplotdirs`.  Identical to forkaddplotdirs except that it removes plot directories instead of adding them.  Has its own config file that needs to be edited in order to use.
+- New tool `forkcheck`.  Whereas forkports monitors actual port usage, forkcheck lists all the ports as set in your config.yaml's in a nicely formatted chart (very similar in layout to the Chia Forks Trader "Unofficial List of Chia Forks" ports tab) and, as a bonus, compares them to the ports in the fork's `initial-config.yaml` and identifies all non-standard ports in your operating configs.
+- New tool `forkpatch`.  Applies popular code patches to all forks, with plenty of validation to ensure the patch can be applied safely.  For now, only supports grayfallstown's excellent multiprocessing_limit patch that can drastically reduce CPU and memory usage.  Works on every known fork.  And there will be more global code patches to come!
+- Extensive improvements to `forkports`.  Now runs for every installed fork it can find, rather than only forks running a harvester process.  Now ignores conflicts with timelord port and timelord launcher port (because the vast majority of people don't run them) and introducer port and remote peer port usage (because neither conflicts with local ports).  Forks with very long names (looking at you, LLC) will no longer show as conflicting with itself.  And forkports now runs much much much much much faster.
+- `forktargets` now also runs much much faster
+- `forkaddplotdirs` and the new `forkremoveplotdirs` now support fork-specific config files.  For example, if you have a different set of plot directories for chives, simply create `ftconfigs/config.forkaddplotdirs.chives`, and set the fork-specific plot directories in it.  These fork-specific configs will be respected even when running with 'all' parameter and when run from within `forkupdate`.
+- `forkfixconfig` also supports fork specific configs now, but behaves slightly differently.  You name them the same way (`config.forkfixconfig.forkname`) and you COULD make it a duplicate of the entire main `config.forkfixconfig` file and it would all work (any setting in `config.forkfixconfig` can be overridden by the value set in `config.forkfixconfig.forkname`), but you probably shouldn't, because the settings in the main file, `config.forkfixconfig`, are still operative and applied *unless* overwritten by the settings in the fork specific config.  So for example if you want to just override the Maize full node RPC port to resolve the conflict with Tranzact's full node port, create `config.forkfixconfig.maize` and have only one line in it, `SETFULLNODERPCPORT= 8667`.  Then even when you update the fork with forkupdate, that port setting will always be re-applied, and all the other global settings from the main `config.forkfixconfig` will also still be applied.  This way you still only have to maintain the global settings that you don't ever override in one place, `config.forkfixconfig`.
+- The install scripts have been improved so that, when new parameters are added to a forktool's config template file, the new parameters will be automatically added to your own custom config files and all of your personal preferred settings will be preserved.
+- A bug that could very very rarely cause some forktools to just display the -help information and nothing else has been fixed.
+- All hardcoded references to specific forks in forktools code have been removed. The code that deals with forks that use "chia" process names and otherwise do things in a non-standard fashion is entirely dynamic now, and if a fork changes the way it handles those things from one version to another, forktools will support both versions.
+- `forkfixconfig` can now be used to edit `parallel_read` in the harvester section, which is mainly only useful to Mac OS X users using exfat-formatted drives.
+- `forkmon` now has a "Srvcs DNFHW" column in both sections. This identifies which services are running.  The DNFHW refers to Daemon Node Farmer Harvester Wallet, and it will show Y  under that service's letter if it's running, and N if it isn't.
+- Many irrelevant bash error messages, particularly in `forkmon` and `forkexplore`, that were generated during normal, expected operation will no longer be logged or visible to users.
+- If a newly installed fork is still below height 500, accurate ETW calculations aren't possible. `forkmon` will now show "Ht<500" under ETW and "N/A" under Effort in this circumstance.
+- If a newly installed fork has never had a successful harvest, `forkmon` will now show 'Never' under LastHarvest rather than the number of seconds since 1970.
+- Symlink creation for venidium removed now that it has moved to mainnet.
 
 # Changelog, Version 3.11:
 

@@ -1,0 +1,6 @@
+#  This template should be copied to config.nftaddress.forkname, setting the variable below to any address you would like forkmon or forkexplore
+#    to use for that fork when run with the switches -o or --otherkey.  If the config does not exist for that fork, the balance shown will be 0
+#    and effort and last block in forkmon will be N/A.
+#  The primary intended use for this would be for people farming forks with NFT plots, so they can monitor their NFT recovery addresses
+#    for recovered NFT pool rewards.  However, any other address you wish to monitor can also be set here.
+USEOTHERADDRESS=''

@@ -16,9 +16,12 @@ function print_usage () {
    echo "    harvest, average response time today and yesterday (each starting at midnight), longest response"
    echo "    time today and yesterday (each starting at midnight), the number of '5 second' warnings in the logs"
    echo "    today and yesterday (each starting at midnight), and the number of proofs found since midnight yesterday."
-   echo "           If you specify the -p switch, forkmon will attempt to use your hot wallet address instead of"
-   echo "    your target receive address for balances and effort calculations.  This would primarily be used by"
-   echo "    people who use cold wallets and NFT plots, and want to check their hot wallets for NFT pool rewards."
+   echo "           If you specify the -p switch, forkmon will attempt to use your hot wallet first receive address"
+   echo "    instead of your target receive address for balances and effort calculations."
+   echo "           If you specify the -o switch, forkmon will attempt to use whatever address is specified in"
+   echo "    ftconfigs/config.nftaddress.forkname, if one exists. This would primarily be used by people who farm forks"
+   echo "    with NFT plots and want to check this address for recovered NFT pool rewards. It is not limited to this use,"
+   echo "    however, and you can specify any address you like with -o | --otherkey."
    echo
    echo "PARAMETERS:"
    echo "    forkname               OPTIONAL.  If set, must be the first parameter.  Only show output for this fork."
@@ -26,7 +29,9 @@ function print_usage () {
    echo "    -f | --farmeronly      OPTIONAL.  If set, the harvester section will be skipped."
    echo "    -h | --harvesteronly   OPTIONAL.  If set, the farmer section will be skipped."
    echo "    -p | --plotkey         OPTIONAL.  If set, the first 'First Wallet Address' returned by 'forkname keys show'"
-   echo "                              (presumably your hot wallet address) will be used instead of target address."
+   echo "                              (presumably your plot key address) will be used instead of target address."
+   echo "    -o | --otherkey        OPTIONAL.  If set, any address specified in ftconfigs/config.nftaddress.forkname,"
+   echo "                              (presumably your nft recovery address) for the fork will be used instead." 
    echo "    -help | --help         Show this information again."
    echo
    exit 0
@@ -36,7 +41,7 @@ function print_usage () {
 VALIDATEFORKNAME='No'
 FTERRORSTOFILE='Yes'
 
-if [[ $1 != '' && $1 != '-n' && $1 != '--nowallet' && $1 != '-f' && $1 != '--farmeronly' && $1 != '-h' && $1 != '--harvesteronly' && $1 != '-p' && $1 != '--plotkey' && $1 != '-help' && $1 != '--help' ]]; then
+if [[ $1 != '' && $1 != '-n' && $1 != '--nowallet' && $1 != '-f' && $1 != '--farmeronly' && $1 != '-h' && $1 != '--harvesteronly' && $1 != '-p' && $1 != '--plotkey' && $1 != '-help' && $1 != '--help' && $1 != '-o' && $1 != '--otherkey' ]]; then
   VALIDATEFORKNAME='Yes'
 fi
 . ftinit.sh
@@ -59,6 +64,7 @@ while [[ $# -gt 0 ]]; do
      "-f"|"--farmeronly"     ) FARMERONLY=1; shift;;
      "-h"|"--harvesteronly"  ) HARVESTERONLY=1; shift;;
      "-p"|"--plotkey"        ) HOTSWITCH='on'; shift;;
+     "-o"|"--otherkey"       ) NFTSWITCH='on'; shift;;     
      "-help"|"--help"        ) print_usage; exit;;
      *                       ) echo 'ERROR: Invalid option: '$opt >&2;
                                exit 1;;
@@ -68,7 +74,7 @@ done
 if [[ $HARVESTERONLY != 1 ]]; then
   printf '\n'
   if [[ $VALIDATEFORKNAME == 'No' ]]; then
-    echo -e "---------------------------------------------------------------------- FARMERS: $FARMERCOUNT --------------------------------------------------------------------"
+    echo -e "---------------------------------------------------------------------- FARMERS: $FARMERCOUNT ---------------------------------------------------------------------"
     printf '\n'
   fi
   if [[ $FARMERCOUNT > 0 ]]; then
@@ -80,28 +86,41 @@ if [[ $HARVESTERONLY != 1 ]]; then
      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
      fi
-     FORKNAME=$fork     
-     cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log 
-     YESTERDAYLOGLIST='debug.log'
-     TESTDEBUG1=''
-     TESTDEBUG2=''
-     if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 ]; then
-        TESTDEBUG1=$(tail -1 debug.log.1)
+     FORKNAME=$fork
+     if [[ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log ]]; then
+        cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log        
+        TODAYLOGLIST='debug.log'
+        YESTERDAYLOGLIST='debug.log'
+        TESTDEBUG1=''
+        TESTDEBUG2=''
+        if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 ]; then
+           TESTDEBUG1=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 | grep "^20" | tail -1)
+           if [[ $TESTDEBUG1 > $TODAYSTAMP ]]; then     
+              TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.1')
+           fi
+           if [[ $TESTDEBUG1 > $YESTERDAYSTAMP ]]; then
+              YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.1')
+           fi
+           if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 ]; then
+              TESTDEBUG2=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 | grep "^20" | tail -1)
+              if [[ $TESTDEBUG2 > $TODAYSTAMP ]]; then     
+                 TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.2')
+              fi
+              if [[ $TESTDEBUG2 > $YESTERDAYSTAMP ]]; then
+                 YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.2')
+              fi
+           fi
+        fi
+        HARVESTERERRORS=$(grep -a "Harvester did not respond" $YESTERDAYLOGLIST | grep -c -e $TODAYSTAMP -e $YESTERDAYSTAMP )
+     else 
+        HARVESTERERRORS='NoLog'
      fi
-     if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 ]; then
-        TESTDEBUG2=$(tail -1 debug.log.2)
-     fi
-     if [[ $TESTDEBUG1 > $YESTERDAYSTAMP ]]; then
-        YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.1')
-     fi
-     if [[ $TESTDEBUG2 > $YESTERDAYSTAMP ]]; then
-        YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.2')
-     fi
-     HARVESTERERRORS=$(grep -a "Harvester did not respond" $YESTERDAYLOGLIST | grep -c -e $TODAYSTAMP -e $YESTERDAYSTAMP )
      FORKMEM=$(forkmemory)
      FORKVERSION=$($FORKTOOLSDIR/fork $fork ver)
-     FULLNODEPROCESS='\s'$FORKNAME'_full'   
-     FNWORKERS=$(ps -ef | grep -v grep | grep -c "$FULLNODEPROCESS" )
+     OLDIFS=$IFS
+     IFS=''
+     FNWORKERS=$(echo $PROCESSEF | grep -c "^${FORKNAME}_full" )
+     IFS=$OLDIFS
      . $FORKTOOLSDIR/ftrpcinclude.sh
      EFFORT=${EFFORT%.*}
      ADDRESSBALANCE=${ADDRESSBALANCE%.*}
@@ -124,81 +143,93 @@ if [[ $HARVESTERONLY != 1 ]]; then
      printf '%-17.17s %-15.15s %-5.5s  %-10.10s%5.5s%9.9s %7d%10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%11.11s %5s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$FARMSTATUS" "$PEERCOUNT" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$PRINTEFFORT"
   done
 fi
-
 IFS=$ORIGIFS
 
 if [[ $FARMERONLY != 1 ]]; then
   printf '\n'
   if [[ $VALIDATEFORKNAME == 'No' ]]; then
-    echo -e "----------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ---------------------------------------------------------"
+    echo -e "------------------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ----------------------------------------------------------------"
   fi
-  printf  '                                                               Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
-  printf  '                                  Srvcs                Last   Response   Response   Response   Response   Warns  Warns   Since\n'
-  printf  'Harvester         Version         DNFHW   #Plots    Harvest      Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
-  echo -e "------------------------------------------------------------------------------------------------------------------------------"
+  echo
+  printf  '                                                               Plot    Plot   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
+  printf  '                                  Srvcs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since\n'
+  printf  'Harvester         Version         DNFHW   #Plots    Harvest   Today   Y/Day     Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
+  echo -e "---------------------------------------------------------------------------------------------------------------------------------------------"
   for fork in $HARVESTERLIST; do
      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
      fi
-     FORKNAME=$fork     
-     cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log
-     # For speed purposes, let's check how far we have to go back in logs to get everything since TODAYSTAMP and YESTERDAYSTAMP
-     TODAYLOGLIST='debug.log'
-     YESTERDAYLOGLIST='debug.log'
-     TESTDEBUG1=''
-     TESTDEBUG2=''
-     if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 ]; then
-        TESTDEBUG1=$(tail -1 debug.log.1)
+     FORKNAME=$fork
+     if [[ ! -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log ]]; then
+       continue
      fi
-     if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 ]; then
-        TESTDEBUG2=$(tail -1 debug.log.2)
-     fi
-     if [[ $TESTDEBUG1 > $TODAYSTAMP ]]; then     
-        TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.1')
-     fi
-     if [[ $TESTDEBUG2 > $TODAYSTAMP ]]; then     
-        TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.2')
-     fi
-     if [[ $TESTDEBUG1 > $YESTERDAYSTAMP ]]; then
-        YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.1')
-     fi
-     if [[ $TESTDEBUG2 > $YESTERDAYSTAMP ]]; then
-        YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.2')
-     fi
-
      PORTPARSINGDONE=0
      . $FORKTOOLSDIR/ftcheckprocs.sh
 
      FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
-     LASTHARVESTERLINE=$(cat debug.log | grep -a "plots were eligible" | tail -1)
-     PLOTCOUNT=$(sed 's/.*Total //' <<< "$LASTHARVESTERLINE" | sed 's/ plots//' | awk '{$1=$1};1')
-     CURRENTTIME=$(date "+%s")
-     LASTHARVESTTIME=$(sed 's/\..*//' <<< "$LASTHARVESTERLINE" | awk '{$1=$1};1')
-     LASTHARVESTEPOCH=$(echo "$LASTHARVESTTIME" | DateToEpoch )
-     TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -ac ' below 5 seconds ' )
-     YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac ' below 5 seconds ')   
-     if [[ $LASTHARVESTEPOCH = '' ]]; then
-       LASTHARVESTEPOCH=0
-       LASTHARVESTAGO='Never'
+     LASTHARVESTERLINE=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log | grep -a "plots were eligible" | tail -1)
+     if [[ $LASTHARVESTERLINE == '' ]]; then
+        LASTHARVESTTIME=0
+        LASTHARVESTEPOCH=0
+        LASTHARVESTAGO='Never'
+        PLOTCOUNT=' N/A'
+        TODAYAVG=0
+        YESTERDAYAVG=0
+        TODAYMAX=0
+        YESTERDAYMAX=0
+        TODAYFIVESECWARNS=' N/A'
+        YESTERDAYFIVESECWARNS=' N/A'
+        PROOFCOUNT=' N/A'
      else
-       let LASTHARVESTAGO=$CURRENTTIME-$LASTHARVESTEPOCH
-       LASTHARVESTAGO=$( printf "%ss ago" $LASTHARVESTAGO )
+        # For speed purposes, let's check how far we have to go back in logs to get everything since TODAYSTAMP and YESTERDAYSTAMP
+        cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log        
+        TODAYLOGLIST='debug.log'
+        YESTERDAYLOGLIST='debug.log'
+        TESTDEBUG1=''
+        TESTDEBUG2=''
+        if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 ]; then
+           TESTDEBUG1=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.1 | grep "^202" | tail -1)
+           if [[ $TESTDEBUG1 > $TODAYSTAMP ]]; then     
+              TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.1')
+           fi
+           if [[ $TESTDEBUG1 > $YESTERDAYSTAMP ]]; then
+              YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.1')
+           fi
+           if [ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 ]; then
+              TESTDEBUG2=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log.2 | grep "^202" | tail -1)
+              if [[ $TESTDEBUG2 > $TODAYSTAMP ]]; then     
+                 TODAYLOGLIST=$(echo $TODAYLOGLIST ' debug.log.2')
+              fi
+              if [[ $TESTDEBUG2 > $YESTERDAYSTAMP ]]; then
+                 YESTERDAYLOGLIST=$(echo $YESTERDAYLOGLIST ' debug.log.2')
+              fi
+           fi
+        fi
+        CURRENTTIME=$(date "+%s")     
+        LASTHARVESTTIME=$(sed 's/\..*//' <<< "$LASTHARVESTERLINE" | awk '{$1=$1};1')     
+        LASTHARVESTEPOCH=$(echo "$LASTHARVESTTIME" | DateToEpoch )        
+        let LASTHARVESTAGO=$CURRENTTIME-$LASTHARVESTEPOCH
+        LASTHARVESTAGO=$( printf "%ss ago" $LASTHARVESTAGO )
+        PLOTCOUNT=$(sed 's/.*Total //' <<< "$LASTHARVESTERLINE" | sed 's/ plots//' | awk '{$1=$1};1')
+        TODAYAVG=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total += $2; count++} END { if ( count > 0 ) print total/count }')
+        YESTERDAYAVG=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total2 += $2; count2++} END { if ( count2 > 0 ) print total2/count2 }')   
+        TODAYMAX=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
+        YESTERDAYMAX=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
+        TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -ac ' below 5 seconds ' )
+        YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac ' below 5 seconds ')   
+        TODAYFILEERRORS=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -ac -e 'badbit or failbit' -e 'Invalid file' -e 'may no longer exist' -e 'multiple copies of the' )
+        YESTERDAYFILEERRORS=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac -e 'badbit or failbit' -e 'Invalid file' -e 'may no longer exist' -e 'multiple copies of the' )
+        PROOFSTODAYLIST=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )
+        PROOFSYESTERDAYLIST=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )   
+        PROOFCOUNT=0
+        for proof in $(echo $PROOFSTODAYLIST); do
+          let PROOFCOUNT=$PROOFCOUNT+$proof
+        done
+        for proof in $(echo $PROOFSYESTERDAYLIST); do
+          let PROOFCOUNT=$PROOFCOUNT+$proof
+        done
      fi
-     LASTRESPONSETIME=$(sed 's/.*Time: //' <<< "$LASTHARVESTERLINE" | sed 's/ s\. Total.*//' | awk '{$1=$1};1')
-     TODAYMAX=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
-     YESTERDAYMAX=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
-     TODAYAVG=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total += $2; count++} END { if ( count > 0 ) print total/count }')
-     YESTERDAYAVG=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total2 += $2; count2++} END { if ( count2 > 0 ) print total2/count2 }')   
-     PROOFSTODAYLIST=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )
-     PROOFSYESTERDAYLIST=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )   
-     PROOFCOUNT=0
-     for proof in $(echo $PROOFSTODAYLIST); do
-       let PROOFCOUNT=$PROOFCOUNT+$proof
-     done
-     for proof in $(echo $PROOFSYESTERDAYLIST); do
-       let PROOFCOUNT=$PROOFCOUNT+$proof
-     done
-     printf '%-17.17s %-15.15s %-6.6s%8.8s %10s %9.2fs %9.2fs %9.2fs %9.2fs %7s %6s %7s %5s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$PLOTCOUNT" "$LASTHARVESTAGO" "$TODAYAVG" "$YESTERDAYAVG" "$TODAYMAX" "$YESTERDAYMAX" "$TODAYFIVESECWARNS" "$YESTERDAYFIVESECWARNS" "$PROOFCOUNT" "$FORKNODES2"
+     printf '%-17.17s %-15.15s %-6.6s%8.8s %10s  %6.6s  %6.6s%9.2fs %9.2fs %9.2fs %9.2fs %7s %6s %7s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$PLOTCOUNT"  "$LASTHARVESTAGO" "$TODAYFILEERRORS" "$YESTERDAYFILEERRORS" "$TODAYAVG" "$YESTERDAYAVG" "$TODAYMAX" "$YESTERDAYMAX" "$TODAYFIVESECWARNS" "$YESTERDAYFIVESECWARNS" "$PROOFCOUNT"
   done
 fi
 echo

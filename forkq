@@ -3,38 +3,85 @@
 function print_usage () {
    echo "fork help:"
    echo
-   echo "SYNOPSIS:  Changed into the specified fork's directory, activates the venv, and runs whatever command follows the forkname."
-   echo "           Three abbreviations are provided:  'fork chia sum' runs 'chia farm summary'."
-   echo "                                              'fork chia wal' runs 'chia wallet show'."
-   echo "                                              'fork chia ver' runs 'chia version'."
+   echo "SYNOPSIS:  Changes into the specified fork's directory, activates the venv, and runs whatever command follows the forkname."
+   echo "           Sixteen abbreviations are provided."
+   echo "           These 3 run commands directly:  'fork chia sum' runs 'chia farm summary'."
+   echo "                                           'fork chia wal' runs 'chia wallet show'."
+   echo "                                           'fork chia ver' runs 'chia version'."
+   echo "           Thirteen more abbreviations will run other forktools (see PARAMETERS section).  Any parameters after the"
+   echo "      abbreviation are passed to the forktool being called.  Examples:"
+   echo "                                           'fork maize add' runs 'forkaddplotdirs maize'."
+   echo "                                           'fork flora nod' runs 'forknodes flora'."
+   echo "                                           'fork flax fix 10.0.0.100' runs 'forkfixconfig flax 10.0.0.100'."
+   echo "                                           'fork venidium upd -b 1.0.2' runs 'forkupdate venidium -b 1.0.2'."
+   echo "           Note that running a forktool for 'all' forks cannot be simulated this way.  The second parameter MUST be a"
+   echo "      specific fork."
    echo
    echo "PARAMETERS:"
-   echo "    forkname              Required first parameter."
+   echo "    forkname              Required first parameter. 'all' is not supported even if tools that can be called by fork support it."
    echo "    Second parameter:"
-   echo "      sum | wal | ver     2nd parameter. Abbreviations for 'farm summary', 'wallet show' and 'version' respectively."
-   echo "      anything else       Anything other than the 3 abbreviations in the second parameter means the 2nd, 3rd and all other"
+   echo "      sum | wal | ver     Abbreviations for 'farm summary', 'wallet show' and 'version' respectively."
+   echo "      add | ben | edi     Abbreviations for 'forkaddplotdirs', 'forkbenchips' and 'forkedit' respectively."      
+   echo "      exp | fix | log     Abbreviations for 'forkexplore', 'forkfixconfig' and 'forklog' respectively."
+   echo "      mon | nod | pat     Abbreviations for 'forkmon', 'forknodes' and 'forkpatch' respectively."   
+   echo "      rem | sta | sto     Abbreviations for 'forkremoveplotdirs', 'forkstart' and 'forkstop' respectively."
+   echo "      upd                 Abbreviation for 'forkupdate'."   
+   echo "      anything else       Anything other than the 16 abbreviations in the second parameter means the 2nd, 3rd and all other"
    echo "                            passed parameters get run exactly as passed. e.g. 'fork chia show -a 123.45.67.8910:8444'"
    echo "    -help | --help      Show this information again."
    echo
    exit 0
 }
 
-VALIDATEFORKNAME='Yes'
-. ftinit.sh
+HELPREQUEST=$( printf '%s' $* | grep '\-help' ) 
+if [[ $HELPREQUEST != '' ]]; then
+  print_usage
+  exit
+fi   
+
+if [[ ! -d $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain ]]; then
+   echo "fork:  Directory $1-blockchain does not exist.  fork aborted."
+   exit
+fi
+   
+ORIGBASECOMMAND=$( basename $0 | sed 's/q$//' )
+if [[ "$*" == '' ]]; then
+  ORIGFULLCOMMAND=$(printf '%s' "$ORIGBASECOMMAND" )
+else
+  ORIGFULLCOMMAND=$(printf '%s %s' "$ORIGBASECOMMAND" "$*")   
+fi
 
 FORKNAME=$1
 shift;
 
+export FORKTOOLCALL='No'
 case "$1" in
   "sum"             ) FORKCOMMAND="farm summary";;
   "wal"             ) FORKCOMMAND="wallet show";;
   "ver"             ) FORKCOMMAND="version";;
+  "add"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkaddplotdirs %s %s' "$FORKNAME" "$*" );;
+  "ben"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkbenchips %s %s' "$FORKNAME" "$*" );;
+  "edi"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkedit %s %s' "$FORKNAME" "$*" );;
+  "exp"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkexplore %s %s' "$FORKNAME" "$*" );;
+  "fix"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkfixconfig %s %s' "$FORKNAME" "$*" );;
+  "log"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forklog %s %s' "$FORKNAME" "$*" );;
+  "mon"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkmon %s %s' "$FORKNAME" "$*" );;
+  "nod"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forknodes %s %s' "$FORKNAME" "$*" );;
+  "pat"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkpatch %s %s' "$FORKNAME" "$*" );;
+  "rem"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkremoveplotdirs %s %s' "$FORKNAME" "$*" );;
+  "sta"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkstart %s %s' "$FORKNAME" "$*" );;
+  "sto"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkstop %s %s' "$FORKNAME" "$*" );;    
+  "upd"             ) export FORKTOOLCALL='Yes'; shift; FORKCOMMAND=$( printf 'forkupdate %s %s' "$FORKNAME" "$*" );;
   *                 ) FORKCOMMAND=$*;;
 esac
 
-cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain 
-. ./activate 
-$FORKNAME $FORKCOMMAND
-deactivate
-
+if [[ $FORKTOOLCALL == 'No' ]]; then
+   . $FORKTOOLSDIR/ftinit.sh
+   cd $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain 
+   . ./activate 
+   $FORKNAME $FORKCOMMAND
+   deactivate
+elif [[ $FORKTOOLCALL == 'Yes' ]]; then
+   $FORKCOMMAND
+fi
 

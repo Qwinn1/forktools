@@ -6,7 +6,7 @@ DAEMONLIST=$FORKLIST
 
 OLDIFSBRL=$IFS
 IFS=''
-PROCESSEF=$(ps -ef | grep -e 'full_node' -e 'farmer' -e 'harvester' -e 'wallet' -e '_daemon' | grep -v grep | awk '{ print $8 } ' | sort | uniq )
+PROCESSEF=$(ps -ef | grep -e 'full_node' -e 'farmer' -e 'harvester' -e 'wallet' -e '_daemon' | grep -v grep | awk '{ print $8 } ' | sort )
 CHIAPROCS=$(forkss | grep "\"chia" )
 
 IFS=$OLDIFSBRL

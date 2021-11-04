@@ -1,10 +1,20 @@
 # platform-specific function definitions
 if [[ $OSTYPE == 'darwin'* ]]; then
+    function getlocale () {
+      echo 'en_US.UTF-8'
+    }
     function DateOffset () {
       if [ $# -eq 1 ] ; then
           date -j -v${1}d +"%Y-%m-%d"
       else
           date -j -f "%Y-%m-%d" -v${1}d $2 +"%Y-%m-%d"
+      fi
+    }
+    function MonthOffset () {
+      if [ $# -eq 1 ] ; then
+          date -j -v${1}m +"%Y-%m"
+      else
+          date -j -f "%Y-%m" -v${1}m $2 +"%Y-%m"
       fi
     }
     function forkss () {
@@ -34,21 +44,39 @@ if [[ $OSTYPE == 'darwin'* ]]; then
       xargs -I {} date -j -f "@%s" "{}" "+%Y-%m-%dT%H:%M:%S" | awk '{$1=$1};1'
     }
 else
+    function getlocale () {
+      echo 'C.UTF-8'
+    }
     function DateOffset () {
       date -d $2"${1} day" +"%Y-%m-%d"
     }
+    function MonthOffset () {
+      date -d $2"${1} month" +"%Y-%m"
+    }    
     function forkss () {
-      ss -atnp 2>/dev/null | awk '{ printf "%s %s %s\n", $1, $4, $6 }' | grep LISTEN
+      LOCALIPS=$( ip address | grep 'inet ' | awk '{ print $2 }'  | sed 's|/.*||' )
+      # We do two passes of ss -atnp output, collecting matches of local ips on column 4 first (local), then on column 5 (peers), then concatenate
+      BUILDEXPR=$(echo 'ss -atnp 2>/dev/null | ')
+      BUILDEXPR=$(echo $BUILDEXPR " awk '{ printf \"%s %s %s\n\", " )
+      BUILDEXPR4=$(echo $BUILDEXPR ' $1, $4, $6 }')
+      BUILDEXPR5=$(echo $BUILDEXPR ' $1, $5, $6 }')
+      BUILDEXPR4=$(echo $BUILDEXPR4 "' | grep -e '\[::\]' -e '0.0.0.0' " )
+      BUILDEXPR5=$(echo $BUILDEXPR5 "' | grep -e '\[::\]' -e '0.0.0.0' " )      
+      OLDIFS=$IFS
+      IFS=$'\n'
+      for localip in $LOCALIPS; do
+        BUILDEXPR4=$(printf "%s -e '%s'" $BUILDEXPR4 $localip )
+        BUILDEXPR5=$(printf "%s -e '%s'" $BUILDEXPR5 $localip )        
+      done
+      FULLLIST=$( eval $BUILDEXPR4 && eval $BUILDEXPR5 )
+      IFS=''
+      echo $FULLLIST      
+      IFS=$OLDIFS      
     }
     function forkssoutput () {
       OLDIFS=$IFS
       IFS=''
-      FORKLENGTH=$( expr length $FORKNAME )
-      if [[ $FORKLENGTH == 15 ]]; then
-        CONFLICTS=$( echo $FORKSS | grep :$port[^0-9] | grep -v '"'${PROCESSNAME} | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
-      else
-        CONFLICTS=$( echo $FORKSS | grep :$port[^0-9] | grep -v '"'${PROCESSNAME}_ | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
-      fi
+      CONFLICTS=$( echo $FORKSS | grep :$port[^0-9] | grep -v '"'${PROCESSNAME}'"' | grep -v '"'${PROCESSNAME}_ | sed 's/((//' | grep -Eo '.*users:"[^"]*["]' | sed 's/users://' )
       if [[ $CONFLICTS != '' ]]; then
          if [[ $SCANNEDMSG == 0 ]]; then
             printf "Scanned %-15.15s - Conflicts Found!\n" $fork

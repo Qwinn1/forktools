@@ -10,6 +10,9 @@ SETFNTARGETPEERCOUNT='80'     # Default chia value: 80. I don't have a recommend
 SETBATCHSIZE='1500'           # Default chia value: Initially 30, now 300. I don't have problems loading all my plots in one batch.  If you do, please report it.
 SETBATCHSLEEP='1'             # Default chia value: Initially 10, now 1. 
 SETPARALLELREAD=''            # Default chia value: true.  MacOS users using exfat formatted drives may need to change this setting.
+SETBLOCKCHAINDBSYNC=''        # Default chia value: auto, which is same as 'FULL'.  'on' is 'NORMAL'.  'off' is 'OFF'.  OFF is not recommended.  NORMAL ('on') should be sufficient.
+SETWALLETDBSYNC=''            # Default chia value: auto, which is same as 'FULL'.  'on' is 'NORMAL'.  'off' is 'OFF'.  OFF is not recommended.  NORMAL ('on') should be sufficient.
+SETENABLEUPNP=''              # Default chia value: true.  Turn this off on any secondary farmers or if your router doesn't support it anyway.
 SETMULTIPROC='4'              # IMPORTANT:  "multiprocessing_limit: X" was designed by grayfallstown and has been implemented in several forks. Meant to reduce the number of full_node processes (which is monitored by forkmon) and thus reduce RAM usage. My understanding is the unmodified value is roughly the number of your CPU cores, which is great for initial syncing, but severe overkill once synced.  Therefore, even if you leave this variable set to 4, it will not be added to your config until a full node RPC call confirms full sync.  Otherwise you'd have to edit this setting every time you wanted to forkfixconfig a new fork.
 
 

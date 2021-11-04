@@ -75,7 +75,8 @@ CHIAPROCS=$(forkss | grep "\"chia" )
 OLDVERSION=$(forkq $FORKNAME ver)
 echo "forkupdate:  Updating from current version # :" $OLDVERSION
 
-
+POOLLISTSECTION=0
+SETPOOLLIST=''
 # Get farmer peer from harvester section.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
 OLDIFS=$IFS
 IFS=''
@@ -94,6 +95,25 @@ while read line; do
   if [[ $SECTION == *pool:* && $WORKLINE == *target_address:* ]]; then
     SETPOOLTARGET=$(grep "target_address: " <<< "$WORKLINE" | sed 's/.*target_address: //' | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
   fi
+  # Foxypool support
+  if [[ $SECTION == *farmer:* && $WORKLINE == *pool_url:* ]]; then
+    SETFOXYPOOLURL=$( echo $line )
+  fi
+  if [[ $SECTION == *farmer:* && $WORKLINE == *pool_payout_address:* ]]; then
+    SETFOXYPOOLPAYOUTADDRESS=$( echo $line )
+  fi
+  # Regular chia pooling support
+  if [[ $SECTION == *pool:* && $WORKLINE == *pool_list:* ]]; then
+    SETPOOLLIST=$( echo $line )
+    POOLLISTSECTION=1
+    continue
+  fi
+  if [[ $SECTION == *pool:* && $WORKLINE == *selected_network:* ]]; then
+    POOLLISTSECTION=0  
+  fi
+  if [[ $SECTION == *pool:* && $POOLLISTSECTION == 1 ]]; then
+    SETPOOLLIST+=$( printf '\n%s' $line )
+  fi
 done < $CURRENTCONFIG
 IFS=$OLDIFS
 
@@ -106,8 +126,36 @@ echo "   Farmer peer           : " $FARMERPEER
 echo "   Farmer target address : " $SETFARMTARGET
 echo "   Pool target address   : " $SETPOOLTARGET
 echo "   Multiprocessing_limit : " $ORIGMULTIPROC
+if [[ $SETPOOLLIST != '' ]]; then
+  echo "Standard chia pooling parameters detected.  Preserving pool_list parameters:"
+  OLDIFS=$IFS
+  IFS=''
+  echo $SETPOOLLIST
+  IFS=$OLDIFS  
+fi
+if [[ $SETFOXYPOOLURL != '' && $SETFOXYPOOLPAYOUTADDRESS != '' ]]; then
+  echo "Foxypool pooling parameters detected.  Preserving foxypool parameters:"
+  OLDIFS=$IFS
+  IFS=''
+  echo $SETFOXYPOOLURL
+  echo $SETFOXYPOOLPAYOUTADDRESS
+  IFS=$OLDIFS  
+fi
 echo
+echo "Checking if any forkpatch patches were applied so they can be re-applied at the end of forkupdate."
 
+MULTIPROCPATCH=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/blockchain.py
+MULTIPROCPATCH=$( c1grep -c 'added by forkpatch -multiproc' $MULTIPROCPATCH )
+if [[ $MULTIPROCPATCH > 0 ]]; then
+   echo "  Confirmed forkpatch -multiproc is applied.  Will attempt to reapply -multiproc patch before forkupdate ends."
+fi
+LOGWINNINGPLOTSPATCH=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/harvester/harvester_api.py
+LOGWINNINGPLOTSPATCH=$( c1grep -c 'added by forkpatch -logwinningplots' $LOGWINNINGPLOTSPATCH )
+if [[ $LOGWINNINGPLOTSPATCH > 0 ]]; then
+   echo "  Confirmed forkpatch -logwinningplots is applied.  Will attempt to reapply -logwinningplots patch before update ends."
+fi
+
+echo
 echo "forkupdate:  Stopping services."
 forkstop $1
 
@@ -159,6 +207,15 @@ while read line; do
     OLDPOOLTARGET=$(grep "target_address: " <<< "$WORKLINE" | sed 's/.*target_address: //' | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
     OLDPOOLTARGETLINENO=$LINENUMBER
   fi
+  if [[ $SECTION == *pool:* && $WORKLINE == *network_overrides:* ]]; then
+    NETWORKOVERRIDESLINENO=$LINENUMBER
+  fi
+  if [[ $SECTION == *farmer:* && $WORKLINE == *pool_public_keys:* ]]; then
+    POOLPUBLICKEYSLINENO=$LINENUMBER
+  fi
+  if [[ $SECTION == *farmer:* && $WORKLINE == *pool_share_threshold:* ]]; then
+    POOLSHARETHRESHOLDLINENO=$LINENUMBER
+  fi  
 done < "$CURRENTCONFIG"
 IFS=$OLDIFS
 
@@ -167,14 +224,33 @@ if [[ $OLDFARMTARGET != '' && $OLDPOOLTARGET != '' ]]; then
   sed -i.bak "${OLDFARMTARGETLINENO}s/$OLDFARMTARGET/$SETFARMTARGET/" $CURRENTCONFIG
   sed -i.bak "${OLDPOOLTARGETLINENO}s/$OLDPOOLTARGET/$SETPOOLTARGET/" $CURRENTCONFIG
   # Making sure we don't add multiproc a second time in case forkfixconfig miraculously did it
-  NEWMULTIPROC=$( grep "multiprocessing_limit" $CURRENTCONFIG )
-  if [[ $NEWMULTIPROC == '' ]]; then
-     echo >> "$CURRENTCONFIG"
-     echo $ORIGMULTIPROC >> "$CURRENTCONFIG"
-  fi
 else
   echo "forkupdate:  Original config did not have settings for both target addresses, so no address transfer is attempted."
   echo "             This is normal when this is just a harvester. If this is a farmer, make sure to edit your addresses."
+fi
+
+# For the following inserts, make sure to work from the end of the file backwards.  That way our inserts don't change line numbers captured above.
+# Multiproc gets appended at the end, so do that first.
+# Then standard chia pooling which is in the 'pool:' section
+# Then foxypool settings which are in the 'farmer:' section.
+
+NEWMULTIPROC=$( grep "multiprocessing_limit" $CURRENTCONFIG )
+if [[ $NEWMULTIPROC == '' ]]; then
+   echo "forkupdate:  Reapplying multiprocessing_limit."
+   echo >> "$CURRENTCONFIG"
+   echo $ORIGMULTIPROC >> "$CURRENTCONFIG"
+fi
+
+if [[ $SETPOOLLIST != '' ]]; then
+  echo "forkupdate:  Reapplying standard chia pool settings."
+  sed -i.bak "${NETWORKOVERRIDESLINENO}r /dev/stdin" $CURRENTCONFIG <<< "$SETPOOLLIST"
+fi
+
+if [[ $SETFOXYPOOLURL != '' && $SETFOXYPOOLPAYOUTADDRESS != '' ]]; then
+  let FOXYPOOLPAYOUTADDRESSINSERTLINENO=( $POOLPUBLICKEYSLINENO - 1)
+  sed -i.bak "${FOXYPOOLPAYOUTADDRESSINSERTLINENO}r /dev/stdin" $CURRENTCONFIG <<< "$SETFOXYPOOLPAYOUTADDRESS"
+  let FOXYPOOLURLINSERTLINENO=( $POOLSHARETHRESHOLDLINENO + 1)  
+  sed -i.bak "${FOXYPOOLURLINSERTLINENO}r /dev/stdin" $CURRENTCONFIG <<< "$SETFOXYPOOLURL"
 fi
 
 NEWVERSION=$(forkq $FORKNAME ver)
@@ -202,24 +278,16 @@ else
    mv $CURRENTCONFIG.preupdate-$DATESUFFIX $CURRENTCONFIG
 fi
 
-if [[ $DAEMONRUNNING == 1 ]]; then
-   echo "forkupdate:  Restarting fork with same services it had when it was stopped."
-   if [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 1 && $FULLNODERUNNING == 1 ]]; then
-      FORKSTARTPARAM='-f'
-   elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 1 ]]; then
-      FORKSTARTPARAM='-fnw'
-   elif [[ $FARMERRUNNING == 0 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
-      FORKSTARTPARAM='-h'
-   elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 0 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
-      FORKSTARTPARAM='-fo'         
-   elif [[ $FARMERRUNNING == 1 && $HARVESTERRUNNING == 1 && $WALLETRUNNING == 0 && $FULLNODERUNNING == 0 ]]; then
-      FORKSTARTPARAM='-fh'
-   else 
-      echo "forkupdate:  You should now run forkstart -f, -fnw or -h to resume whichever service you prefer for this fork."
-      exit
-   fi
-   $FORKTOOLSDIR/forkstart $FORKNAME $FORKSTARTPARAM
-else 
-   echo "forkupdate:  You should now run forkstart -f, -fnw or -h to resume whichever service you prefer for this fork."
+if [[ $MULTIPROCPATCH > 0 ]]; then
+  echo "Running 'forkpatch $FORKNAME -multiproc'"
+  forkpatchq $FORKNAME -multiproc
 fi
+if [[ $LOGWINNINGPLOTSPATCH > 0 ]]; then
+  echo "Running 'forkpatch $FORKNAME -logwinningplots'"
+  forkpatchq $FORKNAME -logwinningplots
+fi
+echo
 
+. $FORKTOOLSDIR/ftrestart.sh
+
+echo 'forkupdate:  Complete'
