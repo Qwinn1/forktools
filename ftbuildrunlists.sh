@@ -4,14 +4,9 @@ FARMERLIST=$FORKLIST
 HARVESTERLIST=$FORKLIST
 DAEMONLIST=$FORKLIST
 
+PROCESSEF=$( getproclist )
+
 OLDIFSBRL=$IFS
-IFS=''
-PROCESSEF=$(ps -ef | grep -e 'full_node' -e 'farmer' -e 'harvester' -e 'wallet' -e '_daemon' | grep -v grep | awk '{ print $8 } ' | sort )
-CHIAPROCS=$(forkss | grep "\"chia" )
-
-IFS=$OLDIFSBRL
-
-
 for FORKNAME in $FORKLIST; do
   IFS=''
   if [[ ! -f $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml ]]; then
@@ -22,7 +17,6 @@ for FORKNAME in $FORKLIST; do
   else
      CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
   fi
-  PORTPARSINGDONE=0
   . $FORKTOOLSDIR/ftcheckprocs.sh
   if [[ $FARMERRUNNING != 1 ]]; then
      FARMERLIST=$(echo $FARMERLIST | grep -v "^$FORKNAME$" )
