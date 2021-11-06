@@ -74,13 +74,13 @@ done
 if [[ $HARVESTERONLY != 1 ]]; then
   printf '\n'
   if [[ $VALIDATEFORKNAME == 'No' ]]; then
-    echo -e "---------------------------------------------------------------------- FARMERS: $FARMERCOUNT ---------------------------------------------------------------------"
-    printf '\n'
+    echo -e "------------------------------------------------------------------- FARMERS: $FARMERCOUNT -------------------------------------------------------------------"
   fi
   if [[ $FARMERCOUNT > 0 ]]; then
-     printf '                                  Srvcs                                              FulNode   Memory   NoHarv       Address              Last\n'
-     printf 'Farmer            Version         DNFHW  Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort\n'
-     echo -e "--------------------------------------------------------------------------------------------------------------------------------------------------------"
+#    echo   '                                  Process'  
+     printf '                                  Prcss                                                  Memory   NoHarv       Address               Last\n'
+     printf 'Farmer            Version         DNFHW  Status   #Peers   #Plots  Height  Netspace       Usage   Errors       Balance    ETW        Block   Effort\n'
+     echo -e "---------------------------------------------------------------------------------------------------------------------------------------------------"
   fi
   for fork in $FARMERLIST; do
      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
@@ -117,10 +117,11 @@ if [[ $HARVESTERONLY != 1 ]]; then
      fi
      FORKMEM=$(forkmemory)
      FORKVERSION=$($FORKTOOLSDIR/fork $fork ver)
-     OLDIFS=$IFS
-     IFS=''
-     FNWORKERS=$(echo $PROCESSEF | grep -c "^${FORKNAME}_full" )
-     IFS=$OLDIFS
+#     OLDIFS=$IFS
+#     IFS=''
+#     echo $PROCESSEF | grep ${fork}-blockchain | awk {'print$2'}           
+#     FNWORKERS=$(echo $PROCESSEF | grep -c "^${FORKNAME}_full" )
+#     IFS=$OLDIFS
      . $FORKTOOLSDIR/ftrpcinclude.sh
      EFFORT=${EFFORT%.*}
      ADDRESSBALANCE=${ADDRESSBALANCE%.*}
@@ -140,7 +141,7 @@ if [[ $HARVESTERONLY != 1 ]]; then
         ETWTEXT='Ht<500'
         PRINTEFFORT='N/A'        
      fi     
-     printf '%-17.17s %-15.15s %-5.5s  %-10.10s%5.5s%9.9s %7d%10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%11.11s %5s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$FARMSTATUS" "$PEERCOUNT" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$PRINTEFFORT"
+     printf '%-17.17s %-15.15s %-5.5s  %-10.10s%5.5s%9.9s %7d%10.10s  %8s %7.7s %10d %-5.5s  %-7s%11.11s %5s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$FARMSTATUS" "$PEERCOUNT" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$PRINTEFFORT"
   done
 fi
 IFS=$ORIGIFS
@@ -150,9 +151,8 @@ if [[ $FARMERONLY != 1 ]]; then
   if [[ $VALIDATEFORKNAME == 'No' ]]; then
     echo -e "------------------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ----------------------------------------------------------------"
   fi
-  echo
   printf  '                                                               Plot    Plot   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
-  printf  '                                  Srvcs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since\n'
+  printf  '                                  Prcss                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since\n'
   printf  'Harvester         Version         DNFHW   #Plots    Harvest   Today   Y/Day     Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
   echo -e "---------------------------------------------------------------------------------------------------------------------------------------------"
   for fork in $HARVESTERLIST; do
@@ -164,7 +164,7 @@ if [[ $FARMERONLY != 1 ]]; then
        continue
      fi
      PORTPARSINGDONE=0
-     . $FORKTOOLSDIR/ftcheckprocs.sh
+     . $FORKTOOLSDIR/ftcountprocs.sh
 
      FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
      LASTHARVESTERLINE=$(cat $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log | grep -a "plots were eligible" | tail -1)
