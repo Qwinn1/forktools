@@ -91,10 +91,25 @@ else
       fi
       IFS=$OLDIFS      
     }
+    function getproclist () {
+       OLDIFS=$IFS
+       IFS=$'\n'
+       for i in `ps -ef | c1grep -e 'full_node' -e 'farmer' -e 'harvester' -e 'wallet' -e '_daemon' | grep -v grep | awk {'print $8 " " $2'} | sort` ; do
+          PROCPID=$( echo $i | awk {'print$2'} )
+          PROCCWD=$( pwdx $PROCPID | awk {'print$2'} )
+          printf '%s %s\n' $i $PROCCWD
+       done
+       IFS=$OLDIFS
+    }
     function forkmemory () {
-      for pid in $(pgrep ^${fork}_); do 
-         awk '/Pss:/{ sum += $2 } END { print sum }' /proc/${pid}/smaps 
-      done | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
+       OLDIFS=$IFS
+       IFS=''
+       MEMPIDLIST=$( echo $PROCESSEF | grep ${fork}-blockchain | awk {'print$2'} )
+       IFS=$'\n'      
+       for pid in $MEMPIDLIST; do 
+          awk '/Pss:/{ sum += $2 } END { print sum }' /proc/${pid}/smaps 
+       done | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
+       IFS=$OLDIFS
     }
     function DateToEpoch () {
       date -f - +%s | awk '{$1=$1};1'
