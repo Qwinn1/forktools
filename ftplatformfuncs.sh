@@ -166,7 +166,7 @@ else
           PROCPID=$( echo $i | awk {'print$2'} )
           if [[ $PROCFORKNAME = 'chia' ]]; then
              PROCCWD=$( platformpwdx $PROCPID | sed 's|.*/||g' )
-             IFS=''
+             # IFS=''
              for link in $SYMLINKLIST; do
                 echo "getproclist" $PROCFORKNAME "pid" $PROCPID "proccwd" $PROCCWD "link" $link
                 FROMLINK=$( echo $link | awk {'print$1'} )
