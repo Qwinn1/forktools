@@ -72,7 +72,7 @@ if [[ $OSTYPE == 'darwin'* ]]; then
           else
              PROCCWD=$( echo "${PROCFORKNAME}-blockchain" )
           fi
-          printf '%s %s\n' $i $PROCCWD
+          # printf '%s %s\n' $i $PROCCWD
        done
        IFS=$OLDIFS
     }
