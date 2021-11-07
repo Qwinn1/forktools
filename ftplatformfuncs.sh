@@ -168,6 +168,7 @@ else
              PROCCWD=$( platformpwdx $PROCPID | sed 's|.*/||g' )
              IFS=''
              for link in $SYMLINKLIST; do
+                echo "getproclist" $PROCFORKNAME "pid" $PROCPID "proccwd" $PROCCWD "link" $link
                 FROMLINK=$( echo $link | awk {'print$1'} )
                 if [[ $FROMLINK = $PROCCWD ]]; then
                    PROCCWD=$( echo $link | awk {'print$2'} )
