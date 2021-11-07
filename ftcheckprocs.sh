@@ -11,8 +11,8 @@ for process in daemon full_node farmer harvester wallet; do
    PROCPROCESSNAME=$( echo "_${process}" )
    OLDIFS=$IFS
    IFS=''
-   PROCCOUNT=$( echo $PROCESSEF | c1grep "${FORKTOOLSBLOCKCHAINDIRS}/${PROCBLOCKCHAINNAME}" | c1grep -c ${PROCPROCESSNAME} )
-   CHIAPROCS=$( echo $PROCESSEF | c1grep "${FORKTOOLSBLOCKCHAINDIRS}/${PROCBLOCKCHAINNAME}" | c1grep -c "^chia${PROCPROCESSNAME}" )
+   PROCCOUNT=$( echo $PROCESSEF | c1grep "${PROCBLOCKCHAINNAME}" | c1grep -c ${PROCPROCESSNAME} )
+   CHIAPROCS=$( echo $PROCESSEF | c1grep "${PROCBLOCKCHAINNAME}" | c1grep -c "^chia${PROCPROCESSNAME}" )
    if [[ $CHIAPROCS > 0 ]]; then
       USINGCHIAPROCESSNAMES=1
    fi

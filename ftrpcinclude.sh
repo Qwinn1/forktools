@@ -168,11 +168,7 @@ NETSPACE=$( assemble_bytestring "$RPCSPACEBYTES" )
 # Avocado is weird in that they renamed "get_harvesters" to "get_plots", so we call it differently
 IFS=''
 
-if [[ $FORKNAME = "avocado" ]]; then
-   PLOTLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_plots | python -m json.tool )
-else
-   PLOTLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_harvesters | python -m json.tool 2>/dev/null)
-fi
+PLOTLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_harvesters | python -m json.tool 2>/dev/null)
 
 IFS=$'\n'
 if [[ $PLOTLIST == '' ]]; then

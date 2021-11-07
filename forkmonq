@@ -46,6 +46,13 @@ if [[ $1 != '' && $1 != '-n' && $1 != '--nowallet' && $1 != '-f' && $1 != '--far
 fi
 . ftinit.sh
 
+#TESTING=$( getproclist )
+#TESTING=$( getsymlinklist )
+#IFS=''
+#echo "here:"
+#echo $TESTING
+#exit
+
 . $FORKTOOLSDIR/ftbuildrunlists.sh
 ORIGIFS=$IFS
 OLDIFS=$IFS
