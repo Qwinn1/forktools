@@ -21,7 +21,7 @@ for process in daemon full_node farmer harvester wallet; do
    if [[ $PROCCOUNT > 0 ]]; then
       PROCESSRUNNING=1
    fi
-   if [[ $PROCCOUNT > 9 ]]; then
+   if [[ $PROCCOUNT -gt 9 ]]; then
       SINGLESERVICE='+'
    else
       SINGLESERVICE=$( echo $PROCCOUNT )      
