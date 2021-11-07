@@ -91,7 +91,7 @@ else
       fi
       IFS=$OLDIFS      
     }
-    function getproclist () {
+    function getproclistnolinks () {
        OLDIFS=$IFS
        IFS=$'\n'
        for i in `ps -ef | c1grep -e 'full_node' -e 'farmer' -e 'harvester' -e 'wallet' -e '_daemon' | grep -v grep | awk {'print $8 " " $2'} | sort` ; do
@@ -100,6 +100,31 @@ else
           printf '%s %s\n' $i $PROCCWD
        done
        IFS=$OLDIFS
+    }
+    function getproclist () {
+       OLDIFS=$IFS
+       IFS=''
+       PROCLIST=$( getproclistnolinks )
+       SYMLINKLIST=$( find $FORKTOOLSBLOCKCHAINDIRS -maxdepth 1 -type l -ls | grep "blockchain" ) # | awk {'print ${8} " " ${9}' } )
+       IFS=$'\n'       
+       for processlist in $PROCLIST; do
+          DIDREPLACE=0
+          for linklist in $SYMLINKLIST; do
+             PROCPATH=$( echo $processlist | awk {'print$3'} )
+             CHECKLINK=$( echo $linklist | awk {'print$13'} )
+             if [[ $CHECKLINK == $PROCPATH ]]; then
+                REPLACELINK=$( echo $linklist | awk {'print$11'} )
+                COL1=$( echo $processlist | awk {'print $1 " " $2'} )
+                printf '%s %s\n' $COL1 $REPLACELINK
+                DIDREPLACE=1
+                break
+             fi
+          done
+          if [[ $DIDREPLACE = 0 ]]; then
+             printf '%s\n' $processlist
+          fi
+       done
+       IFS=$OLDIFS      
     }
     function forkmemory () {
        OLDIFS=$IFS
