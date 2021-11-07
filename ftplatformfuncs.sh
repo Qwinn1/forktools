@@ -61,9 +61,7 @@ if [[ $OSTYPE == 'darwin'* ]]; then
           PROCPID=$( echo $i | awk {'print$2'} )
           if [[ $PROCFORKNAME = 'chia' ]]; then
              PROCCWD=$( platformpwdx $PROCPID | sed 's|.*/||g' )
-             # IFS=''
              for link in $SYMLINKLIST; do
-                # echo "getproclist" $PROCFORKNAME "pid" $PROCPID "proccwd" $PROCCWD "link" $link
                 FROMLINK=$( echo $link | awk {'print$1'} )
                 if [[ $FROMLINK = $PROCCWD ]]; then
                    PROCCWD=$( echo $link | awk {'print$2'} )
@@ -77,6 +75,7 @@ if [[ $OSTYPE == 'darwin'* ]]; then
        done
        IFS=$OLDIFS
     }
+
     function forkmemory () {
       # ps -x -o rss= -p $(pgrep ^${fork}_) | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
       OLDIFS=$IFS
@@ -167,9 +166,7 @@ else
           PROCPID=$( echo $i | awk {'print$2'} )
           if [[ $PROCFORKNAME = 'chia' ]]; then
              PROCCWD=$( platformpwdx $PROCPID | sed 's|.*/||g' )
-             # IFS=''
              for link in $SYMLINKLIST; do
-                # echo "getproclist" $PROCFORKNAME "pid" $PROCPID "proccwd" $PROCCWD "link" $link
                 FROMLINK=$( echo $link | awk {'print$1'} )
                 if [[ $FROMLINK = $PROCCWD ]]; then
                    PROCCWD=$( echo $link | awk {'print$2'} )
