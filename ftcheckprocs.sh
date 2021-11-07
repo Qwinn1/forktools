@@ -12,10 +12,10 @@ for process in daemon full_node farmer harvester wallet; do
    OLDIFS=$IFS
    IFS=''
    PROCCOUNT=$( echo $PROCESSEF | c1grep " ${PROCBLOCKCHAINNAME}" | c1grep -c ${PROCPROCESSNAME} )
-   CHIAPROCS=$( echo $PROCESSEF | c1grep " ${PROCBLOCKCHAINNAME}" | c1grep -c "^chia${PROCPROCESSNAME}" )
-   if [[ $CHIAPROCS > 0 ]]; then
-      USINGCHIAPROCESSNAMES=1
-   fi
+#  CHIAPROCS=$( echo $PROCESSEF | c1grep " ${PROCBLOCKCHAINNAME}" | c1grep -c "^chia${PROCPROCESSNAME}" )
+#  if [[ $CHIAPROCS > 0 ]]; then
+#     USINGCHIAPROCESSNAMES=1
+#  fi
    IFS=$OLDIFS
    PROCESSRUNNING=0
    if [[ $PROCCOUNT > 0 ]]; then

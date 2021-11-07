@@ -72,7 +72,6 @@ if [[ $2 == '-multiproc' ]]; then
       PROGRAMTOMOD=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/blockchain.py
       if [[ -f $PROGRAMTOMOD ]]; then
          echo "forkpatch:  Analyzing suitability of $FORKNAME for automated -multiproc patching."
-        . $FORKTOOLSDIR/ftparseports.sh
         . $FORKTOOLSDIR/ftcheckprocs.sh
       
          FORKNAMEINCODE=$FORKNAME
@@ -137,7 +136,6 @@ if [[ $2 == '-logwinningplots' ]]; then
       PROGRAMTOMOD=$FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/harvester/harvester_api.py      
       if [[ -f $PROGRAMTOMOD ]]; then
          echo "forkpatch:  Analyzing suitability of $FORKNAME for automated -logwinningplots patching."      
-        . $FORKTOOLSDIR/ftparseports.sh
         . $FORKTOOLSDIR/ftcheckprocs.sh
       
          FINDPROOFSINFILENAME=$( grep -c 'proofs in {filename}' $PROGRAMTOMOD )
