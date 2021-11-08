@@ -84,19 +84,23 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ $HARVESTERONLY != 1 ]]; then
-  printf '\n'
-  if [[ $VALIDATEFORKNAME == 'No' ]]; then
-    echo -e "------------------------------------------------------------------- FARMERS: $FARMERCOUNT -------------------------------------------------------------------"
-  fi
-  if [[ $FARMERCOUNT > 0 ]]; then
-     printf '                                  Procs                                                  Memory   NoHarv       Address               Last\n'
-     printf 'Farmer            Version         DNFHW  Status   #Peers   #Plots  Height  Netspace       Usage   Errors       Balance    ETW        Block   Effort\n'
-     echo -e "---------------------------------------------------------------------------------------------------------------------------------------------------"
-  fi
+  PRINTEDHEADER=0
   for fork in $FARMERLIST; do
      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
      fi
+     if [[ $PRINTEDHEADER == 0 ]]; then
+        printf '\n'
+        if [[ $VALIDATEFORKNAME == 'No' ]]; then
+           echo -e "------------------------------------------------------------------- FARMERS: $FARMERCOUNT -------------------------------------------------------------------"
+        fi
+        if [[ $FARMERCOUNT > 0 ]]; then
+           printf '                                  Procs                                                  Memory   NoHarv       Address               Last\n'
+           printf 'Farmer            Version         DNFHW  Status   #Peers   #Plots  Height  Netspace       Usage   Errors       Balance    ETW        Block   Effort\n'
+           echo -e "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        fi
+        PRINTEDHEADER=1
+     fi    
      FORKNAME=$fork
      if [[ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log ]]; then
         cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log        
@@ -153,23 +157,27 @@ fi
 IFS=$ORIGIFS
 
 if [[ $FARMERONLY != 1 ]]; then
-  printf '\n'
-  if [[ $VALIDATEFORKNAME == 'No' ]]; then
-    echo -e "------------------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ----------------------------------------------------------------"
-    echo
-  fi
-  printf  '                                                               Plot    Plot   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
-  printf  '                                  Procs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since\n'
-  printf  'Harvester         Version         DNFHW   #Plots    Harvest   Today   Y/Day     Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
-  echo -e "---------------------------------------------------------------------------------------------------------------------------------------------"
+  PRINTEDHEADER=0
   for fork in $HARVESTERLIST; do
      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
      fi
-     FORKNAME=$fork
      if [[ ! -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log ]]; then
        continue
      fi
+     if [[ $PRINTEDHEADER == 0 ]]; then
+        printf '\n'
+        if [[ $VALIDATEFORKNAME == 'No' ]]; then
+           echo -e "------------------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ----------------------------------------------------------------"
+           echo
+        fi
+        printf  '                                                               Plot    Plot   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
+        printf  '                                  Procs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since\n'
+        printf  'Harvester         Version         DNFHW   #Plots    Harvest   Today   Y/Day     Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
+        echo -e "---------------------------------------------------------------------------------------------------------------------------------------------"
+        PRINTEDHEADER=1
+     fi
+     FORKNAME=$fork
      . $FORKTOOLSDIR/ftcheckprocs.sh
 
      FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
@@ -241,17 +249,17 @@ fi
 echo
 
 if [[ $HARVESTERONLY != 1 && $FARMERONLY != 1 && $STOPPEDLIST != '' ]]; then
-   PRINTEDSTOPPEDHEADER=0
+   PRINTEDHEADER=0
    for fork in $STOPPEDLIST; do
       if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
         continue
       fi
-      if [[ $PRINTEDSTOPPEDHEADER == 0 ]]; then
+      if [[ $PRINTEDHEADER == 0 ]]; then
          echo -e "---------- STOPPED FORKS: $STOPPEDCOUNT -----------"
          printf  'Stopped                           Procs\n'
          printf  'Forks             Version         DNFHW\n'
          echo -e "---------------------------------------"
-         PRINTEDSTOPPEDHEADER=1
+         PRINTEDHEADER=1
       fi   
       FORKNAME=$fork
       FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
