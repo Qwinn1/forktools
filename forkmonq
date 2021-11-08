@@ -241,7 +241,7 @@ fi
 echo
 
 if [[ $HARVESTERONLY != 1 && $FARMERONLY != 1 && $STOPPEDLIST != '' ]]; then
-   echo -e "-------------STOPPED FORKS: $STOPPEDCOUNT -------------"
+   echo -e "---------- STOPPED FORKS: $STOPPEDCOUNT -----------"
    printf  'Stopped                           Procs\n'
    printf  'Forks             Version         DNFHW\n'
    echo -e "---------------------------------------"
