@@ -72,6 +72,8 @@ stopforkscript() {
 #### LOGGING SETTINGS
 . $FORKTOOLSDIR/ftconfigs/config.logging
 
+#### Set up any needed symlinks
+. $FORKTOOLSDIR/ftsymlinks.sh
 
 #### Call corresponding include for the forktool we're running.  
 # We'll include forkstartall for any run of forkstart, even if it's not 'forkstart all'
