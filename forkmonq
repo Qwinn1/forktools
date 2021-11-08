@@ -46,19 +46,21 @@ if [[ $1 != '' && $1 != '-n' && $1 != '--nowallet' && $1 != '-f' && $1 != '--far
 fi
 . ftinit.sh
 
+
+. $FORKTOOLSDIR/ftbuildrunlists.sh
+ORIGIFS=$IFS
+OLDIFS=$IFS
+
 #TESTING=$( getproclist )
 #TESTING2=$( getsymlinklist )
 #IFS=''
-#echo "Processes"
-#echo $TESTING
+#echo "Testing"
+#echo $STOPPEDLIST
 #echo
 #echo "Symlinks"
 #echo $TESTING2
 #exit
 
-. $FORKTOOLSDIR/ftbuildrunlists.sh
-ORIGIFS=$IFS
-OLDIFS=$IFS
 
 FIRSTLOOP=1
 while [[ $# -gt 0 ]]; do
@@ -154,6 +156,7 @@ if [[ $FARMERONLY != 1 ]]; then
   printf '\n'
   if [[ $VALIDATEFORKNAME == 'No' ]]; then
     echo -e "------------------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ----------------------------------------------------------------"
+    echo
   fi
   printf  '                                                               Plot    Plot   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
   printf  '                                  Procs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since\n'
@@ -167,7 +170,6 @@ if [[ $FARMERONLY != 1 ]]; then
      if [[ ! -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log ]]; then
        continue
      fi
-     PORTPARSINGDONE=0
      . $FORKTOOLSDIR/ftcheckprocs.sh
 
      FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
@@ -238,5 +240,17 @@ if [[ $FARMERONLY != 1 ]]; then
 fi
 echo
 
+if [[ $HARVESTERONLY != 1 && $FARMERONLY != 1 && $STOPPEDLIST != '' ]]; then
+   echo -e "-------------STOPPED FORKS: $STOPPEDCOUNT -------------"
+   printf  'Stopped                           Procs\n'
+   printf  'Forks             Version         DNFHW\n'
+   echo -e "---------------------------------------"
+   for fork in $STOPPEDLIST; do
+      FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
+      FORKNAME=$fork
+      . $FORKTOOLSDIR/ftcheckprocs.sh
+      printf '%-17.17s %-15.15s %-6.6s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" 
+   done
+fi
 . ftexit.sh
 
