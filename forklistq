@@ -3,8 +3,8 @@
 function print_usage () {
    echo "forklist help:"
    echo
-   echo "SYNOPSIS:  Provides a count of running farmers and harvesters on the local server, with a single"
-   echo "     line list of the active forks running each type of service."
+   echo "SYNOPSIS:  Provides a count of running farmers, running harvesters, and installed forks that aren't running,"
+   echo "     along with a single line list of forks in each category."
    echo
    echo "PARAMETERS:"
    echo "     -help | --help      Show this information again."
@@ -20,4 +20,7 @@ echo $FARMERLIST
 echo
 echo "Harvester count:" $HARVESTERCOUNT
 echo $HARVESTERLIST
+echo
+echo "Stopped count:" $STOPPEDCOUNT
+echo $STOPPEDLIST
 echo
