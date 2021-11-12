@@ -141,7 +141,7 @@ else
     }
     function platformpwdx () {
        PROCPID=$1
-       echo `pwdx $PROCPID | awk {'print$2'}`
+       echo `pwdx $PROCPID 2>/dev/null | awk {'print$2'}`
     }
 
     # The next two get a process list with pid and directory process was launched from
