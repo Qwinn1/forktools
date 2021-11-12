@@ -62,7 +62,14 @@ while read line; do
      NEWBATCHSLEEP=$(sed "s/$OLDBATCHSLEEP/$SETBATCHSLEEP/" <<< "$WORKLINE")$PRESERVECOMMENT
      OLDBATCHSLEEP=$line
      continue     
-  fi    
+  fi
+  if [[ $SETHARVTHREADS != '' && $SECTION == *harvester:* && $WORKLINE == *num_threads:* ]];
+  then
+     OLDHARVTHREADS=$(sed 's/num_threads: //' <<< "$WORKLINE" | awk '{$1=$1};1')
+     NEWHARVTHREADS=$(sed "s/$OLDHARVTHREADS/$SETHARVTHREADS/" <<< "$WORKLINE")$PRESERVECOMMENT
+     OLDHARVTHREADS=$line
+     continue     
+  fi      
   if [[ $SETFNTARGETPEERCOUNT != '' && $SECTION == *full_node:* && $WORKLINE == *target_peer_count:* ]];
   then
      OLDTGTPEERS=$(sed 's/target_peer_count: //' <<< "$WORKLINE" | awk '{$1=$1};1')
@@ -165,6 +172,11 @@ fi
 if [[ $SETBATCHSLEEP != '' && $OLDBATCHSLEEP != $NEWBATCHSLEEP ]]; then  
   echo "  Old Batch Sleep: " $OLDBATCHSLEEP
   echo "  New Batch Sleep: " $NEWBATCHSLEEP
+  ANYCHANGES='Yes'
+fi
+if [[ $SETHARVTHREADS != '' && $OLDHARVTHREADS != $NEWHARVTHREADS ]]; then  
+  echo "  Old Harvester Number of Threads: " $OLDHARVTHREADS
+  echo "  New Harvester Number of Threads: " $NEWHARVTHREADS
   ANYCHANGES='Yes'
 fi
 if [[ $SETFNTARGETPEERCOUNT != '' && $OLDTGTPEERS != $NEWTGTPEERS ]]; then  
@@ -317,6 +329,10 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
    if [[ $SETBATCHSLEEP != '' && $OLDBATCHSLEEP != $NEWBATCHSLEEP ]]; then  
       echo "Setting batch sleep..."
       sed -i.bak "s/$OLDBATCHSLEEP/$NEWBATCHSLEEP/" $CURRENTCONFIG
+   fi
+   if [[ $SETHARVTHREADS != '' && $OLDHARVTHREADS != $NEWHARVTHREADS ]]; then  
+      echo "Setting number of harvester threads..."
+      sed -i.bak "s/$OLDHARVTHREADS/$NEWHARVTHREADS/" $CURRENTCONFIG
    fi
    if [[ $SETFNTARGETPEERCOUNT != '' && $OLDTGTPEERS != $NEWTGTPEERS ]]; then  
       echo "Setting target peer count..."
