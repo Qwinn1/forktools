@@ -96,9 +96,11 @@ fi
 
 # Constants and Dates
 DEFAULT_IFS=$' \t\n'
-TODAYSTAMP=`date +"20%y-%m-%d"`
-YESTERDAYSTAMP=$(DateOffset -1)
+TODAYSTAMP='^'`date +"20%y-%m-%d"`
+YESTERDAYSTAMP='^'$(DateOffset -1)
 
+#echo $TODAYSTAMP
+#echo $YESTERDAYSTAMP
 
 ##  FUNCTIONS
 
