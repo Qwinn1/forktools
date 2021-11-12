@@ -33,10 +33,6 @@ COINNAME=$(echo $COINNAME | sed 's/.*"network_prefix": "//' | sed 's/",.*//' | t
 
 # Get major-minor multiplier
 MMMULTIPLIERNAME=$FORKNAME
-# Hard coding to account for crappy lack of proper fork renaming. 
-if [[ $MMMULTIPLIERNAME == 'rolls' ]]; then
-   MMMULTIPLIERNAME='roll'
-fi
 MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME =" | sed 's/.*=//' | sed 's/_//g' | sed 's/\*.*//' | awk '{$1=$1};1')
 if [[ $MMMULTIPLIER == '' ]]; then
    MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_chia =" | sed 's/.*=//' | sed 's/_//g' | sed 's/\*.*//' | awk '{$1=$1};1')
