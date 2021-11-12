@@ -232,7 +232,7 @@ elif [[ $LASTBLOCKDATE == '' ]]; then
      FIRSTLOG=$( echo "debug.log.$FIRSTLOG" )
   fi   
   FIRSTHARVESTLINE=$(cat $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/$FIRSTLOG | grep "eligible for farming" | sort | head -1)  
-  if [[ $FIRSTHARVESTLINE != '' ]]; then
+  if [[ $FIRSTHARVESTLINE != '' && $ETWSEC != '' ]]; then
     FIRSTHARVESTTIME=$(sed 's/\..*//' <<< "$FIRSTHARVESTLINE" | awk '{$1=$1};1')
     FIRSTHARVESTEPOCH=$(echo "$FIRSTHARVESTTIME" | DateToEpoch )
     SECONDSSINCESTART=$(echo "($CURRENTDATEEPOCH - $FIRSTHARVESTEPOCH)")
