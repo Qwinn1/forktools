@@ -126,7 +126,8 @@ if [[ $HARVESTERONLY != 1 ]]; then
               fi
            fi
         fi
-        HARVESTERERRORS=$(grep -a "Harvester did not respond" $YESTERDAYLOGLIST | grep -c -e ^$TODAYSTAMP -e ^$YESTERDAYSTAMP )
+        # The : checks are because, when searching multiple files, the output of the first grep can be, for example 'debug.log:2021-11-21' rather than date at beginning
+        HARVESTERERRORS=$(grep -a "did not respond" $YESTERDAYLOGLIST | grep -c -e ":$TODAYSTAMP" -e ^$TODAYSTAMP -e ":$YESTERDAYSTAMP" -e ^$YESTERDAYSTAMP )
      else 
         HARVESTERERRORS='NoLog'
      fi
