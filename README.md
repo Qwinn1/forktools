@@ -26,24 +26,14 @@ Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 ins
 - `forknodes`           \- Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
 - `forkbenchips`        \- Benchmarks your server's capacity for running a timelord
 
-# CHANGELOG, VERSION 4.1:
+# CHANGELOG, VERSION 4.2:
 
-- Confirmed compatibility with Debian 10.  Note that Debian users may need to run `apt install bc` as the `bc` function, which allows for some basic mathematical processing in bash, does not appear to be part of a default Debian installation.
-- Users running forktools under certain locale settings (such as European locales that display commas instead of periods for decimals) should no longer suffer minor display and calculation issues.
-- New tool `forkcerts` makes setting up remote harvesters much easier.  It will export all farmer `ca` folders containing ssl certs into a single folder for easy transfer to and import on remote harvesters for the required `init -c` process.  Also sets the farmer peer setting in the harvester config.yamls during the import process.
-- `fork`, in addition to the 3 previous abbreviations 'sum', 'wal' and 'ver', now supports an additional 13 three-letter abbreviations for various other forktools.  For example, instead of running `forkfixconfig chia`, you can run `fork chia fix`.  Run `fork -help` for the list of available abbreviations.  Note that the capability of running for 'all' forks cannot be replicated in this way. `fork` can still only be run for one forkname at a time.
-- `forkpatch` now supports a second patch, -logwinningplots, which will identify the specific plot any proof was found in in your debug.log.
-- `forkfixconfig` now supports setting `enable_upnp` and the two new db_sync parameters recently added by Chia.  Like all other parameters, this can be set by a fork-specific config override if desired.
-- `forkupdate` will now automatically detect whether any forkpatch was previously applied to the fork and attempt to reapply them just before the restart at the end of forkupdate.
-- `forkupdate` will now preserve chia pooling parameters and foxypool pooling parameters when recreating the fork's config.yaml.
-- `forkexplore` transaction details now go to 3 decimal point precision, rather than 2.
-- `forkexplore` can now be run in summary mode with -d (for daily) and -m (for monthly) switches.  Will report farmed and non-farmed totals separately for easier trend analysis.
-- `forkports` has been refined even more to detect more local port usage and exclude more remote port usage in conflict determination.
-- `forkmon` now shows "Plot Errors Today" and "Plot Errors Y/Day" in the harvester section.  This count sums 4 different plot related errors that can be found in the harvester logs.
-- `forkmon` will now show the number of seconds since winning the last block, rather than a blank, when the last block was won less than a minute ago.
-- `forkmon` harvester section will now display forks that have just been set up and never actually started harvesting yet more gracefully.
-- `forkmon` and `forkexplore` can now be run with -o switch, intended to allow users to monitor their NFT recovery addresses.  This relies on the user having set up a config.nftaddress.forkname file in the ftconfigs folder specifying the NFT recovery address for each fork they want to monitor with `forkmon -o` or `forkexplore -o`.
-- Symlink creation for silicoin revised to the new `sit` naming structure.  Technical support for this fork should not be misconstrued as a recommendation to farm this fork.
+- Several performance tweaks across all tools.
+- It is no longer necessary to rerun forktools install script after installing new forks that require symlinks.  Any needed symlinks for any new forks will be created whenever you run any forktool.
+- `forkmon`:  Process count and memory usage statistics for forks that spoof chia process names, as well as chia itself when run alongside such forks, are now reported accurately. (Disclaimer:  Docker installations can still produce unexpected results).
+- `forkmon`:  If a blockchain directory and config.yaml is found for a fork, but the fork did not appear under Farmer or Harvester sections for any reason, it will now appear under a new third Stopped Forks section.  The prime purpose is to detect hung processes for stopped forks (see next entry).
+- `forkmon`:  The 'FullNode Workers' column in the Farmer section has been removed.  Instead, the 'Procs DNFHW' column (which appears in all three sections of forkmon) will now display a count of each kind of process that is running (Daemon, Node, Farmer, Harvester, Wallet) instead of the current "Y" for more than zero and "N" for zero.  If that count is greater than 9 processes (usually only applicable to the 'N(ode)' column), it will display '+' instead.
+- `forkfixconfig` now supports changing "num_threads" in harvester section.  Experimentation modifying this value has not yielded conclusive benefits or penalties thus far.
 
 
 # INSTALLATION INSTRUCTIONS:
@@ -272,6 +262,24 @@ https://discord.gg/XmTEZ4SHtj
 
 ## OLDER CHANGELOGS
 
+# Changelog, Version 4.1:
+
+- Confirmed compatibility with Debian 10.  Note that Debian users may need to run `apt install bc` as the `bc` function, which allows for some basic mathematical processing in bash, does not appear to be part of a default Debian installation.
+- Users running forktools under certain locale settings (such as European locales that display commas instead of periods for decimals) should no longer suffer minor display and calculation issues.
+- New tool `forkcerts` makes setting up remote harvesters much easier.  It will export all farmer `ca` folders containing ssl certs into a single folder for easy transfer to and import on remote harvesters for the required `init -c` process.  Also sets the farmer peer setting in the harvester config.yamls during the import process.
+- `fork`, in addition to the 3 previous abbreviations 'sum', 'wal' and 'ver', now supports an additional 13 three-letter abbreviations for various other forktools.  For example, instead of running `forkfixconfig chia`, you can run `fork chia fix`.  Run `fork -help` for the list of available abbreviations.  Note that the capability of running for 'all' forks cannot be replicated in this way. `fork` can still only be run for one forkname at a time.
+- `forkpatch` now supports a second patch, -logwinningplots, which will identify the specific plot any proof was found in in your debug.log.
+- `forkfixconfig` now supports setting `enable_upnp` and the two new db_sync parameters recently added by Chia.  Like all other parameters, this can be set by a fork-specific config override if desired.
+- `forkupdate` will now automatically detect whether any forkpatch was previously applied to the fork and attempt to reapply them just before the restart at the end of forkupdate.
+- `forkupdate` will now preserve chia pooling parameters and foxypool pooling parameters when recreating the fork's config.yaml.
+- `forkexplore` transaction details now go to 3 decimal point precision, rather than 2.
+- `forkexplore` can now be run in summary mode with -d (for daily) and -m (for monthly) switches.  Will report farmed and non-farmed totals separately for easier trend analysis.
+- `forkports` has been refined even more to detect more local port usage and exclude more remote port usage in conflict determination.
+- `forkmon` now shows "Plot Errors Today" and "Plot Errors Y/Day" in the harvester section.  This count sums 4 different plot related errors that can be found in the harvester logs.
+- `forkmon` will now show the number of seconds since winning the last block, rather than a blank, when the last block was won less than a minute ago.
+- `forkmon` harvester section will now display forks that have just been set up and never actually started harvesting yet more gracefully.
+- `forkmon` and `forkexplore` can now be run with -o switch, intended to allow users to monitor their NFT recovery addresses.  This relies on the user having set up a config.nftaddress.forkname file in the ftconfigs folder specifying the NFT recovery address for each fork they want to monitor with `forkmon -o` or `forkexplore -o`.
+- Symlink creation for silicoin revised to the new `sit` naming structure.  Technical support for this fork should not be misconstrued as a recommendation to farm this fork.
 
 # Changelog, Version 4.0:
 
