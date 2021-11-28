@@ -6,7 +6,12 @@ if [[ $HELPREQUEST != '' ]]; then
   exit
 fi   
 
+# Used to make sure that a grep that is expected to sometimes not find any results doesn't return a 1 and trigger error trapping
+c1grep() { grep -a "$@" || test $? = 1; }
+
 . ftplatformfuncs.sh
+
+
 
 PLATFORMLOCALE=$(getlocale)
 export LC_ALL=$PLATFORMLOCALE
@@ -67,6 +72,8 @@ stopforkscript() {
 #### LOGGING SETTINGS
 . $FORKTOOLSDIR/ftconfigs/config.logging
 
+#### Set up any needed symlinks
+. $FORKTOOLSDIR/ftsymlinks.sh
 
 #### Call corresponding include for the forktool we're running.  
 # We'll include forkstartall for any run of forkstart, even if it's not 'forkstart all'
@@ -91,7 +98,6 @@ fi
 DEFAULT_IFS=$' \t\n'
 TODAYSTAMP=`date +"20%y-%m-%d"`
 YESTERDAYSTAMP=$(DateOffset -1)
-
 
 ##  FUNCTIONS
 
@@ -174,8 +180,6 @@ assemble_bytestring() {
   echo $RETURNTEXT
 }
 
-# Used to make sure that a grep that is expected to sometimes not find any results doesn't return a 1 and trigger error trapping
-c1grep() { grep -a "$@" || test $? = 1; }
 
 
 

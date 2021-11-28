@@ -34,8 +34,56 @@ if [[ $OSTYPE == 'darwin'* ]]; then
       IFS=$OLDIFS      
       return 0
     }
+    function platformpwdx () {
+       PROCPID=$1
+       echo `lsof -a -d cwd -p $PROCPID -n -Fn | awk '/^n/ {print substr($0,2)}'`
+    }
+
+    # The next two get a process list with pid and directory process was launched from
+    function getsymlinklist () {
+       OLDIFS=$IFS
+       IFS=''
+       SYMLINKLIST=$( find $FORKTOOLSBLOCKCHAINDIRS -maxdepth 1 -type l -ls | grep "blockchain" ) 
+       IFS=$'\n'
+       for link in $SYMLINKLIST; do
+          FROMLINK=$(echo $link | awk {'print$13'} | sed 's|.*/||g' )
+          TOLINK=$(echo $link | awk {'print$11'} | sed 's|.*/||g' )
+          echo $FROMLINK $TOLINK
+       done
+       IFS=$OLDIFS
+    }
+    function getproclist () {
+       OLDIFS=$IFS
+       SYMLINKLIST=$( getsymlinklist )
+       IFS=$'\n'
+       for i in `ps -ef | c1grep -e 'full_node' -e 'farmer' -e 'harvester' -e 'wallet' -e '_daemon' | grep -v grep | awk {'print $8 " " $2'}` ; do
+          PROCFORKNAME=$( echo $i | awk {'print$1'} | sed 's/_.*//' )
+          PROCPID=$( echo $i | awk {'print$2'} )
+          if [[ $PROCFORKNAME = 'chia' ]]; then
+             PROCCWD=$( platformpwdx $PROCPID | sed 's|.*/||g' )
+             for link in $SYMLINKLIST; do
+                FROMLINK=$( echo $link | awk {'print$1'} )
+                if [[ $FROMLINK = $PROCCWD ]]; then
+                   PROCCWD=$( echo $link | awk {'print$2'} )
+                   break
+                fi
+             done
+          else
+             PROCCWD=$( echo "${PROCFORKNAME}-blockchain" )
+          fi
+          printf '%s %s\n' $i $PROCCWD
+       done
+       IFS=$OLDIFS
+    }
+
     function forkmemory () {
-      ps -x -o rss= -p $(pgrep ^${fork}_) | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
+      # ps -x -o rss= -p $(pgrep ^${fork}_) | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
+      OLDIFS=$IFS
+      IFS=''
+      MEMPIDLIST=$( echo $PROCESSEF | grep ${fork}-blockchain | awk {'print$2'} )
+      IFS=$'\n'      
+      ps -x -o rss= -p $(echo $MEMPIDLIST) | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
+      IFS=$OLDIFS
     }
     function DateToEpoch () {
       xargs -I {} date -j -f "%Y-%m-%dT%H:%M:%S" "{}" "+%s" | awk '{$1=$1};1'
@@ -91,10 +139,56 @@ else
       fi
       IFS=$OLDIFS      
     }
+    function platformpwdx () {
+       PROCPID=$1
+       echo `pwdx $PROCPID 2>/dev/null | awk {'print$2'}`
+    }
+
+    # The next two get a process list with pid and directory process was launched from
+    function getsymlinklist () {
+       OLDIFS=$IFS
+       IFS=''
+       SYMLINKLIST=$( find $FORKTOOLSBLOCKCHAINDIRS -maxdepth 1 -type l -ls | grep "blockchain" ) 
+       IFS=$'\n'
+       for link in $SYMLINKLIST; do
+          FROMLINK=$(echo $link | awk {'print$13'} | sed 's|.*/||g' )
+          TOLINK=$(echo $link | awk {'print$11'} | sed 's|.*/||g' )
+          echo $FROMLINK $TOLINK
+       done
+       IFS=$OLDIFS
+    }
+    function getproclist () {
+       OLDIFS=$IFS
+       SYMLINKLIST=$( getsymlinklist )
+       IFS=$'\n'
+       for i in `ps -ef | c1grep -e 'full_node' -e 'farmer' -e 'harvester' -e 'wallet' -e '_daemon' | grep -v grep | awk {'print $8 " " $2'}` ; do
+          PROCFORKNAME=$( echo $i | awk {'print$1'} | sed 's/_.*//' )
+          PROCPID=$( echo $i | awk {'print$2'} )
+          if [[ $PROCFORKNAME = 'chia' ]]; then
+             PROCCWD=$( platformpwdx $PROCPID | sed 's|.*/||g' )
+             for link in $SYMLINKLIST; do
+                FROMLINK=$( echo $link | awk {'print$1'} )
+                if [[ $FROMLINK = $PROCCWD ]]; then
+                   PROCCWD=$( echo $link | awk {'print$2'} )
+                   break
+                fi
+             done
+          else
+             PROCCWD=$( echo "${PROCFORKNAME}-blockchain" )
+          fi
+          printf '%s %s\n' $i $PROCCWD
+       done
+       IFS=$OLDIFS
+    }
     function forkmemory () {
-      for pid in $(pgrep ^${fork}_); do 
-         awk '/Pss:/{ sum += $2 } END { print sum }' /proc/${pid}/smaps 
-      done | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
+       OLDIFS=$IFS
+       IFS=''
+       MEMPIDLIST=$( echo $PROCESSEF | grep ${fork}-blockchain | awk {'print$2'} )
+       IFS=$'\n'      
+       for pid in $MEMPIDLIST; do 
+          awk '/Pss:/{ sum += $2 } END { print sum }' /proc/${pid}/smaps 
+       done | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
+       IFS=$OLDIFS
     }
     function DateToEpoch () {
       date -f - +%s | awk '{$1=$1};1'

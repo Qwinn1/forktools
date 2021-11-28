@@ -26,24 +26,14 @@ Fully tested and compatible under Ubuntu 20.04, Debian 10, MacOS X, and WSL2 ins
 - `forknodes`           \- Prints a list of the peers you're connected to, in 'show -a' format for sharing with friends who can't connect
 - `forkbenchips`        \- Benchmarks your server's capacity for running a timelord
 
-# CHANGELOG, VERSION 4.1:
+# CHANGELOG, VERSION 4.2:
 
-- Confirmed compatibility with Debian 10.  Note that Debian users may need to run `apt install bc` as the `bc` function, which allows for some basic mathematical processing in bash, does not appear to be part of a default Debian installation.
-- Users running forktools under certain locale settings (such as European locales that display commas instead of periods for decimals) should no longer suffer minor display and calculation issues.
-- New tool `forkcerts` makes setting up remote harvesters much easier.  It will export all farmer `ca` folders containing ssl certs into a single folder for easy transfer to and import on remote harvesters for the required `init -c` process.  Also sets the farmer peer setting in the harvester config.yamls during the import process.
-- `fork`, in addition to the 3 previous abbreviations 'sum', 'wal' and 'ver', now supports an additional 13 three-letter abbreviations for various other forktools.  For example, instead of running `forkfixconfig chia`, you can run `fork chia fix`.  Run `fork -help` for the list of available abbreviations.  Note that the capability of running for 'all' forks cannot be replicated in this way. `fork` can still only be run for one forkname at a time.
-- `forkpatch` now supports a second patch, -logwinningplots, which will identify the specific plot any proof was found in in your debug.log.
-- `forkfixconfig` now supports setting `enable_upnp` and the two new db_sync parameters recently added by Chia.  Like all other parameters, this can be set by a fork-specific config override if desired.
-- `forkupdate` will now automatically detect whether any forkpatch was previously applied to the fork and attempt to reapply them just before the restart at the end of forkupdate.
-- `forkupdate` will now preserve chia pooling parameters and foxypool pooling parameters when recreating the fork's config.yaml.
-- `forkexplore` transaction details now go to 3 decimal point precision, rather than 2.
-- `forkexplore` can now be run in summary mode with -d (for daily) and -m (for monthly) switches.  Will report farmed and non-farmed totals separately for easier trend analysis.
-- `forkports` has been refined even more to detect more local port usage and exclude more remote port usage in conflict determination.
-- `forkmon` now shows "Plot Errors Today" and "Plot Errors Y/Day" in the harvester section.  This count sums 4 different plot related errors that can be found in the harvester logs.
-- `forkmon` will now show the number of seconds since winning the last block, rather than a blank, when the last block was won less than a minute ago.
-- `forkmon` harvester section will now display forks that have just been set up and never actually started harvesting yet more gracefully.
-- `forkmon` and `forkexplore` can now be run with -o switch, intended to allow users to monitor their NFT recovery addresses.  This relies on the user having set up a config.nftaddress.forkname file in the ftconfigs folder specifying the NFT recovery address for each fork they want to monitor with `forkmon -o` or `forkexplore -o`.
-- Symlink creation for silicoin revised to the new `sit` naming structure.  Technical support for this fork should not be misconstrued as a recommendation to farm this fork.
+- Several performance tweaks across all tools.
+- It is no longer necessary to rerun forktools install script after installing new forks that require symlinks.  Any needed symlinks for any new forks will be created whenever you run any forktool.
+- `forkmon`:  Process count and memory usage statistics for forks that spoof chia process names, as well as chia itself when run alongside such forks, are now reported accurately. (Disclaimers:  Docker installations can still produce unexpected results.  Have not been able to implement this item fully for MacOS X yet, still being worked on, but no functionality from previous versions of forktools for MacOS X has been lost.)
+- `forkmon`:  If a blockchain directory and config.yaml is found for a fork, but the fork did not appear under Farmer or Harvester sections for any reason, it will now appear under a new third Stopped Forks section.  The prime purpose is to detect hung processes for stopped forks (see next entry).
+- `forkmon`:  The 'FullNode Workers' column in the Farmer section has been removed.  Instead, the 'Procs DNFHW' column (which appears in all three sections of forkmon) will now display a count of each kind of process that is running (Daemon, Node, Farmer, Harvester, Wallet) instead of the current "Y" for more than zero and "N" for zero.  If that count is greater than 9 processes (usually only applicable to the 'N(ode)' column), it will display '+' instead.
+- `forkfixconfig` now supports changing "num_threads" in harvester section.  Experimentation modifying this value has not yielded conclusive benefits or penalties thus far.
 
 
 # INSTALLATION INSTRUCTIONS:
@@ -106,40 +96,68 @@ Daily summary from 2021-10-15 to 2021-11-03:           222.000 APPLE
 - forkmon ( Detailed overview of all running farmers and harvesters ) :
 
 ```
-'forkmon' initiated on Thu 21 Oct 2021 06:31:30 PM EDT...
+'forkmon -n' initiated on Sun Nov 28 13:18:31 EST 2021...
 
 
----------------------------------------------------------------------- FARMERS: 19 --------------------------------------------------------------------
+------------------------------------------------------------------- FARMERS: 20 -------------------------------------------------------------------
+                                  Procs                                                  Memory   NoHarv       Address               Last
+Farmer            Version         DNFHW  Status   #Peers   #Plots  Height  Netspace       Usage   Errors       Balance    ETW        Block   Effort
+---------------------------------------------------------------------------------------------------------------------------------------------------
+apple             1.2.90          16110  Farming       8     5914  625771   442 PiB     1484 MB       0          0 APPLE  4h14m    7h20m ago   173%
+avocado           1.1.7.dev124    16110  Farming       8     5914  682232   321 PiB     1819 MB       0          0 AVO    2h41m    3h39m ago   135%
+beet              2.1.3b0         16110  Farming       8     5914  468019   118 PiB     1231 MB       0          0 XBT    59m        12m ago    20%
+btcgreen          2.2.6.dev8      16110  Farming       8     5914  520748   551 PiB     1303 MB       0          0 XBTC   4h56m       4m ago     1%
+cannabis          1.2.301         16110  Farming       8     5914  623912   264 PiB     1755 MB       0          0 CANS   2h22m    3h58m ago   167%
+covid             1.2.9           16110  Farming       8     5914  582097   299 PiB     1765 MB       0          0 COV    2h31m    3h48m ago   150%
+flax              0.1.5           17110  Farming       8     5914  803088   3.0 EiB     2219 MB       0          0 XFX    1d2h      4h4m ago    15%
+flora             0.2.12          16110  Farming       8     5914  702240   1.0 EiB     1588 MB       0          0 XFL    10h3m   18h47m ago   186%
+goji              0.2.3           16110  Farming       6     5914  733208   368 PiB     1581 MB       0          0 XGJ    3h32m      25m ago    12%
+goldcoin          1.2.6           16110  Farming       8     5914  396714   307 PiB     1641 MB       0          0 OZT    2h34m    3h58m ago   154%
+greendoge         1.2.10          16110  Farming       8     5914  674750   838 PiB     1447 MB       0          0 GDOG   7h31m    8h15m ago   109%
+maize             1.2.3.dev14     16110  Not Synced    8     5914  643655   531 PiB     1381 MB       0          0 XMZ    7h59m    9h20m ago   116%
+melon             1.0.1.dev1      16110  Farming       8     5914  221369   202 PiB      857 MB       0          0 MELON  4h38m     9h2m ago   194%
+mint              0.1.0           16110  Farming       8     5914  338737   328 PiB     1641 MB       0          0 XKM    2h44m    7h42m ago   280%
+rolls             1.2.10.dev88    16110  Farming       8     5914   80813   225 PiB     1126 MB       0          0 ROLLS  2h17m    1h55m ago    84%
+salvia            0.7.7           17110  Farming       8     5914  379130   210 PiB     1246 MB       0          0 XSLV   1h44m      22m ago    21%
+scam              1.0.5           16110  Farming       8     5914  527672   173 PiB     1668 MB       0          0 SCM    1h33m      18m ago    19%
+skynet            1.0.1.dev2      16110  Farming       8     5914  148846   376 PiB     1528 MB       0          0 XNT    3h8m       40m ago    21%
+stor              1.0.3           16110  Farming       8     5914  465346   730 PiB     1808 MB       0          0 STOR   6h29m     8h4m ago   124%
+venidium          1.0.3           16110  Farming       8     5914  196577   410 PiB     1147 MB       0          0 XVM    3h12m      39m ago    20%
 
-                                  Srvcs                                              FulNode   Memory   NoHarv       Address              Last
-Farmer            Version         DNFHW  Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort
---------------------------------------------------------------------------------------------------------------------------------------------------------
-apple             1.2.90          YYYYN  Farming      20     5415  447701   421 PiB      6    1202 MB       0        870 APPLE 4h11m    8h45m ago   208%
-avocado           1.1.7.dev124    YYYYN  Farming      13     5415  498496   384 PiB      6    1218 MB       0        668 AVO   3h45m     6h1m ago   160%
-beet              2.1.3b0         YYYYN  Farming      19     5415  290981    60 PiB      6    1001 MB       1       3718 XBT   33m      1h17m ago   233%
-btcgreen          2.2.4           YYYYN  Farming      20     5415  347878   235 PiB      6    1070 MB       0        823 XBTC  2h20m    6h13m ago   265%
-cannabis          1.2.301         YYYYN  Farming      16     5415  449282   257 PiB      6    1169 MB       0       9472 CANS  2h44m      34m ago    21%
-covid             1.2.9           YYYYN  Farming      19     5415  406132   280 PiB      6    1321 MB       0       7080 COV   2h55m    5h29m ago   187%
-flax              0.1.3           YYYYN  Farming      20     5415  626453   2.4 EiB      6    1337 MB       0        206 XFX   1d2h     3h32m ago    13%
-flora             0.2.10          YYYYN  Farming      12     5415  527050   824 PiB      6    1323 MB       0        888 XFL   7h48m      49m ago    10%
-goji              0.2.3           YYYYN  Farming       8     5415  558912   424 PiB      6    1181 MB       0        528 XGJ   3h22m     5h3m ago   149%
-
-
-...
-
-------------------------------------------------------------- HARVESTERS: 19 ----------------------------------------------------------------
+------------------------------------------------------------- HARVESTERS: 20 ----------------------------------------------------------------
 
                                                                Plot    Plot   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs
-                                  Srvcs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since
+                                  Procs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since
 Harvester         Version         DNFHW   #Plots    Harvest   Today   Y/Day     Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day
 ---------------------------------------------------------------------------------------------------------------------------------------------
-apple             1.2.90          YYYYN     5415     2s ago       0       0     0.68s      0.70s      4.20s      5.98s       0      2       9
-avocado           1.1.7.dev124    YYYYN     5415     1s ago       0       0     0.71s      0.73s      4.21s      4.61s       0      0      12
-beet              2.1.3b0         YYYYN     5415     5s ago       0       0     0.72s      0.72s      5.13s      5.48s       1      1      81
-btcgreen          2.2.6.dev8      YYYYN     5415     6s ago       0       0     0.68s      0.72s      5.06s    105.10s       1     32      11
-cannabis          1.2.301         YYYYN     5415     6s ago       0       0     0.72s      0.72s      3.44s      4.68s       0      0      11
-covid             1.2.9           YYYYN     5415     5s ago       0       0     0.69s      0.69s      4.76s      3.87s       0      0      12
+apple             1.2.90          16110     5914     7s ago       0       0     0.72s      0.72s      3.70s      6.48s       0      2      12
+avocado           1.1.7.dev124    16110     5914     6s ago       0       0     0.75s      0.75s      2.84s      5.25s       0      1      18
+beet              2.1.3b0         16110     5914     4s ago       0       0     0.76s      0.75s      3.75s      4.48s       0      0      24
+btcgreen          2.2.6.dev8      16110     5914     5s ago       0       0     0.72s      0.73s      3.79s      4.07s       0      0       8
+cannabis          1.2.301         16110     5914     2s ago       0       0     0.76s      0.75s      4.38s      3.32s       0      0       7
+covid             1.2.9           16110     5914     7s ago       0       0     0.72s      0.73s      3.90s      6.00s       0      1      12
+flax              0.1.5           17110     5914     5s ago       0       0     0.72s      0.72s      3.47s      3.80s       0      0       1
+flora             0.2.12          16110     5914     5s ago       0       0     0.72s      0.72s     11.76s      4.59s       1      0       4
+goji              0.2.3           16110     5914     5s ago       0       0     0.75s      0.76s      3.59s      4.23s       0      0      10
+goldcoin          1.2.6           16110     5914     0s ago       0       0     0.72s      0.72s      3.26s      5.01s       0      1      11
+greendoge         1.2.10          16110     5914     3s ago       0       0     0.73s      0.72s      4.70s      6.03s       0      3       5
+maize             1.2.3.dev14     16110     5914   500s ago       0       0     0.75s      0.75s      4.41s      4.42s       0      0       7
+melon             1.0.1.dev1      16110     5914    15s ago       0       0     0.74s      0.74s      3.57s      3.44s       0      0       8
+mint              0.1.0           16110     5914     8s ago       0       0     0.72s      0.72s      4.04s      5.04s       0      1       9
+rolls             1.2.10.dev88    16110     5914    11s ago       0       0     0.74s      0.72s      5.22s      4.01s       1      0      17
+salvia            0.7.7           17110     5914     1s ago       0       0     0.72s      0.72s      4.90s      4.09s       0      0      20
+scam              1.0.5           16110     5914     5s ago       0       0     0.76s      0.76s      3.25s      4.52s       0      0      19
+skynet            1.0.1.dev2      16110     5914     2s ago       0       0     0.72s      0.72s      3.65s      3.66s       0      0      10
+stor              1.0.3           16110     5914     8s ago       0       0     0.73s      0.72s      5.79s      4.76s       1      0       4
+venidium          1.0.3           16110     5914     0s ago       0       0     0.72s      0.73s      4.69s      3.56s       0      0      11
 
+---------- STOPPED FORKS: 3 -----------
+Stopped                           Procs
+Forks             Version         DNFHW
+---------------------------------------
+chia              1.2.9           00000 
+seno              1.1.8.dev36     00000 
+sit               1.0.2.dev3      00000 
 ```
 
 - forkfixconfig ( Automated editing of fork config.yamls to preferred settings as set up in config.forkfixconfig )
@@ -272,6 +290,24 @@ https://discord.gg/XmTEZ4SHtj
 
 ## OLDER CHANGELOGS
 
+# Changelog, Version 4.1:
+
+- Confirmed compatibility with Debian 10.  Note that Debian users may need to run `apt install bc` as the `bc` function, which allows for some basic mathematical processing in bash, does not appear to be part of a default Debian installation.
+- Users running forktools under certain locale settings (such as European locales that display commas instead of periods for decimals) should no longer suffer minor display and calculation issues.
+- New tool `forkcerts` makes setting up remote harvesters much easier.  It will export all farmer `ca` folders containing ssl certs into a single folder for easy transfer to and import on remote harvesters for the required `init -c` process.  Also sets the farmer peer setting in the harvester config.yamls during the import process.
+- `fork`, in addition to the 3 previous abbreviations 'sum', 'wal' and 'ver', now supports an additional 13 three-letter abbreviations for various other forktools.  For example, instead of running `forkfixconfig chia`, you can run `fork chia fix`.  Run `fork -help` for the list of available abbreviations.  Note that the capability of running for 'all' forks cannot be replicated in this way. `fork` can still only be run for one forkname at a time.
+- `forkpatch` now supports a second patch, -logwinningplots, which will identify the specific plot any proof was found in in your debug.log.
+- `forkfixconfig` now supports setting `enable_upnp` and the two new db_sync parameters recently added by Chia.  Like all other parameters, this can be set by a fork-specific config override if desired.
+- `forkupdate` will now automatically detect whether any forkpatch was previously applied to the fork and attempt to reapply them just before the restart at the end of forkupdate.
+- `forkupdate` will now preserve chia pooling parameters and foxypool pooling parameters when recreating the fork's config.yaml.
+- `forkexplore` transaction details now go to 3 decimal point precision, rather than 2.
+- `forkexplore` can now be run in summary mode with -d (for daily) and -m (for monthly) switches.  Will report farmed and non-farmed totals separately for easier trend analysis.
+- `forkports` has been refined even more to detect more local port usage and exclude more remote port usage in conflict determination.
+- `forkmon` now shows "Plot Errors Today" and "Plot Errors Y/Day" in the harvester section.  This count sums 4 different plot related errors that can be found in the harvester logs.
+- `forkmon` will now show the number of seconds since winning the last block, rather than a blank, when the last block was won less than a minute ago.
+- `forkmon` harvester section will now display forks that have just been set up and never actually started harvesting yet more gracefully.
+- `forkmon` and `forkexplore` can now be run with -o switch, intended to allow users to monitor their NFT recovery addresses.  This relies on the user having set up a config.nftaddress.forkname file in the ftconfigs folder specifying the NFT recovery address for each fork they want to monitor with `forkmon -o` or `forkexplore -o`.
+- Symlink creation for silicoin revised to the new `sit` naming structure.  Technical support for this fork should not be misconstrued as a recommendation to farm this fork.
 
 # Changelog, Version 4.0:
 

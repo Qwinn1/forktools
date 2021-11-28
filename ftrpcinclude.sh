@@ -32,7 +32,6 @@ COINNAME=$(echo $COINNAME | sed 's/.*"network_prefix": "//' | sed 's/",.*//' | t
 
 
 # Get major-minor multiplier
-# Hard coding to account for crappy lack of proper fork renaming. 
 MMMULTIPLIERNAME=$FORKNAME
 MMMULTIPLIER=$( cat $FORKTOOLSBLOCKCHAINDIRS/$FORKNAME-blockchain/$FORKNAME/consensus/block_rewards.py | grep "^_.*_per_$MMMULTIPLIERNAME =" | sed 's/.*=//' | sed 's/_//g' | sed 's/\*.*//' | awk '{$1=$1};1')
 if [[ $MMMULTIPLIER == '' ]]; then
@@ -168,11 +167,7 @@ NETSPACE=$( assemble_bytestring "$RPCSPACEBYTES" )
 # Avocado is weird in that they renamed "get_harvesters" to "get_plots", so we call it differently
 IFS=''
 
-if [[ $FORKNAME = "avocado" ]]; then
-   PLOTLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_plots | python -m json.tool )
-else
-   PLOTLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_harvesters | python -m json.tool 2>/dev/null)
-fi
+PLOTLIST=$(curl -s --insecure --cert $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.crt --key $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/ssl/farmer/private_farmer.key -d '{}' -H "Content-Type: application/json" -X POST https://localhost:$FARMERRPCPORT/get_harvesters | python -m json.tool 2>/dev/null)
 
 IFS=$'\n'
 if [[ $PLOTLIST == '' ]]; then
@@ -233,7 +228,7 @@ elif [[ $LASTBLOCKDATE == '' ]]; then
      FIRSTLOG=$( echo "debug.log.$FIRSTLOG" )
   fi   
   FIRSTHARVESTLINE=$(cat $FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/log/$FIRSTLOG | grep "eligible for farming" | sort | head -1)  
-  if [[ $FIRSTHARVESTLINE != '' ]]; then
+  if [[ $FIRSTHARVESTLINE != '' && $ETWSEC != '' ]]; then
     FIRSTHARVESTTIME=$(sed 's/\..*//' <<< "$FIRSTHARVESTLINE" | awk '{$1=$1};1')
     FIRSTHARVESTEPOCH=$(echo "$FIRSTHARVESTTIME" | DateToEpoch )
     SECONDSSINCESTART=$(echo "($CURRENTDATEEPOCH - $FIRSTHARVESTEPOCH)")

@@ -9,6 +9,7 @@ SETPLOTLOADFREQUENCY='18000'  # Default chia value: 120 seconds (2 minutes). Rec
 SETFNTARGETPEERCOUNT='80'     # Default chia value: 80. I don't have a recommendation for this one, but some people like to adjust it, so here's the option.
 SETBATCHSIZE='1500'           # Default chia value: Initially 30, now 300. I don't have problems loading all my plots in one batch.  If you do, please report it.
 SETBATCHSLEEP='1'             # Default chia value: Initially 10, now 1. 
+SETHARVTHREADS=''             # Default chia value: 30.  num_threads in harvester section.  No recommended setting, experimental for now. 
 SETPARALLELREAD=''            # Default chia value: true.  MacOS users using exfat formatted drives may need to change this setting.
 SETBLOCKCHAINDBSYNC=''        # Default chia value: auto, which is same as 'FULL'.  'on' is 'NORMAL'.  'off' is 'OFF'.  OFF is not recommended.  NORMAL ('on') should be sufficient.
 SETWALLETDBSYNC=''            # Default chia value: auto, which is same as 'FULL'.  'on' is 'NORMAL'.  'off' is 'OFF'.  OFF is not recommended.  NORMAL ('on') should be sufficient.

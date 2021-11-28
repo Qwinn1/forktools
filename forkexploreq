@@ -48,9 +48,7 @@ VALIDATEFORKNAME='Yes'
 FORKNAME=$1
 
 CURRENTCONFIG=$FORKTOOLSHIDDENDIRS/.$FORKNAME/mainnet/config/config.yaml
-PROCESSEF=$(ps -ef | grep -e 'full_node' -e 'farmer' -e 'harvester' -e 'wallet' -e '_daemon' | grep -v grep | awk '{ print $8 } ' | sort | uniq )
-CHIAPROCS=$(forkss | grep "\"chia" )
-PORTPARSINGDONE=0
+PROCESSEF=$( getproclist )
 . $FORKTOOLSDIR/ftcheckprocs.sh
 
 if [[ $FARMERRUNNING == 0 ]]; then

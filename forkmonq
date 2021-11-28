@@ -46,9 +46,21 @@ if [[ $1 != '' && $1 != '-n' && $1 != '--nowallet' && $1 != '-f' && $1 != '--far
 fi
 . ftinit.sh
 
+
 . $FORKTOOLSDIR/ftbuildrunlists.sh
 ORIGIFS=$IFS
 OLDIFS=$IFS
+
+#TESTING=$( getproclist )
+#TESTING2=$( getsymlinklist )
+#IFS=''
+#echo "Testing"
+#echo $STOPPEDLIST
+#echo
+#echo "Symlinks"
+#echo $TESTING2
+#exit
+
 
 FIRSTLOOP=1
 while [[ $# -gt 0 ]]; do
@@ -72,20 +84,23 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ $HARVESTERONLY != 1 ]]; then
-  printf '\n'
-  if [[ $VALIDATEFORKNAME == 'No' ]]; then
-    echo -e "---------------------------------------------------------------------- FARMERS: $FARMERCOUNT ---------------------------------------------------------------------"
-    printf '\n'
-  fi
-  if [[ $FARMERCOUNT > 0 ]]; then
-     printf '                                  Srvcs                                              FulNode   Memory   NoHarv       Address              Last\n'
-     printf 'Farmer            Version         DNFHW  Status   #Peers   #Plots  Height  Netspace  Workers    Usage   Errors       Balance   ETW        Block   Effort\n'
-     echo -e "--------------------------------------------------------------------------------------------------------------------------------------------------------"
-  fi
+  PRINTEDHEADER=0
   for fork in $FARMERLIST; do
      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
      fi
+     if [[ $PRINTEDHEADER == 0 ]]; then
+        printf '\n'
+        if [[ $VALIDATEFORKNAME == 'No' ]]; then
+           echo -e "------------------------------------------------------------------- FARMERS: $FARMERCOUNT -------------------------------------------------------------------"
+        fi
+        if [[ $FARMERCOUNT > 0 ]]; then
+           printf '                                  Procs                                                  Memory   NoHarv       Address               Last\n'
+           printf 'Farmer            Version         DNFHW  Status   #Peers   #Plots  Height  Netspace       Usage   Errors       Balance    ETW        Block   Effort\n'
+           echo -e "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        fi
+        PRINTEDHEADER=1
+     fi    
      FORKNAME=$fork
      if [[ -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log ]]; then
         cd $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log        
@@ -111,16 +126,13 @@ if [[ $HARVESTERONLY != 1 ]]; then
               fi
            fi
         fi
-        HARVESTERERRORS=$(grep -a "Harvester did not respond" $YESTERDAYLOGLIST | grep -c -e $TODAYSTAMP -e $YESTERDAYSTAMP )
+        # The : checks are because, when searching multiple files, the output of the first grep can be, for example 'debug.log:2021-11-21' rather than date at beginning
+        HARVESTERERRORS=$(grep -a "did not respond" $YESTERDAYLOGLIST | grep -c -e ":$TODAYSTAMP" -e ^$TODAYSTAMP -e ":$YESTERDAYSTAMP" -e ^$YESTERDAYSTAMP )
      else 
         HARVESTERERRORS='NoLog'
      fi
      FORKMEM=$(forkmemory)
      FORKVERSION=$($FORKTOOLSDIR/fork $fork ver)
-     OLDIFS=$IFS
-     IFS=''
-     FNWORKERS=$(echo $PROCESSEF | grep -c "^${FORKNAME}_full" )
-     IFS=$OLDIFS
      . $FORKTOOLSDIR/ftrpcinclude.sh
      EFFORT=${EFFORT%.*}
      ADDRESSBALANCE=${ADDRESSBALANCE%.*}
@@ -140,30 +152,33 @@ if [[ $HARVESTERONLY != 1 ]]; then
         ETWTEXT='Ht<500'
         PRINTEFFORT='N/A'        
      fi     
-     printf '%-17.17s %-15.15s %-5.5s  %-10.10s%5.5s%9.9s %7d%10.10s   %4.4s %8s %7.7s %10d %-5.5s %-7s%11.11s %5s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$FARMSTATUS" "$PEERCOUNT" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FNWORKERS" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$PRINTEFFORT"
+     printf '%-17.17s %-15.15s %-5.5s  %-10.10s%5.5s%9.9s %7d%10.10s  %8s %7.7s %10d %-5.5s  %-7s%11.11s %5s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" "$FARMSTATUS" "$PEERCOUNT" "$PLOTCOUNT" "$PEAKHEIGHT" "$NETSPACE" "$FORKMEM" "$HARVESTERERRORS" "$ADDRESSBALANCE" "$COINNAME" "$ETWTEXT" "$LASTBLOCKAGOTEXT" "$PRINTEFFORT"
   done
 fi
 IFS=$ORIGIFS
 
 if [[ $FARMERONLY != 1 ]]; then
-  printf '\n'
-  if [[ $VALIDATEFORKNAME == 'No' ]]; then
-    echo -e "------------------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ----------------------------------------------------------------"
-  fi
-  echo
-  printf  '                                                               Plot    Plot   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
-  printf  '                                  Srvcs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since\n'
-  printf  'Harvester         Version         DNFHW   #Plots    Harvest   Today   Y/Day     Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
-  echo -e "---------------------------------------------------------------------------------------------------------------------------------------------"
+  PRINTEDHEADER=0
   for fork in $HARVESTERLIST; do
      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
        continue
      fi
-     FORKNAME=$fork
      if [[ ! -f $FORKTOOLSHIDDENDIRS/.$fork/mainnet/log/debug.log ]]; then
        continue
      fi
-     PORTPARSINGDONE=0
+     if [[ $PRINTEDHEADER == 0 ]]; then
+        printf '\n'
+        if [[ $VALIDATEFORKNAME == 'No' ]]; then
+           echo -e "------------------------------------------------------------- HARVESTERS: $HARVESTERCOUNT ----------------------------------------------------------------"
+           echo
+        fi
+        printf  '                                                               Plot    Plot   Average    Average    Longest    Longest   5 Sec  5 Sec  Proofs\n'
+        printf  '                                  Procs                Last  Errors  Errors  Response   Response   Response   Response   Warns  Warns   Since\n'
+        printf  'Harvester         Version         DNFHW   #Plots    Harvest   Today   Y/Day     Today  Yesterday      Today  Yesterday   Today  Y/Day   Y/Day\n'
+        echo -e "---------------------------------------------------------------------------------------------------------------------------------------------"
+        PRINTEDHEADER=1
+     fi
+     FORKNAME=$fork
      . $FORKTOOLSDIR/ftcheckprocs.sh
 
      FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
@@ -211,16 +226,16 @@ if [[ $FARMERONLY != 1 ]]; then
         let LASTHARVESTAGO=$CURRENTTIME-$LASTHARVESTEPOCH
         LASTHARVESTAGO=$( printf "%ss ago" $LASTHARVESTAGO )
         PLOTCOUNT=$(sed 's/.*Total //' <<< "$LASTHARVESTERLINE" | sed 's/ plots//' | awk '{$1=$1};1')
-        TODAYAVG=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total += $2; count++} END { if ( count > 0 ) print total/count }')
-        YESTERDAYAVG=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total2 += $2; count2++} END { if ( count2 > 0 ) print total2/count2 }')   
-        TODAYMAX=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
-        YESTERDAYMAX=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
-        TODAYFIVESECWARNS=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -ac ' below 5 seconds ' )
-        YESTERDAYFIVESECWARNS=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac ' below 5 seconds ')   
-        TODAYFILEERRORS=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -ac -e 'badbit or failbit' -e 'Invalid file' -e 'may no longer exist' -e 'multiple copies of the' )
-        YESTERDAYFILEERRORS=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac -e 'badbit or failbit' -e 'Invalid file' -e 'may no longer exist' -e 'multiple copies of the' )
-        PROOFSTODAYLIST=$(grep -a $TODAYSTAMP $TODAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )
-        PROOFSYESTERDAYLIST=$(grep -a $YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )   
+        TODAYAVG=$(grep -a ^$TODAYSTAMP $TODAYLOGLIST | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total += $2; count++} END { if ( count > 0 ) print total/count }')
+        YESTERDAYAVG=$(grep -a ^$YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total2 += $2; count2++} END { if ( count2 > 0 ) print total2/count2 }')   
+        TODAYMAX=$(grep -a ^$TODAYSTAMP $TODAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
+        YESTERDAYMAX=$(grep -a ^$YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)
+        TODAYFIVESECWARNS=$(grep -a ^$TODAYSTAMP $TODAYLOGLIST | grep -ac ' below 5 seconds ' )
+        YESTERDAYFIVESECWARNS=$(grep -a ^$YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac ' below 5 seconds ')   
+        TODAYFILEERRORS=$(grep -a ^$TODAYSTAMP $TODAYLOGLIST | grep -ac -e 'badbit or failbit' -e 'Invalid file' -e 'may no longer exist' -e 'multiple copies of the' )
+        YESTERDAYFILEERRORS=$(grep -a ^$YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -ac -e 'badbit or failbit' -e 'Invalid file' -e 'may no longer exist' -e 'multiple copies of the' )
+        PROOFSTODAYLIST=$(grep -a ^$TODAYSTAMP $TODAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )
+        PROOFSYESTERDAYLIST=$(grep -a ^$YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a "Found [1-9].* proofs\." | sed 's/.*Found //' | sed 's/ proofs.*//' )   
         PROOFCOUNT=0
         for proof in $(echo $PROOFSTODAYLIST); do
           let PROOFCOUNT=$PROOFCOUNT+$proof
@@ -234,5 +249,25 @@ if [[ $FARMERONLY != 1 ]]; then
 fi
 echo
 
+if [[ $HARVESTERONLY != 1 && $FARMERONLY != 1 && $STOPPEDLIST != '' ]]; then
+   PRINTEDHEADER=0
+   for fork in $STOPPEDLIST; do
+      if [[ $VALIDATEFORKNAME == 'Yes' && $fork != $FORKNAME ]]; then
+        continue
+      fi
+      if [[ $PRINTEDHEADER == 0 ]]; then
+         echo -e "---------- STOPPED FORKS: $STOPPEDCOUNT -----------"
+         printf  'Stopped                           Procs\n'
+         printf  'Forks             Version         DNFHW\n'
+         echo -e "---------------------------------------"
+         PRINTEDHEADER=1
+      fi   
+      FORKNAME=$fork
+      FORKVERSION=$($FORKTOOLSDIR/forkq $fork ver)
+      . $FORKTOOLSDIR/ftcheckprocs.sh
+      printf '%-17.17s %-15.15s %-6.6s\n' "$fork" "$FORKVERSION" "$SERVICESRUNNING" 
+   done
+   echo
+fi
 . ftexit.sh
 
