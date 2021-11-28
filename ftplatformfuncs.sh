@@ -36,8 +36,8 @@ if [[ $OSTYPE == 'darwin'* ]]; then
     }
     function platformpwdx () {
        PROCPID=$1
-       echo `lsof -w -p $PROCPID | awk {'print$9'}`
-    }    
+       echo `lsof -a -d cwd -p $PROCPID -n -Fn | awk '/^n/ {print substr($0,2)}'`
+    }
 
     # The next two get a process list with pid and directory process was launched from
     function getsymlinklist () {
@@ -80,7 +80,7 @@ if [[ $OSTYPE == 'darwin'* ]]; then
       # ps -x -o rss= -p $(pgrep ^${fork}_) | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
       OLDIFS=$IFS
       IFS=''
-      MEMPIDLIST=$( echo $PROCESSEF | grep ${fork}-blockchain | awk {'print$2'} )
+      MEMPIDLIST=$( echo $PROCESSEF ) | grep ${fork}-blockchain | awk {'print$2'} 
       IFS=$'\n'      
       ps -x -o rss= -p $(echo $MEMPIDLIST | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}' )
       IFS=$OLDIFS
