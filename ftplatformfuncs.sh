@@ -72,6 +72,11 @@ if [[ $OSTYPE == 'darwin'* ]]; then
              PROCCWD=$( echo "${PROCFORKNAME}-blockchain" )
           fi
           printf '%s %s\n' $i $PROCCWD
+          if [[ "$i" != *"_daemon"* ]]; then
+             for childpid in $(pgrep -P $PROCPID) ; do
+                printf '%s %s %s\n' $(echo $i | awk {'print$1'}) $childpid $PROCCWD
+             done
+          fi
        done
        IFS=$OLDIFS
     }
