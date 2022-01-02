@@ -188,7 +188,7 @@ else
     function forkmemory () {
        OLDIFS=$IFS
        IFS=''
-       MEMPIDLIST=$( echo $PROCESSEF | grep ${fork}-blockchain | awk {'print$2'} )
+       MEMPIDLIST=$( echo $PROCESSEF | grep " ${fork}-blockchain" | awk {'print$2'} )
        IFS=$'\n'      
        for pid in $MEMPIDLIST; do 
           awk '/Pss:/{ sum += $2 } END { print sum }' /proc/${pid}/smaps 
