@@ -85,7 +85,7 @@ if [[ $OSTYPE == 'darwin'* ]]; then
       # ps -x -o rss= -p $(pgrep ^${fork}_) | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
       OLDIFS=$IFS
       IFS=''
-      MEMPIDLIST=$( echo $PROCESSEF | grep ${fork}-blockchain | awk {'print$2'} )
+      MEMPIDLIST=$( echo $PROCESSEF | grep " ${fork}-blockchain" | awk {'print$2'} )
       IFS=$'\n'      
       ps -x -o rss= -p $(echo $MEMPIDLIST) | awk '{ sum +=$1/1024 } END {printf "%7.0f MB\n", sum}'
       IFS=$OLDIFS
