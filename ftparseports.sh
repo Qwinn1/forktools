@@ -67,7 +67,7 @@
        TIMELORDPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
        continue
      fi  
-     if [[ $WORKLINE == *daemon_port:* ]]; then 
+     if [[ $SECTION != *ui:* && $WORKLINE == *daemon_port:* ]]; then 
        DAEMONPORT=$(sed 's/daemon_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
        continue
      fi
