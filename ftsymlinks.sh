@@ -58,6 +58,13 @@ if [[ ( -d "$FORKTOOLSHIDDENDIRS/.chiarose" ) && ( ! -d "$FORKTOOLSHIDDENDIRS/.r
   ln -sv $FORKTOOLSHIDDENDIRS/.chiarose $FORKTOOLSHIDDENDIRS/.rose
 fi
 
+# Symlink creation for mainnet folder
+if [[ ( -f "$FORKTOOLSHIDDENDIRS/.chinilla/vanillanet" ) && ( ! -f "$FORKTOOLSHIDDENDIRS/.chinilla/mainnet" ) ]]; then
+  printf 'Created symlink: '
+  ln -sv $FORKTOOLSHIDDENDIRS/.chinilla/vanillanet $FORKTOOLSHIDDENDIRS/.chinilla/mainnet
+fi
+
+
 
 # Symlink creation for code directories
 if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain/chia" ) && ( ! -d "$FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain/sit" ) ]]; then
@@ -108,4 +115,6 @@ if [[ ( -f "$FORKTOOLSBLOCKCHAINDIRS/fishery-blockchain/venv/bin/chia" ) && ( ! 
   printf 'Created symlink: '
   ln -sv $FORKTOOLSBLOCKCHAINDIRS/fishery-blockchain/venv/bin/chia $FORKTOOLSBLOCKCHAINDIRS/fishery-blockchain/venv/bin/fishery
 fi
+
+
 
