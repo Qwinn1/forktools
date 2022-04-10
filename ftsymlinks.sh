@@ -99,6 +99,10 @@ if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/gold-blockchain/chia" ) && ( ! -d "$FORKTOO
   printf 'Created symlink: '
   ln -sv $FORKTOOLSBLOCKCHAINDIRS/gold-blockchain/chia $FORKTOOLSBLOCKCHAINDIRS/gold-blockchain/gold
 fi
+if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/petroleum-blockchain/chia" ) && ( ! -d "$FORKTOOLSBLOCKCHAINDIRS/petroleum-blockchain/petroleum" ) ]]; then
+  printf 'Created symlink: '
+  ln -sv $FORKTOOLSBLOCKCHAINDIRS/petroleum-blockchain/chia $FORKTOOLSBLOCKCHAINDIRS/petroleum-blockchain/petroleum
+fi
 
 
 
@@ -115,6 +119,5 @@ if [[ ( -f "$FORKTOOLSBLOCKCHAINDIRS/fishery-blockchain/venv/bin/chia" ) && ( ! 
   printf 'Created symlink: '
   ln -sv $FORKTOOLSBLOCKCHAINDIRS/fishery-blockchain/venv/bin/chia $FORKTOOLSBLOCKCHAINDIRS/fishery-blockchain/venv/bin/fishery
 fi
-
 
 
