@@ -59,7 +59,7 @@ if [[ ( -d "$FORKTOOLSHIDDENDIRS/.chiarose" ) && ( ! -d "$FORKTOOLSHIDDENDIRS/.r
 fi
 
 # Symlink creation for mainnet folder
-if [[ ( -f "$FORKTOOLSHIDDENDIRS/.chinilla/vanillanet" ) && ( ! -f "$FORKTOOLSHIDDENDIRS/.chinilla/mainnet" ) ]]; then
+if [[ ( -d "$FORKTOOLSHIDDENDIRS/.chinilla/vanillanet" ) && ( ! -d "$FORKTOOLSHIDDENDIRS/.chinilla/mainnet" ) ]]; then
   printf 'Created symlink: '
   ln -sv $FORKTOOLSHIDDENDIRS/.chinilla/vanillanet $FORKTOOLSHIDDENDIRS/.chinilla/mainnet
 fi
