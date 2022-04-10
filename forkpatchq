@@ -98,8 +98,14 @@ if [[ $2 == '-multiproc' ]]; then
          if [[ $FINDNUMWORKERSKEY > 0 ]]; then         
             CHIAPRE130=1
          else
+            CHIAPRE130=0		 
             FINDNUMWORKERSKEY=$( grep -c '^        num_workers = max(cpu_count - reserved_cores, 1)$' $PROGRAMTOMOD )
-            CHIAPRE130=0
+            if [[ $FINDNUMWORKERSKEY > 0 ]]; then         
+               CHIAPRE134=1
+            else
+               CHIAPRE134=0
+			   FINDNUMWORKERSKEY=$( grep -c '^            num_workers = max(cpu_count - reserved_cores, 1)$' $PROGRAMTOMOD )
+			fi   
          fi
          if [[ $FINDNUMWORKERSKEY == 0 ]]; then
             echo "forkpatch:  $FORKNAME failed code validation - num_workers code missing or has non-standard indendation.  Skipping $FORKNAME."
