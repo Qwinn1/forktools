@@ -203,7 +203,7 @@ LINENUMBER=0
 while read line; do
    ((LINENUMBER=$LINENUMBER+1))
    WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
-   TESTSECTION=$(c1grep -e '^harvester:' -e '^pool:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' <<< "$WORKLINE" )
+   TESTSECTION=$(c1grep -e '^harvester:' -e '^pool:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:'  -e '^seeder:' <<< "$WORKLINE" )
   if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]]; then 
     SECTION=$TESTSECTION 
   fi
