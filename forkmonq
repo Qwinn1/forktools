@@ -225,7 +225,7 @@ if [[ $FARMERONLY != 1 ]]; then
         LASTHARVESTEPOCH=$(echo "$LASTHARVESTTIME" | DateToEpoch )        
         let LASTHARVESTAGO=$CURRENTTIME-$LASTHARVESTEPOCH
         LASTHARVESTAGO=$( printf "%ss ago" $LASTHARVESTAGO )
-        PLOTCOUNT=$(sed 's/.*Total //' <<< "$LASTHARVESTERLINE" | sed 's/ plots//' | awk '{$1=$1};1')
+        PLOTCOUNT=$(sed 's/.*Total //' <<< "$LASTHARVESTERLINE" | sed 's/ plots//' | sed 's/ with staking.*//' | awk '{$1=$1};1')
         TODAYAVG=$(grep -a ^$TODAYSTAMP $TODAYLOGLIST | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total += $2; count++} END { if ( count > 0 ) print total/count }')
         YESTERDAYAVG=$(grep -a ^$YESTERDAYSTAMP $YESTERDAYLOGLIST | grep -a 'plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{ total2 += $2; count2++} END { if ( count2 > 0 ) print total2/count2 }')   
         TODAYMAX=$(grep -a ^$TODAYSTAMP $TODAYLOGLIST | grep -a ' [1-9].* plots were eligible' | sed 's/\./\. /' | sed 's/\. .*Time://' | sed 's/ s\. Total.*//' | awk '{print $2}' | sort -nr | head -n 1)

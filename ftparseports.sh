@@ -3,6 +3,8 @@
    IFS=''
    # Get all ports.  Uses c1grep function instead of grep so as to not trigger ERROR trap code 1 (no line found) which is intended
    MEMORYCONFIG=$(cat $CURRENTCONFIG | c1grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^logging:' -e 'port: ' -e '_peer:' -e 'vdf_server:' ) 
+   SECTION=''
+   TESTSECTION=''
    while read line; do
      WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
      if [[ $WORKLINE == *default_full_node_port* || $WORKLINE == *log_syslog_port* ]]; then
@@ -65,7 +67,7 @@
        TIMELORDPORT=$(sed 's/port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
        continue
      fi  
-     if [[ $WORKLINE == *daemon_port:* ]]; then 
+     if [[ $SECTION != *ui:* && $WORKLINE == *daemon_port:* ]]; then 
        DAEMONPORT=$(sed 's/daemon_port: //' <<< "$WORKLINE" | awk '{$1=$1};1') 
        continue
      fi

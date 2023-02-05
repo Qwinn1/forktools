@@ -95,11 +95,23 @@ if [[ $2 == '-multiproc' ]]; then
             continue
          fi
          FINDNUMWORKERSKEY=$( grep -c '^        num_workers = max(cpu_count - 2, 1)$' $PROGRAMTOMOD )
+         if [[ $FINDNUMWORKERSKEY > 0 ]]; then         
+            CHIAPRE130=1
+         else
+            CHIAPRE130=0		 
+            FINDNUMWORKERSKEY=$( grep -c '^        num_workers = max(cpu_count - reserved_cores, 1)$' $PROGRAMTOMOD )
+            if [[ $FINDNUMWORKERSKEY > 0 ]]; then         
+               CHIAPRE134=1
+            else
+               CHIAPRE134=0
+  	       FINDNUMWORKERSKEY=$( grep -c '^            num_workers = max(cpu_count - reserved_cores, 1)$' $PROGRAMTOMOD )
+            fi   
+         fi
          if [[ $FINDNUMWORKERSKEY == 0 ]]; then
             echo "forkpatch:  $FORKNAME failed code validation - num_workers code missing or has non-standard indendation.  Skipping $FORKNAME."
             continue
          fi
-         FINDIMPORTKEY=$( grep -c "^from ${FORKNAMEINCODE}.util.streamable import recurse_jsonify$" $PROGRAMTOMOD )
+         FINDIMPORTKEY=$( grep -c "^from ${FORKNAMEINCODE}.util.setproctitle import getproctitle, setproctitle$" $PROGRAMTOMOD )
          if [[ $FINDIMPORTKEY == 0 ]]; then
             echo "forkpatch:  $FORKNAME failed code validation - exact key needed for proper placement of from-import lines missing.  Skipping $FORKNAME."
             continue
@@ -108,8 +120,16 @@ if [[ $2 == '-multiproc' ]]; then
          echo "forkpatch:  $FORKNAME deemed suitable for automated -multiproc patching. Attempting to mod $FORKNAME/consensus/blockchain.py."
          echo "            blockchain.py will be backed up to $FORKNAME/consensus/blockchain.py.ftbackup"
       
-         sed -i.ftbackup "/^from ${FORKNAMEINCODE}.util.streamable import recurse_jsonify/a # Next two lines added by forkpatch -multiproc\nfrom ${FORKNAMEINCODE}.util.default_root import DEFAULT_ROOT_PATH\nfrom ${FORKNAMEINCODE}.util.config import load_config" $PROGRAMTOMOD
-         sed -i.ftbak "/^        num_workers = max(cpu_count - 2, 1)/a\        # Next three lines added by forkpatch -multiproc\n        config = load_config(DEFAULT_ROOT_PATH, \"config.yaml\")\n        if 'multiprocessing_limit' in config.keys():\n            num_workers = min(num_workers, int(config[\"multiprocessing_limit\"]));" $PROGRAMTOMOD
+         if [[ $CHIAPRE130 == 1 ]]; then
+            sed -i.ftbackup "/^from ${FORKNAMEINCODE}.util.setproctitle import getproctitle, setproctitle/a # Next two lines added by forkpatch -multiproc\nfrom ${FORKNAMEINCODE}.util.default_root import DEFAULT_ROOT_PATH\nfrom ${FORKNAMEINCODE}.util.config import load_config" $PROGRAMTOMOD
+            sed -i.ftbak "/^        num_workers = max(cpu_count - 2, 1)/a\        # Next three lines added by forkpatch -multiproc\n        config = load_config(DEFAULT_ROOT_PATH, \"config.yaml\")\n        if 'multiprocessing_limit' in config.keys():\n            num_workers = min(num_workers, int(config[\"multiprocessing_limit\"]));" $PROGRAMTOMOD
+         elif [[ $CHIAPRE134 == 1 ]]; then
+            sed -i.ftbackup "/^from ${FORKNAMEINCODE}.util.setproctitle import getproctitle, setproctitle/a # Next two lines added by forkpatch -multiproc\nfrom ${FORKNAMEINCODE}.util.default_root import DEFAULT_ROOT_PATH\nfrom ${FORKNAMEINCODE}.util.config import load_config" $PROGRAMTOMOD
+            sed -i.ftbak "/^        num_workers = max(cpu_count - reserved_cores, 1)/a\        # Next three lines added by forkpatch -multiproc\n        config = load_config(DEFAULT_ROOT_PATH, \"config.yaml\")\n        if 'multiprocessing_limit' in config.keys():\n            num_workers = min(num_workers, int(config[\"multiprocessing_limit\"]));" $PROGRAMTOMOD
+         else
+            sed -i.ftbackup "/^from ${FORKNAMEINCODE}.util.setproctitle import getproctitle, setproctitle/a # Next two lines added by forkpatch -multiproc\nfrom ${FORKNAMEINCODE}.util.default_root import DEFAULT_ROOT_PATH\nfrom ${FORKNAMEINCODE}.util.config import load_config" $PROGRAMTOMOD
+            sed -i.ftbak "/^            num_workers = max(cpu_count - reserved_cores, 1)/a\            # Next three lines added by forkpatch -multiproc\n            config = load_config(DEFAULT_ROOT_PATH, \"config.yaml\")\n            if 'multiprocessing_limit' in config.keys():\n                num_workers = min(num_workers, int(config[\"multiprocessing_limit\"]));" $PROGRAMTOMOD
+         fi
          rm ${PROGRAMTOMOD}.ftbak
       else
          echo "forkpatch: $FORKNAME code $PROGRAMTOMOD not found.  Skipping $FORKNAME."
