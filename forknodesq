@@ -6,11 +6,12 @@ function print_usage () {
    echo "SYNOPSIS:  Prints a list of IP addresses and ports for all currently connected network nodes/peers"
    echo "    for the specified fork in a format useful for sharing with others having difficulty connecting"
    echo "    to the network."
-   echo "           Prepends each node and port with 'forkname show -a' for easy CLI connection command"
-   echo "    via cut and paste."
+   echo "           Prepends each node and port with 'forkname show -a' (or 'forkname peers full_node -a' in"
+   echo "    more recent versions of the chia code) for easy CLI connection command via cut and paste."
    echo
    echo "PARAMETERS:"
-   echo "    forkname            Required."   
+   echo "    forkname            Required."
+   echo "    -f                  Prepend 'fork ' to each line of output for sharing nodes with other forktools users."   
    echo "    -help | --help      Show this information again."
    echo
    exit 0
@@ -19,10 +20,17 @@ function print_usage () {
 VALIDATEFORKNAME='Yes'
 . ftinit.sh
 
+if [[ $2 == '-f' ]]; then
+   FORFORKTOOLS='fork '
+fi
+
 cd $FORKTOOLSBLOCKCHAINDIRS/$1-blockchain 
 . ./activate
 for port in $($1 show -c | grep "^FULL_NODE" | awk '{print $2,$3}' | sed 's/ [0-9]*\//:/' ); do
-  echo $1 "show -a" $port
+  echo $FORFORKTOOLS $1 "show -a" $port
+done
+for port in $($1 peer full_node -c | grep "^FULL_NODE" | awk '{print $2,$3}' | sed 's/ [0-9]*\//:/' ); do
+  echo $FORFORKTOOLS $1 "peer full_node -a" $port
 done
 echo
 deactivate

@@ -27,6 +27,11 @@ if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain" ) && ( ! -d "$FORKTOOL
   printf 'Created symlink: '
   ln -sv $FORKTOOLSBLOCKCHAINDIRS/silicoin-blockchain $FORKTOOLSBLOCKCHAINDIRS/sit-blockchain
 fi
+if [[ ( -d "$FORKTOOLSBLOCKCHAINDIRS/ballcoin-blockchain" ) && ( ! -d "$FORKTOOLSBLOCKCHAINDIRS/ball-blockchain" ) ]]; then
+  printf 'Created symlink: '
+  ln -sv $FORKTOOLSBLOCKCHAINDIRS/ballcoin-blockchain $FORKTOOLSBLOCKCHAINDIRS/ball-blockchain
+fi
+
 
 # Symlink creation for .hidden dirs
 if [[ ( -d "$FORKTOOLSHIDDENDIRS/.spare-blockchain" ) && ( ! -d "$FORKTOOLSHIDDENDIRS/.spare" ) ]]; then

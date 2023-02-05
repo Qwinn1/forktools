@@ -14,21 +14,21 @@ while read line; do
    ((LINENUMBER=$LINENUMBER+1))
    PRESERVECOMMENT=$(grep '#' <<< "$line" | sed 's/.*#/#/')
    WORKLINE=$(sed 's/#.*//' <<< "$line" )  # This removes any comments from consideration for alteration
-   TESTSECTION=$(grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^pool:' -e '^logging:' <<< "$WORKLINE" )
+   TESTSECTION=$(grep -e '^harvester:' -e '^farmer:' -e '^full_node:' -e '^timelord:' -e '^timelord_launcher:' -e '^ui:' -e '^introducer:' -e '^wallet:' -e '^pool:' -e '^logging:' -e '^data_layer:' <<< "$WORKLINE" )
 
   if [[ $TESTSECTION != '' && $TESTSECTION != $SECTION ]];
   then 
      SECTION=$TESTSECTION
   fi
   
-  if [[ $SETLOGLEVEL != '' && ($SECTION == *logging:* || $SECTION == *farmer:*) && $WORKLINE == *log_level:* ]];
+  if [[ $SETLOGLEVEL != '' && ($SECTION == *logging:* || $SECTION == *farmer:* || $SECTION == *data_layer:*) && $WORKLINE == *log_level:* ]];
   then
      OLDLOGLEVEL=$(sed 's/log_level: //' <<< "$WORKLINE" | sed 's/"//g' | sed 's/'\''//g' | awk '{$1=$1};1')
      NEWLOGLEVEL=$(sed "s/$OLDLOGLEVEL/$SETLOGLEVEL/" <<< "$WORKLINE")$PRESERVECOMMENT
      OLDLOGLEVEL=$line
      continue
   fi
-  if [[ $SETMAXLOGROTATION != '' && ($SECTION == *logging:* || $SECTION == *farmer:*) && $WORKLINE == *log_maxfilesrotation:* ]];
+  if [[ $SETMAXLOGROTATION != '' && ($SECTION == *logging:* || $SECTION == *farmer:* || $SECTION == *data_layer:*) && $WORKLINE == *log_maxfilesrotation:* ]];
   then
      OLDROTATION=$(sed 's/log_maxfilesrotation: //' <<< "$WORKLINE" | awk '{$1=$1};1')
      NEWROTATION=$(sed "s/$OLDROTATION/$SETMAXLOGROTATION/" <<< "$WORKLINE")$PRESERVECOMMENT
